@@ -2,6 +2,24 @@
 <html lang="en">
 <head>
 <!-- ── Device routing · added when wanderkind.love switched to PPWA repo ─── -->
+<style>
+  /* ─── A11Y overrides · ensure AA contrast on marketing landing ───── */
+  /* The landing uses its own --amber/--ink-muted variables that produce
+     sub-AA contrast on cream backgrounds. These overrides promote text
+     to AA-passing values without touching the inline content. */
+  :root {
+    --amber: #9C5A1E !important;         /* darker amber for text · was #C8762A */
+    --ink-muted: #6B5A3E !important;     /* promoted to ink-soft · was #9A8B73 */
+  }
+  /* Links inside text blocks must be visually distinguished beyond color */
+  footer a[href^="/"], footer a[href^="mailto:"],
+  p > a, .legal a {
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
+    text-decoration-thickness: 1px !important;
+  }
+</style>
+
 <script>
   (function () {
     var isStandalone =
