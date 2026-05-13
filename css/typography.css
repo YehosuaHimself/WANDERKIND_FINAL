@@ -50,6 +50,9 @@ p {
 }
 
 /* The signature mono eyebrow — wide tracking, amber, uppercase */
+/* The signature "h-label" eyebrow — dash + Courier caps + amber.
+   The dash prefix is a content-rendered glyph; if the writer adds
+   their own dash, it stays. If they don't, the ::before adds one. */
 .eyebrow {
   font-family: var(--wk-font-mono);
   font-size: var(--wk-fs-micro);
@@ -57,6 +60,16 @@ p {
   letter-spacing: var(--wk-ls-mono-wide);
   text-transform: uppercase;
   color: var(--wk-amber-text);   /* AA-passing amber for small text */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 1.4em;
+  height: 1.5px;
+  background: var(--wk-amber-text);
 }
 
 /* Smaller mono label */

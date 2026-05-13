@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Wanderkind — Install</title>
+  <meta name="description" content="Wanderkind installs as a small app on your home screen. No app store. No tracking. Just a door." />
+
+  <!-- Theme — embassy bg on this page even in light system mode -->
+  <meta name="theme-color" content="#0B0705" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal-parchment.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* Page-local: the install gate lives in the embassy register
+       regardless of system theme — it's a brand introduction. */
+    html, body {
+      background: var(--wk-embassy-bg);
+      color: var(--wk-embassy-ink);
+    }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: env(safe-area-inset-top) var(--wk-page-x) env(safe-area-inset-bottom);
+    }
+    main.gate {
+      flex: 1;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: var(--wk-space-lg);
+      padding: var(--wk-space-2xl) 0;
+    }
+
+    /* The W seal at presentation size, with the dust glow around it */
+    .gate-seal-wrap {
+      position: relative;
+      width: 152px;
+      height: 152px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--wk-space-sm);
+    }
+    .gate-seal-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -32px;
+      background: radial-gradient(circle, rgba(200,118,42,0.22) 0, transparent 64%);
+      pointer-events: none;
+      animation: gate-glow 4s ease-in-out infinite;
+    }
+    @keyframes gate-glow {
+      0%, 100% { opacity: 0.55; }
+      50%      { opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gate-seal-wrap::before { animation: none; opacity: 0.7; }
+    }
+    .gate-seal-wrap img {
+      width: 100%; height: 100%;
+      position: relative; z-index: 1;
+    }
+
+    /* Eyebrow above the seal */
+    .gate-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-xwide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+      opacity: 0.9;
+    }
+    .gate-eyebrow::before { content: "— "; }
+
+    /* The mantra — Helvetica 900 uppercase, calm size */
+    .gate-mantra {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.5rem, 5vw + 0.5rem, 2.25rem);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink);
+      max-width: 14ch;
+    }
+    .gate-sub {
+      font-family: var(--wk-font-body);
+      font-size: var(--wk-fs-small);
+      line-height: 1.6;
+      color: var(--wk-embassy-ink-soft);
+      max-width: 32ch;
+      margin: 0 auto;
+    }
+
+    /* Install steps card — parchment-on-dark, the embassy register */
+    .gate-steps {
+      width: 100%;
+      max-width: 420px;
+      margin-top: var(--wk-space-md);
+      background: var(--wk-embassy-bg-2);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-md);
+      padding: var(--wk-space-lg);
+      text-align: left;
+    }
+    .gate-steps h2 {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+      margin-bottom: var(--wk-space-md);
+      display: flex; align-items: center; gap: 0.6em;
+    }
+    .gate-steps h2::before {
+      content: "";
+      display: inline-block;
+      width: 1.4em; height: 1.5px;
+      background: var(--wk-embassy-amber);
+    }
+    .gate-steps ol {
+      list-style: none;
+      padding: 0; margin: 0;
+      counter-reset: gate;
+    }
+    .gate-steps li {
+      counter-increment: gate;
+      position: relative;
+      padding-left: var(--wk-space-xl);
+      margin-bottom: var(--wk-space-md);
+      color: var(--wk-embassy-ink);
+      font-size: var(--wk-fs-small);
+      line-height: 1.55;
+    }
+    .gate-steps li::before {
+      content: counter(gate, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: -2px;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: var(--wk-ls-mono);
+      color: var(--wk-embassy-amber);
+    }
+    .gate-steps li:last-child { margin-bottom: 0; }
+    .gate-steps li strong {
+      color: var(--wk-embassy-ink);
+      font-weight: var(--wk-fw-medium);
+    }
+    .gate-steps li em {
+      font-style: normal;
+      color: var(--wk-embassy-amber);
+    }
+
+    /* Platform tabs */
+    .gate-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: var(--wk-space-md);
+      padding: 4px;
+      background: var(--wk-embassy-bg);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-md);
+    }
+    .gate-tab {
+      flex: 1;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      padding: 10px 12px;
+      border: 0;
+      background: transparent;
+      color: var(--wk-embassy-ink-soft);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background var(--wk-duration-fast) var(--wk-ease-out),
+                  color var(--wk-duration-fast) var(--wk-ease-out);
+    }
+    .gate-tab[aria-selected="true"] {
+      background: var(--wk-embassy-bg-2);
+      color: var(--wk-embassy-amber);
+    }
+    .gate-tabpanel { display: none; }
+    .gate-tabpanel[data-active="true"] { display: block; }
+
+    /* Footer — the desktop-already-installed note + the "I'm on desktop" alternative */
+    .gate-footer {
+      margin-top: var(--wk-space-xl);
+      padding-top: var(--wk-space-lg);
+      border-top: 1px solid var(--wk-embassy-line);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+    .gate-footer p {
+      font-size: var(--wk-fs-nano);
+      font-family: var(--wk-font-mono);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink-muted);
+      line-height: 1.6;
+    }
+    .gate-footer a {
+      color: var(--wk-embassy-amber);
+      text-decoration: none;
+      border-bottom: 1px solid var(--wk-embassy-amber);
+    }
+  </style>
+</head>
+
+<body class="embassy">
+
+  <main class="gate" id="gate">
+    <span class="gate-eyebrow">Wanderkind Embassy</span>
+
+    <div class="gate-seal-wrap">
+      <img src="/assets/icons/seal-parchment.svg" alt="Wanderkind seal" width="152" height="152" />
+    </div>
+
+    <h1 class="gate-mantra">Every Way begins at your door.</h1>
+
+    <p class="gate-sub">
+      Wanderkind installs as a small app on your home screen. No app store.
+      No tracking. Just a door — yours, and the doors that open for you in return.
+    </p>
+
+    <section class="gate-steps" aria-labelledby="install-title">
+      <h2 id="install-title">Install in two minutes</h2>
+
+      <div class="gate-tabs" role="tablist" aria-label="Choose your device">
+        <button class="gate-tab" role="tab" id="tab-ios"     aria-selected="true"  aria-controls="panel-ios"     data-target="ios">iOS</button>
+        <button class="gate-tab" role="tab" id="tab-android" aria-selected="false" aria-controls="panel-android" data-target="android">Android</button>
+      </div>
+
+      <div class="gate-tabpanel" id="panel-ios"     role="tabpanel" aria-labelledby="tab-ios"     data-active="true">
+        <ol>
+          <li>Open this page in <strong>Safari</strong>. <em>Other browsers can't install PWAs on iOS.</em></li>
+          <li>Tap the <strong>Share</strong> icon at the bottom of Safari (the square with the upward arrow).</li>
+          <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+          <li>Confirm. The Wanderkind seal appears on your home screen. Open it from there — it runs as its own app.</li>
+        </ol>
+      </div>
+
+      <div class="gate-tabpanel" id="panel-android" role="tabpanel" aria-labelledby="tab-android" data-active="false">
+        <ol>
+          <li>Open this page in <strong>Chrome</strong>, Edge, or Samsung Internet.</li>
+          <li>Tap the menu (the three dots <strong>⋮</strong> in the top-right).</li>
+          <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+          <li>Confirm. The Wanderkind seal lands on your home screen. Open it from there.</li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="gate-footer">
+      <p>
+        Already installed? <a href="/">Open Wanderkind</a><br/>
+        On desktop? Wanderkind is mobile-first; install it on your phone.
+      </p>
+    </div>
+  </main>
+
+  <script type="module" src="/js/install-gate.js"></script>
+</body>
+</html>

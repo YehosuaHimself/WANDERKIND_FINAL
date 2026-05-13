@@ -90,6 +90,19 @@
     }
     .pass-card .nano { color: inherit; opacity: 0.85; margin-top: 4px; display: block; }
     .pass-card .title { font-family: var(--wk-font-display); font-weight: var(--wk-fw-black); font-size: var(--wk-fs-body); letter-spacing: var(--wk-ls-mono); text-transform: uppercase; }
+
+    /* Embassy section overrides */
+    section.embassy table.tok th,
+    section.embassy table.tok td:first-child {
+      color: var(--wk-embassy-amber);
+    }
+    section.embassy table.tok td {
+      color: var(--wk-embassy-ink);
+      border-bottom-color: var(--wk-embassy-line);
+    }
+    section.embassy table.tok th {
+      border-bottom-color: var(--wk-embassy-line);
+    }
   </style>
 </head>
 <body>
@@ -356,6 +369,62 @@
       <tr><td>INP / First Input Delay</td><td>&lt; 100 ms</td></tr>
       <tr><td>Initial paint weight</td><td>&lt; 250 KB</td></tr>
       <tr><td>Total bundle weight</td><td>&lt; 500 KB</td></tr>
+    </table>
+  </section>
+
+  <!-- ── EMBASSY REGISTER · the dark/parchment mood ──────────────── -->
+  <section class="s embassy" style="padding: var(--wk-space-xl); border-radius: var(--wk-r-lg); margin-top: var(--wk-space-2xl); border-top: none;">
+    <span class="eyebrow" style="color: var(--wk-embassy-amber);">11 · Embassy Register</span>
+    <h2 style="color: var(--wk-embassy-ink); margin-top: var(--wk-space-sm);">Embassy at Night</h2>
+    <p class="lead" style="color: var(--wk-embassy-ink-soft);">
+      The parchment-on-dark mood. Used for the install gate, bottom sheets, pass cards, and dark-mode app chrome.
+      The cream daylight register above lives in everyday surfaces; this is the brand introduction and the ceremonial moment.
+    </p>
+
+    <h3 style="font-size:var(--wk-fs-h3); margin:var(--wk-space-lg) 0 var(--wk-space-sm); color: var(--wk-embassy-ink);">Tokens</h3>
+    <table class="tok" style="color: var(--wk-embassy-ink);">
+      <tr><th style="color: var(--wk-embassy-amber);">Token</th><th style="color: var(--wk-embassy-amber);">Value</th><th style="color: var(--wk-embassy-amber);">Use</th></tr>
+      <tr><td style="color: var(--wk-embassy-amber);">--wk-embassy-bg</td><td>#0B0705</td><td>The dark canvas</td></tr>
+      <tr><td style="color: var(--wk-embassy-amber);">--wk-embassy-bg-2</td><td>#140D08</td><td>Second layer, cards on bg</td></tr>
+      <tr><td style="color: var(--wk-embassy-amber);">--wk-embassy-ink</td><td>#F3E7CC</td><td>Parchment text on dark</td></tr>
+      <tr><td style="color: var(--wk-embassy-amber);">--wk-embassy-amber</td><td>#C8762A</td><td>Same amber — reads warmer on dark</td></tr>
+      <tr><td style="color: var(--wk-embassy-amber);">--wk-embassy-ghost</td><td>rgba(243,231,204,0.12)</td><td>Numeric ghost behind section heads</td></tr>
+    </table>
+
+    <h3 style="font-size:var(--wk-fs-h3); margin:var(--wk-space-lg) 0 var(--wk-space-sm); color: var(--wk-embassy-ink);">The seal · double ring</h3>
+    <div style="display: flex; align-items: center; gap: var(--wk-space-lg); padding: var(--wk-space-md) 0;">
+      <img src="/assets/icons/seal-parchment.svg" alt="" width="96" height="96" />
+      <div>
+        <p style="color: var(--wk-embassy-ink); margin-bottom: 4px;">The canonical W seal in its embassy form.</p>
+        <p class="nano" style="color: var(--wk-embassy-ink-muted);">Inner ring · outer ring · dashed worn-paper detail · W glyph</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3); margin:var(--wk-space-lg) 0 var(--wk-space-sm); color: var(--wk-embassy-ink);">Host-type encoding</h3>
+    <p style="color: var(--wk-embassy-ink-soft); margin-bottom: var(--wk-space-md);">
+      The one place we break monochrome. Each color is functional, not decorative — used on map markers and host cards to communicate the kind of welcome offered.
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: var(--wk-space-sm);">
+      <span class="chip-host chip-host--bed">BED</span>
+      <span class="chip-host chip-host--food">FOOD</span>
+      <span class="chip-host chip-host--water">WATER</span>
+      <span class="chip-host chip-host--verified">VERIFIED</span>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3); margin:var(--wk-space-lg) 0 var(--wk-space-sm); color: var(--wk-embassy-ink);">Empty state · amber dashed</h3>
+    <p style="color: var(--wk-embassy-ink-soft); margin-bottom: var(--wk-space-md);">
+      Used for stamp slots, empty hosts, placeholder cards. Signals "to be earned" instead of "broken."
+    </p>
+    <div class="empty-amber" style="height: 80px; display: flex; align-items: center; justify-content: center;">
+      <span class="nano" style="color: var(--wk-amber-text);">SLOT — TO BE EARNED</span>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3); margin:var(--wk-space-lg) 0 var(--wk-space-sm); color: var(--wk-embassy-ink);">When to use which register</h3>
+    <table class="tok" style="color: var(--wk-embassy-ink);">
+      <tr><th style="color: var(--wk-embassy-amber);">Cream daylight</th><th style="color: var(--wk-embassy-amber);">Embassy at night</th></tr>
+      <tr><td>Map, profiles, lists, forms, settings</td><td>Install gate, pass cards, bottom sheets, stamp ceremony</td></tr>
+      <tr><td>Everyday utility surfaces</td><td>Brand moments + ceremony</td></tr>
+      <tr><td>Default in light system theme</td><td>Default in dark system theme + always-on for gate</td></tr>
     </table>
   </section>
 

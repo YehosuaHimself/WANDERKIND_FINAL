@@ -52,6 +52,26 @@
   --wk-warning:       #C8762A;   /* same as amber */
   --wk-info:          #5A8AB0;   /* 4.5:1 on bg */
 
+  /* Host-type encoding — the one place we break the monochrome amber
+     discipline. Each color is FUNCTIONAL, not decorative. Used on the
+     map markers, host cards, and the More-grid "My House" tile. */
+  --wk-host-bed:      #C8762A;   /* same as amber — shelter */
+  --wk-host-food:     #A0522D;   /* sienna — table */
+  --wk-host-water:    #4CA8C9;   /* river-blue — water */
+  --wk-host-verified: #27864A;   /* embassy green — trust */
+
+  /* Embassy register — the parchment-on-dark mood (used in dark mode,
+     bottom sheets, pass cards, and the install/mobile gate). */
+  --wk-embassy-bg:        #0B0705;   /* deep canvas */
+  --wk-embassy-bg-2:      #140D08;   /* second layer */
+  --wk-embassy-ink:       #F3E7CC;   /* parchment text */
+  --wk-embassy-ink-soft:  #C8BCA6;   /* secondary parchment */
+  --wk-embassy-ink-muted: #8A7B63;   /* tertiary */
+  --wk-embassy-line:      rgba(243,231,204,0.10);
+  --wk-embassy-amber:     #C8762A;   /* same amber, reads warmer on dark */
+  --wk-embassy-amber-hi:  #E09A52;
+  --wk-embassy-ghost:     rgba(243,231,204,0.12);  /* numeric ghost behind headers */
+
   /* ─── TYPOGRAPHY ────────────────────────────────────────────────── */
   /* Two families. Absolute roles. Mixing them is a design violation.   */
 
