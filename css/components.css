@@ -150,7 +150,7 @@ wk-tabbar .wk-tab {
   gap: 3px;
   padding: 10px 4px;
   text-decoration: none;
-  color: var(--wk-ink-muted);
+  color: var(--wk-ink-soft);     /* 5.6:1 on cream — AA */
   font-family: var(--wk-font-mono);
   font-size: var(--wk-fs-nano);
   letter-spacing: var(--wk-ls-mono);
