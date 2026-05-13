@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.24-revert-zoom';
+const VERSION = '0.1.25-stable';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

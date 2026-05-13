@@ -148,7 +148,7 @@ wk-tabbar {
   padding-bottom: env(safe-area-inset-bottom);
   padding-top: 0;
   overflow: visible;
-  min-height: calc(52px + env(safe-area-inset-bottom));
+  min-height: calc(46px + env(safe-area-inset-bottom));
 }
 
 /* ── Side tabs (Me, Map) ─────────────────────────────────────── */
@@ -157,8 +157,8 @@ wk-tabbar .wk-tab {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 4px 6px;
+  gap: 1px;
+  padding: 6px 4px 5px;
   text-decoration: none;
   color: var(--wk-ink-soft);     /* 5.6:1 on cream — AA */
   font-family: var(--wk-font-mono);
@@ -167,9 +167,9 @@ wk-tabbar .wk-tab {
   text-transform: uppercase;
   font-weight: var(--wk-fw-bold);
   transition: color 0.15s;
-  min-height: 52px;
+  min-height: 46px;
 }
-wk-tabbar .wk-tab svg { width: 22px; height: 22px; }
+wk-tabbar .wk-tab svg { width: 20px; height: 20px; }
 wk-tabbar .wk-tab:hover,
 wk-tabbar .wk-tab:focus-visible {
   color: var(--wk-ink);
@@ -188,19 +188,18 @@ wk-tabbar .wk-tab-hub {
   position: relative;
   padding: 0;
   gap: 0;
-  min-height: 52px;
-  color: var(--wk-amber-text);   /* hub is always amber */
+  min-height: 46px;
+  color: var(--wk-amber-text);
 }
 wk-tabbar .wk-tab-hub-circle {
   /* The float-above magic: translate the circle UP so it overlaps the
-     bar's top border. Its background is opaque so it visually punches
-     through the bar. */
+     bar's top border. Opaque background punches through the line. */
   position: absolute;
-  top: -20px;
+  top: -18px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--wk-bg-elevated, var(--wk-bg));
   border: 1px solid var(--wk-line);
@@ -211,8 +210,8 @@ wk-tabbar .wk-tab-hub-circle {
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
 wk-tabbar .wk-tab-hub-circle svg {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   color: var(--wk-amber-text);
 }
 wk-tabbar .wk-tab-hub:hover .wk-tab-hub-circle,
@@ -231,19 +230,8 @@ wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-circle svg {
 wk-tabbar .wk-tab-hub:focus-visible {
   outline: none;
 }
-wk-tabbar .wk-tab-hub-label {
-  /* Push the label down so it sits below the floating circle. */
-  position: absolute;
-  bottom: 5px;
-  left: 0; right: 0;
-  text-align: center;
-  font-family: var(--wk-font-mono);
-  font-size: var(--wk-fs-nano);
-  letter-spacing: var(--wk-ls-mono);
-  text-transform: uppercase;
-  font-weight: var(--wk-fw-bold);
-  color: var(--wk-amber-text);
-}
+/* No visible hub label — the W-seal IS the affordance. Screen
+   readers get the .sr-only "More" inside the anchor. */
 /* When tabbar is present, pages need bottom padding so content
    doesn't underlap. Add this on the page-level body or main:
      body { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }

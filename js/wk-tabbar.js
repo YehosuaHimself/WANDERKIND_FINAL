@@ -51,7 +51,7 @@ class WkTabbar extends HTMLElement {
             </g>
           </svg>
         </span>
-        <span class="wk-tab-hub-label">More</span>
+        <span class="sr-only">More</span>
       </a>
 
       <a href="/me.html" class="wk-tab"${meActive ? ' aria-current="page"' : ''}>

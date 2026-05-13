@@ -134,9 +134,10 @@ form.addEventListener('submit', async (e) => {
         // Wanderkind's social contract: only the chosen trail name is
         // public. The civilian identity (given_name / surname auto-
         // populated by the auth trigger from email metadata) is wiped
-        // so no surface can leak it.
-        given_name: null,
-        surname: null,
+        // so no surface can leak it. Empty strings, not null — those
+        // columns are NOT NULL DEFAULT '' on the server.
+        given_name: '',
+        surname: '',
       }),
     });
 
@@ -147,7 +148,15 @@ form.addEventListener('submit', async (e) => {
     }
     if (!res.ok) {
       const body = await res.text().catch(() => '');
-      showError(`Save failed (HTTP ${res.status}). ${body.slice(0, 120)}`);
+      // Surface the actual Postgres error message in addition to status.
+      let msg = `Save failed (HTTP ${res.status}).`;
+      try {
+        const j = JSON.parse(body);
+        if (j?.message) msg += ' ' + j.message;
+        else if (body) msg += ' ' + body.slice(0, 200);
+      } catch { msg += ' ' + body.slice(0, 200); }
+      showError(msg);
+      console.error('me-edit save failed:', res.status, body);
       return;
     }
 
