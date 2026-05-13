@@ -16,7 +16,9 @@ const VERSION = '0.1.0-foundation';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
-  '/index.html',
+  '/index.html',     // marketing landing (desktop)
+  '/install.html',   // mobile gate
+  '/app.html',       // the actual PWA shell
   '/404.html',
   '/manifest.json',
   '/version.json',
@@ -25,9 +27,8 @@ const PRECACHE = [
   '/css/typography.css',
   '/css/components.css',
   '/js/main.js',
-  '/js/signals.js',
-  '/js/router.js',
   '/js/sw-register.js',
+  '/js/install-gate.js',
 ];
 
 self.addEventListener('install', (event) => {
