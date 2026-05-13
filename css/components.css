@@ -128,20 +128,27 @@
 .chip-host--water     { color: var(--wk-host-water); }
 .chip-host--verified  { color: var(--wk-host-verified); }
 
-/* ── <wk-tabbar> — bottom 3-tab nav ──────────────────────────────
-   Used on every authed surface. Pinned to the bottom of the viewport,
-   respects iOS safe-area-inset-bottom. Active tab is highlighted in
-   amber-text (AA on cream). */
+/* ── <wk-tabbar> — bottom 3-tab nav with center hub ────────────
+   Pinned to the bottom of the viewport, respects iOS safe-area.
+   Side tabs (Me, Map) are compact icon+label cells. The middle tab
+   is the WK-hub: a circular W-seal button that rises above the bar
+   line (FAB style). */
+
 wk-tabbar {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1fr;
   background: var(--wk-bg-elevated, var(--wk-bg));
   border-top: 1px solid var(--wk-line);
   padding-bottom: env(safe-area-inset-bottom);
+  /* Reserve a little extra room so the hub circle can rise above */
+  padding-top: 0;
+  overflow: visible;  /* allow the hub to float above */
 }
+
+/* ── Side tabs (Me, Map) ─────────────────────────────────────── */
 wk-tabbar .wk-tab {
   display: flex;
   flex-direction: column;
@@ -159,10 +166,7 @@ wk-tabbar .wk-tab {
   transition: color 0.15s;
   min-height: 56px;
 }
-wk-tabbar .wk-tab svg {
-  width: 22px;
-  height: 22px;
-}
+wk-tabbar .wk-tab svg { width: 22px; height: 22px; }
 wk-tabbar .wk-tab:hover,
 wk-tabbar .wk-tab:focus-visible {
   color: var(--wk-ink);
@@ -174,6 +178,70 @@ wk-tabbar .wk-tab[aria-current="page"] {
 wk-tabbar .wk-tab[aria-disabled="true"] {
   opacity: 0.45;
   pointer-events: none;
+}
+
+/* ── Center hub: W-seal floats above the bar ─────────────────── */
+wk-tabbar .wk-tab-hub {
+  position: relative;
+  /* Override the side-tab layout so the circle can rise */
+  padding: 0;
+  gap: 0;
+  min-height: 56px;
+  color: var(--wk-amber-text);   /* hub is always amber */
+}
+wk-tabbar .wk-tab-hub-circle {
+  /* The float-above magic: translate the circle UP so it overlaps the
+     bar's top border. Its background is opaque so it visually punches
+     through the bar. */
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--wk-bg-elevated, var(--wk-bg));
+  border: 1px solid var(--wk-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(26,18,10,0.10), 0 1px 2px rgba(26,18,10,0.06);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+wk-tabbar .wk-tab-hub-circle svg {
+  width: 38px;
+  height: 38px;
+  color: var(--wk-amber-text);
+}
+wk-tabbar .wk-tab-hub:hover .wk-tab-hub-circle,
+wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-circle {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 18px rgba(200,118,42,0.18), 0 1px 3px rgba(26,18,10,0.08);
+  border-color: var(--wk-amber-text);
+}
+wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-circle {
+  background: var(--wk-amber-text);
+  border-color: var(--wk-amber-text);
+}
+wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-circle svg {
+  color: var(--wk-bg);
+}
+wk-tabbar .wk-tab-hub:focus-visible {
+  outline: none;
+}
+wk-tabbar .wk-tab-hub-label {
+  /* Push the label down so it sits below the floating circle, just
+     above the bar's bottom edge. */
+  position: absolute;
+  bottom: 6px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-nano);
+  letter-spacing: var(--wk-ls-mono);
+  text-transform: uppercase;
+  font-weight: var(--wk-fw-bold);
+  color: var(--wk-amber-text);
 }
 /* When tabbar is present, pages need bottom padding so content
    doesn't underlap. Add this on the page-level body or main:
