@@ -127,3 +127,55 @@
 .chip-host--food      { color: var(--wk-host-food); }
 .chip-host--water     { color: var(--wk-host-water); }
 .chip-host--verified  { color: var(--wk-host-verified); }
+
+/* ── <wk-tabbar> — bottom 3-tab nav ──────────────────────────────
+   Used on every authed surface. Pinned to the bottom of the viewport,
+   respects iOS safe-area-inset-bottom. Active tab is highlighted in
+   amber-text (AA on cream). */
+wk-tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--wk-bg-elevated, var(--wk-bg));
+  border-top: 1px solid var(--wk-line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+wk-tabbar .wk-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 4px;
+  text-decoration: none;
+  color: var(--wk-ink-muted);
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-nano);
+  letter-spacing: var(--wk-ls-mono);
+  text-transform: uppercase;
+  font-weight: var(--wk-fw-bold);
+  transition: color 0.15s;
+  min-height: 56px;
+}
+wk-tabbar .wk-tab svg {
+  width: 22px;
+  height: 22px;
+}
+wk-tabbar .wk-tab:hover,
+wk-tabbar .wk-tab:focus-visible {
+  color: var(--wk-ink);
+  outline: none;
+}
+wk-tabbar .wk-tab[aria-current="page"] {
+  color: var(--wk-amber-text);
+}
+wk-tabbar .wk-tab[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+/* When tabbar is present, pages need bottom padding so content
+   doesn't underlap. Add this on the page-level body or main:
+     body { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
+   Pages that don't want the bar simply omit <wk-tabbar>. */

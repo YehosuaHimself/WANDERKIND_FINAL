@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.5-day5-me-refresh';
+const VERSION = '0.1.6-day5-tabbar';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -35,6 +35,7 @@ const PRECACHE = [
   '/js/auth.js',
   '/js/session.js',
   '/js/me.js',
+  '/js/wk-tabbar.js',
   '/js/supabase-config.js',
 ];
 
