@@ -1,5 +1,5 @@
 /**
- * <wk-tabbar> — bottom 3-tab navigation: Me · More(hub) · Map.
+ * <wk-tabbar> — bottom 3-tab navigation: Map · More(hub) · Me.
  *
  * The middle tab is the "hub" — visually oversized, rising above the
  * horizontal bar like a FAB, carrying the Wanderkind W-seal as its
@@ -9,9 +9,9 @@
  * JS upgrade; the element just adds aria-current and color cues.
  *
  * Tabs (canonical, V3 — see DOCTRINE.md):
- *   Me   → /me.html       · person glyph
- *   More → /more.html     · W-seal hub (the centerpiece)
  *   Map  → /map.html      · folded-map glyph
+ *   More → /more.html     · W-seal hub (the centerpiece)
+ *   Me   → /me.html       · person glyph
  */
 
 // @ts-check
@@ -30,14 +30,13 @@ class WkTabbar extends HTMLElement {
     // SVGs inline so the hub seal uses currentColor (themes through
     // .wk-tab-hub's color, which is amber when active, ink otherwise).
     this.innerHTML = `
-      <a href="/me.html" class="wk-tab"${meActive ? ' aria-current="page"' : ''}>
+      <a href="/map.html" class="wk-tab"${mapActive ? ' aria-current="page"' : ''}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
              aria-hidden="true">
-          <circle cx="12" cy="9" r="3.5"/>
-          <path d="M5 19c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/>
+          <path d="M9 3v15M15 6v15M3 5l6-2 6 3 6-2v15l-6 2-6-3-6 2z"/>
         </svg>
-        <span>Me</span>
+        <span>Map</span>
       </a>
 
       <a href="/more.html" class="wk-tab wk-tab-hub"${moreActive ? ' aria-current="page"' : ''}>
@@ -55,13 +54,14 @@ class WkTabbar extends HTMLElement {
         <span class="wk-tab-hub-label">More</span>
       </a>
 
-      <a href="/map.html" class="wk-tab"${mapActive ? ' aria-current="page"' : ''}>
+      <a href="/me.html" class="wk-tab"${meActive ? ' aria-current="page"' : ''}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
              aria-hidden="true">
-          <path d="M9 3v15M15 6v15M3 5l6-2 6 3 6-2v15l-6 2-6-3-6 2z"/>
+          <circle cx="12" cy="9" r="3.5"/>
+          <path d="M5 19c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/>
         </svg>
-        <span>Map</span>
+        <span>Me</span>
       </a>
     `;
   }

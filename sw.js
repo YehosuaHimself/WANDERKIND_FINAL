@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.20-otp-resend';
+const VERSION = '0.1.21-polish';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

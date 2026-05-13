@@ -105,6 +105,16 @@ form.addEventListener('submit', async (e) => {
   hideError();
 
   try {
+    // Compute the canonical pass_number / wanderkind_id from the user
+    // UUID — same algorithm the on_auth_user_created trigger uses:
+    //   'WK-' || upper(substring(replace(id::text, '-', '') from 1 for 8))
+    // Including these in the UPSERT body covers the case where the
+    // trigger didn't fire (OTP signups in some Supabase versions) so
+    // the INSERT path doesn't hit the NOT NULL constraint on
+    // profiles.pass_number. For existing rows the value is identical,
+    // so UPDATE is a no-op on those columns.
+    const passNum = 'WK-' + userId.replace(/-/g, '').slice(0, 8).toUpperCase();
+
     // UPSERT — insert if no row exists, update if it does. The id PK
     // is the conflict target. Supabase needs Prefer: resolution=merge-duplicates.
     const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?on_conflict=id`, {
@@ -117,6 +127,8 @@ form.addEventListener('submit', async (e) => {
       },
       body: JSON.stringify({
         id: userId,
+        pass_number: passNum,
+        wanderkind_id: passNum,
         trail_name: trail,
         bio: bio || null,
       }),
