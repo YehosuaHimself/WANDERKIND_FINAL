@@ -94,6 +94,7 @@ jobs:
             --collect.url=http://localhost:8080/ \
             --collect.url=http://localhost:8080/system.html \
             --collect.url=http://localhost:8080/map.html \
+            --collect.url=http://localhost:8080/auth.html \
             --collect.settings.preset=desktop \
             --collect.numberOfRuns=1 \
             --assert.assertions.categories:performance="warn|maxNumericValue=0.95" \

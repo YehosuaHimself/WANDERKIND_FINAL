@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.2-day3-icons';
+const VERSION = '0.1.3-day3-auth';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -20,6 +20,7 @@ const PRECACHE = [
   '/install.html',   // mobile gate
   '/app.html',       // the actual PWA shell
   '/map.html',       // map register page
+  '/auth.html',      // magic-link sign-in
   '/404.html',
   '/manifest.json',
   '/version.json',
@@ -30,6 +31,8 @@ const PRECACHE = [
   '/js/main.js',
   '/js/sw-register.js',
   '/js/install-gate.js',
+  '/js/auth.js',
+  '/js/supabase-config.js',
 ];
 
 self.addEventListener('install', (event) => {

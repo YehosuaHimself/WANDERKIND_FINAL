@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Sign in</title>
+  <meta name="description" content="A magic link arrives in your inbox. One tap and the door opens." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0B0705" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal-parchment.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <!-- Strict CSP — extended to allow connect-src to Supabase REST -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* /auth.html lives in the embassy register — it's the joining moment.
+       Parchment text on a deep canvas, the W seal at presentation size,
+       a single field, a single button. Calm. Ceremonial. Slow. */
+
+    html, body {
+      background: var(--wk-embassy-bg);
+      color: var(--wk-embassy-ink);
+    }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: env(safe-area-inset-top) var(--wk-page-x) env(safe-area-inset-bottom);
+    }
+    main.auth {
+      flex: 1;
+      max-width: 460px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: var(--wk-space-lg);
+      padding: var(--wk-space-2xl) 0;
+    }
+
+    /* W seal with dust glow */
+    .auth-seal-wrap {
+      position: relative;
+      width: 128px;
+      height: 128px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--wk-space-xs);
+    }
+    .auth-seal-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -28px;
+      background: radial-gradient(circle, rgba(200,118,42,0.22) 0, transparent 64%);
+      pointer-events: none;
+      animation: auth-glow 4s ease-in-out infinite;
+    }
+    @keyframes auth-glow {
+      0%, 100% { opacity: 0.55; }
+      50%      { opacity: 1; }
+    }
+    .auth-seal-wrap > img {
+      position: relative;
+      width: 96px;
+      height: 96px;
+    }
+
+    /* Identity strip */
+    .auth-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+      font-weight: var(--wk-fw-bold);
+    }
+    .auth-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.625rem, 4vw + 1rem, 2.125rem);
+      letter-spacing: var(--wk-ls-display);
+      line-height: var(--wk-lh-tight);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink);
+      margin: 0;
+    }
+    .auth-sub {
+      color: var(--wk-embassy-ink-soft);
+      max-width: 360px;
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      margin: 0 auto;
+    }
+
+    /* Form */
+    .auth-form {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+      margin-top: var(--wk-space-md);
+    }
+    .auth-label {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink-muted);
+      align-self: flex-start;
+    }
+    .auth-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 var(--wk-space-md);
+      background: var(--wk-embassy-bg-2);
+      color: var(--wk-embassy-ink);
+      font-family: var(--wk-font-body);
+      font-size: 1rem;
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-sm);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      caret-color: var(--wk-embassy-amber);
+    }
+    .auth-input::placeholder {
+      color: var(--wk-embassy-ink-muted);
+    }
+    .auth-input:focus {
+      outline: none;
+      border-color: var(--wk-embassy-amber);
+      box-shadow: 0 0 0 3px rgba(200,118,42,0.25);
+    }
+    .auth-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 52px;
+      background: var(--wk-embassy-amber);
+      color: #FAFAF5;
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--wk-r-sm);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: var(--wk-space-xs);
+    }
+    .auth-submit:hover:not(:disabled) {
+      background: var(--wk-embassy-amber-hi);
+    }
+    .auth-submit:focus-visible {
+      outline: 2px solid var(--wk-embassy-amber-hi);
+      outline-offset: 2px;
+    }
+    .auth-submit:disabled {
+      opacity: 0.65;
+      cursor: progress;
+    }
+
+    .auth-error {
+      color: #F4B5B5;
+      background: rgba(176,58,58,0.15);
+      border: 1px solid rgba(176,58,58,0.4);
+      padding: 10px var(--wk-space-md);
+      border-radius: var(--wk-r-sm);
+      font-size: var(--wk-fs-small);
+      text-align: left;
+    }
+
+    .auth-legal {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      color: var(--wk-embassy-ink-muted);
+      letter-spacing: 0.04em;
+      line-height: 1.7;
+      max-width: 360px;
+    }
+    .auth-legal a {
+      color: var(--wk-embassy-ink-soft);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .auth-legal a:hover, .auth-legal a:focus-visible {
+      color: var(--wk-embassy-amber);
+    }
+
+    /* Success state */
+    .auth-success {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--wk-space-md);
+    }
+    .auth-success-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(39,134,74,0.15);
+      border: 1px solid rgba(39,134,74,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6FD08A;
+    }
+    .auth-success-icon svg { width: 28px; height: 28px; }
+    .auth-success-email {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-small);
+      color: var(--wk-embassy-ink);
+      padding: 8px 14px;
+      background: var(--wk-embassy-bg-2);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-sm);
+      word-break: break-all;
+      max-width: 100%;
+    }
+    .auth-success-hint {
+      color: var(--wk-embassy-ink-soft);
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      max-width: 360px;
+    }
+
+    .auth-back {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink-muted);
+      text-decoration: none;
+      padding: 8px var(--wk-space-md);
+      border-radius: var(--wk-r-sm);
+      transition: color 0.15s;
+    }
+    .auth-back:hover, .auth-back:focus-visible {
+      color: var(--wk-embassy-amber);
+    }
+  </style>
+</head>
+<body>
+  <a href="#auth-main" class="skip-to-content">Skip to sign-in</a>
+
+  <main class="auth" id="auth-main">
+
+    <div class="auth-seal-wrap" aria-hidden="true">
+      <img src="/assets/icons/seal-parchment.svg" alt="" width="96" height="96" />
+    </div>
+
+    <!-- ── State A · the form ─────────────────────────────────────── -->
+    <div id="state-form">
+      <span class="auth-eyebrow">— Open your door</span>
+      <h1 class="auth-title" style="margin-top: var(--wk-space-sm)">Sign in to Wanderkind</h1>
+      <p class="auth-sub" style="margin-top: var(--wk-space-md)">
+        We'll send you a single-use magic link. No password to remember.
+        One tap and the door opens.
+      </p>
+
+      <form id="auth-form" class="auth-form" novalidate>
+        <label class="auth-label" for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          autocomplete="email"
+          inputmode="email"
+          required
+          spellcheck="false"
+          placeholder="you@somewhere.earth"
+          class="auth-input"
+          aria-describedby="auth-error"
+        />
+        <p id="auth-error" class="auth-error" role="alert" hidden></p>
+        <button id="submit" type="submit" class="auth-submit">Send magic link</button>
+      </form>
+
+      <p class="auth-legal" style="margin-top: var(--wk-space-md)">
+        By signing in you agree to our
+        <a href="/privacy-policy">Privacy Policy</a> and
+        <a href="/terms">Terms</a>.
+      </p>
+    </div>
+
+    <!-- ── State B · success ──────────────────────────────────────── -->
+    <div id="state-success" class="auth-success" hidden>
+      <div class="auth-success-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12.5l5 5 11-11" />
+        </svg>
+      </div>
+      <span class="auth-eyebrow">— Check your inbox</span>
+      <h1 class="auth-title">The door is opening</h1>
+      <p class="auth-success-email" id="success-email"></p>
+      <p class="auth-success-hint">
+        We just sent a magic link to that address. Tap it from the same device and you'll land back here, signed in.
+      </p>
+      <a href="/auth.html" class="auth-back">Use a different email</a>
+    </div>
+
+    <a href="/" class="auth-back" style="margin-top: var(--wk-space-md)">← Back to wanderkind.love</a>
+  </main>
+
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+</body>
+</html>
