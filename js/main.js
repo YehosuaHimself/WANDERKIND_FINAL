@@ -53,10 +53,12 @@ async function boot() {
   const session = resolved ?? (await refreshIfNeeded());
 
   if (session) {
-    renderSignedIn(/** @type {import('./session.js').WkSession} */ (session));
-  } else {
-    renderSignedOut();
+    // Signed in — land the user on their own profile/pass, not on the
+    // bare /app.html boot screen. /me.html is the real signed-in home.
+    location.replace('/me.html');
+    return;
   }
+  renderSignedOut();
 }
 
 /* ── 3. views ────────────────────────────────────────────────────── */

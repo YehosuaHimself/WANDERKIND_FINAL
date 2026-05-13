@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.10-day7-hotfix2';
+const VERSION = '0.1.11-day7-hotfix3';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
