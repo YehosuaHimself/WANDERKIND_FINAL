@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.29-polish';
+const VERSION = '0.1.30-week1-day1';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -51,6 +51,7 @@ const PRECACHE = [
   '/js/supabase-config.js',
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
+  '/js/map-live.js',
   '/js/pwa-mode.js',
 
   /* Icons — offline first-load needs these or every seal renders as

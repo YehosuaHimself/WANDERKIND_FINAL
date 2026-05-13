@@ -262,8 +262,21 @@
       padding: var(--wk-space-sm) var(--wk-space-md);
       border-radius: var(--wk-r-full);
       background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
       align-self: center;
+      cursor: pointer;
+      font-family: inherit;
+      color: inherit;
+      transition: background 0.15s, border-color 0.15s, transform 0.05s;
+      -webkit-tap-highlight-color: transparent;
     }
+    .me-status:hover, .me-status:focus-visible {
+      background: var(--wk-bg-elevated);
+      border-color: var(--wk-amber-text);
+      outline: none;
+    }
+    .me-status:active { transform: scale(0.98); }
+    .me-status[aria-busy="true"] { opacity: 0.55; cursor: progress; }
     .me-status-dot {
       width: 8px; height: 8px;
       border-radius: 50%;

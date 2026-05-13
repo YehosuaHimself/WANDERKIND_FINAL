@@ -154,12 +154,18 @@ function renderProfile(p, email) {
       </div>
     </section>
 
-    <section class="me-status" aria-label="Current status">
-      <span class="me-status-dot" data-walking="${p.is_walking ? 'true' : 'false'}" aria-hidden="true"></span>
+    <button
+      type="button"
+      class="me-status"
+      id="walking-toggle"
+      aria-label="Toggle walking state"
+      data-walking="${p.is_walking ? 'true' : 'false'}"
+    >
+      <span class="me-status-dot" aria-hidden="true"></span>
       <span class="me-status-label">
-        ${p.is_walking ? 'Walking now' : (p.home_country ? `At home · ${escapeHTML(p.home_country)}` : 'At home')}
+        ${p.is_walking ? 'Walking now · tap to stop' : (p.home_country ? `At home · ${escapeHTML(p.home_country)} · tap to start walking` : 'At home · tap to start walking')}
       </span>
-    </section>
+    </button>
 
     <div class="me-actions">
       <a href="/me-edit.html" class="btn-amber">Edit profile</a>
@@ -173,6 +179,67 @@ function renderProfile(p, email) {
   `;
 
   wireSignOut();
+  wireWalkingToggle(p);
+}
+
+/**
+ * Walking-now toggle: PATCH profiles.is_walking optimistically, revert on
+ * error. We persist via Supabase REST so changes show up on the map for
+ * everyone else.
+ * @param {ProfileRow} p
+ */
+async function wireWalkingToggle(p) {
+  const btn = document.getElementById('walking-toggle');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const current = btn.getAttribute('data-walking') === 'true';
+    const next = !current;
+    // Optimistic UI update
+    setWalkingUI(btn, next, p.home_country);
+    btn.setAttribute('aria-busy', 'true');
+
+    try {
+      const session = await refreshIfNeeded();
+      if (!session) { location.replace('/auth.html'); return; }
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.accessToken}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({ is_walking: next }),
+        }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      p.is_walking = next;   // sync local model
+    } catch (err) {
+      // Revert UI on failure
+      setWalkingUI(btn, current, p.home_country);
+      console.error('walking toggle failed', err);
+    } finally {
+      btn.removeAttribute('aria-busy');
+    }
+  });
+}
+
+/** @param {HTMLElement} btn  @param {boolean} walking  @param {string|null|undefined} country */
+function setWalkingUI(btn, walking, country) {
+  btn.setAttribute('data-walking', String(walking));
+  const label = btn.querySelector('.me-status-label');
+  if (label) {
+    if (walking) {
+      label.textContent = 'Walking now · tap to stop';
+    } else {
+      label.textContent = country
+        ? `At home · ${country} · tap to start walking`
+        : 'At home · tap to start walking';
+    }
+  }
 }
 
 /** @param {string} email */

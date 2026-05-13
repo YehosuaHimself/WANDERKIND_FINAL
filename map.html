@@ -92,6 +92,17 @@
       width: 18px; height: 18px;
       color: var(--wk-amber);
     }
+    .map-live-count {
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+    }
     .map-identity .title,
     .map-identity h1.title {
       font-family: var(--wk-font-mono);
@@ -354,6 +365,7 @@
       </svg>
     </a>
     <div class="map-identity" aria-hidden="false">
+      <p id="walking-count" class="map-live-count" hidden></p>
       <svg class="seal" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4" />
         <circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.65" />
@@ -429,6 +441,7 @@
   <script type="module" src="/js/map-session-aware.js"></script>
 
   <script type="module" src="/js/auth-bypass.js"></script>
+  <script type="module" src="/js/map-live.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
 </body>
