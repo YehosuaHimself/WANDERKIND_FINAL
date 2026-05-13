@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.26-stable';
+const VERSION = '0.1.27-tabbar-rebuild';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

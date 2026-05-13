@@ -226,7 +226,7 @@
     .empty-sheet {
       position: absolute;
       left: 0; right: 0;
-      bottom: calc(56px + env(safe-area-inset-bottom));
+      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px);
       padding: var(--wk-space-lg) var(--wk-page-x) var(--wk-space-lg);
       background: linear-gradient(180deg, rgba(250,250,245,0) 0, var(--wk-bg) 28%);
       text-align: center;

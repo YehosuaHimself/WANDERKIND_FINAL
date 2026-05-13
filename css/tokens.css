@@ -120,6 +120,7 @@
 
   /* Page-level */
   --wk-page-x:        22px;       /* horizontal padding */
+  --wk-tabbar-h:      56px;       /* tab-bar content height — used by <wk-tabbar> AND every page that mounts it for predictable bottom-padding */
   --wk-page-top:      54px;       /* includes safe area */
   --wk-page-bottom:   100px;      /* nav clearance */
 

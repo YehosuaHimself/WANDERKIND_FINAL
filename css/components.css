@@ -128,111 +128,103 @@
 .chip-host--water     { color: var(--wk-host-water); }
 .chip-host--verified  { color: var(--wk-host-verified); }
 
-/* ── <wk-tabbar> — bottom 3-tab nav with center hub ────────────
-   Pinned to the bottom of the viewport, respects iOS safe-area.
-   Side tabs (Me, Map) are compact icon+label cells. The middle tab
-   is the WK-hub: a circular W-seal button that rises above the bar
-   line (FAB style). */
+/* ──────────────────────────────────────────────────────────────────
+ *  <wk-tabbar> — bottom 3-tab nav with floating W-seal hub
+ *
+ *  Single source of truth for height: --wk-tabbar-h (56px in tokens).
+ *  Bar = 56px content + safe-area-inset-bottom. Hub is a 56px circle
+ *  that fits ENTIRELY inside the bar height — no rise above. Visual
+ *  emphasis comes from the larger glyph, the circular ring, and the
+ *  amber fill in the active state. The hub does NOT change size or
+ *  position between active and idle — only the fill color.
+ *
+ *  Pages mount <wk-tabbar> and set their main content padding-bottom
+ *  to: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px)
+ *  so there's a consistent 16px breathing room between content and bar
+ *  on every page.
+ * ────────────────────────────────────────────────────────────────── */
 
 wk-tabbar {
   position: fixed;
-  inset: auto 0 0 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 50;
+
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  background: var(--wk-bg-elevated, var(--wk-bg));
-  border-top: 1px solid var(--wk-line);
-  /* Background fills through the home-indicator safe area so there's
-     no visible gap below the bar — only the tab cells respect the
-     home indicator via their own padding-bottom. */
+  height: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  padding-top: 0;
+
+  background: var(--wk-bg);
+  border-top: 1px solid var(--wk-line);
+
+  /* Belt-and-suspenders for iOS Safari sub-pixel rounding */
   overflow: visible;
-  min-height: calc(46px + env(safe-area-inset-bottom));
 }
 
-/* ── Side tabs (Me, Map) ─────────────────────────────────────── */
+/* Side tabs (Me, Map) ───────────────────────────────────────────── */
 wk-tabbar .wk-tab {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  padding: 6px 4px 5px;
+  gap: 3px;
   text-decoration: none;
-  color: var(--wk-ink-soft);     /* 5.6:1 on cream — AA */
+
   font-family: var(--wk-font-mono);
-  font-size: var(--wk-fs-nano);
-  letter-spacing: var(--wk-ls-mono);
-  text-transform: uppercase;
+  font-size: 10px;
   font-weight: var(--wk-fw-bold);
-  transition: color 0.15s;
-  min-height: 46px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wk-ink-soft);
+
+  transition: color 0.15s ease;
 }
-wk-tabbar .wk-tab svg { width: 20px; height: 20px; }
-wk-tabbar .wk-tab:hover,
-wk-tabbar .wk-tab:focus-visible {
-  color: var(--wk-ink);
-  outline: none;
+wk-tabbar .wk-tab > svg {
+  width: 22px;
+  height: 22px;
 }
 wk-tabbar .wk-tab[aria-current="page"] {
   color: var(--wk-amber-text);
 }
-wk-tabbar .wk-tab[aria-disabled="true"] {
-  opacity: 0.45;
-  pointer-events: none;
+wk-tabbar .wk-tab:hover {
+  color: var(--wk-ink);
 }
 
-/* ── Center hub: W-seal floats above the bar ─────────────────── */
+/* Center hub: W-seal in a circle, fits inside the bar height ─── */
 wk-tabbar .wk-tab-hub {
   position: relative;
-  padding: 0;
-  gap: 0;
-  min-height: 46px;
-  color: var(--wk-amber-text);
-}
-wk-tabbar .wk-tab-hub-circle {
-  /* The float-above magic: translate the circle UP so it overlaps the
-     bar's top border. Opaque background punches through the line. */
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--wk-bg-elevated, var(--wk-bg));
-  border: 1px solid var(--wk-line);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(26,18,10,0.10), 0 1px 2px rgba(26,18,10,0.06);
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
-wk-tabbar .wk-tab-hub-circle svg {
-  width: 34px;
-  height: 34px;
+wk-tabbar .wk-tab-hub-circle {
+  width: var(--wk-tabbar-h);            /* circle diameter = bar height */
+  height: var(--wk-tabbar-h);
+  border-radius: 50%;
+  border: 1.5px solid var(--wk-amber-text);
+  background: var(--wk-bg);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--wk-amber-text);
+
+  transition: background 0.15s ease, color 0.15s ease;
 }
-wk-tabbar .wk-tab-hub:hover .wk-tab-hub-circle,
-wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-circle {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 6px 18px rgba(200,118,42,0.18), 0 1px 3px rgba(26,18,10,0.08);
-  border-color: var(--wk-amber-text);
+wk-tabbar .wk-tab-hub-circle > svg {
+  width: 30px;
+  height: 30px;
 }
+/* Active: only the fill inverts. Same size, same position. */
 wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-circle {
   background: var(--wk-amber-text);
-  border-color: var(--wk-amber-text);
-}
-wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-circle svg {
   color: var(--wk-bg);
 }
 wk-tabbar .wk-tab-hub:focus-visible {
   outline: none;
 }
-/* No visible hub label — the W-seal IS the affordance. Screen
-   readers get the .sr-only "More" inside the anchor. */
-/* When tabbar is present, pages need bottom padding so content
-   doesn't underlap. Add this on the page-level body or main:
-     body { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
-   Pages that don't want the bar simply omit <wk-tabbar>. */
+wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-circle {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 30%, transparent);
+}
