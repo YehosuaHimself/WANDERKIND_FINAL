@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Wanderkind</title>
+  <script>
+    // GitHub Pages SPA fallback: any unknown path bounces to / with the
+    // original path encoded so the client-side router can resolve it.
+    (function () {
+      var path = location.pathname + location.search + location.hash;
+      sessionStorage.setItem('wk-redirect', path);
+      location.replace('/');
+    })();
+  </script>
+</head>
+<body></body>
+</html>

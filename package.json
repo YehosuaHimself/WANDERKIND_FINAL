@@ -1,0 +1,14 @@
+{
+  "name": "wanderkind-ppwa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wanderkind PPWA · vanilla HTML/CSS/JS, no framework",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "typecheck": "tsc --noEmit -p .",
+    "lighthouse": "lighthouse http://localhost:8000 --view"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

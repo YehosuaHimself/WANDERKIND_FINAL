@@ -1,0 +1,90 @@
+/* ─────────────────────────────────────────────────────────────────────
+ *  Typography — V3 absolute role mapping
+ *
+ *  Family A · Helvetica Neue — all display + body text
+ *  Family B · Courier New    — labels, eyebrows, metadata only
+ *
+ *  Mixing them is a design violation. See V3 §03.
+ * ─────────────────────────────────────────────────────────────────────*/
+
+/* Display + body — Helvetica heavy weights for power, regular for read */
+h1, h2, h3, h4 {
+  font-family: var(--wk-font-display);
+  font-weight: var(--wk-fw-black);   /* 900 per V3 */
+  letter-spacing: var(--wk-ls-display);
+  line-height: var(--wk-lh-tight);
+  color: var(--wk-ink);
+  margin: 0;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(var(--wk-fs-h1), 5vw + 1rem, var(--wk-fs-hero));
+}
+h2 {
+  font-size: clamp(var(--wk-fs-h2), 3vw + 1rem, calc(var(--wk-fs-h2) * 1.25));
+}
+h3 {
+  font-size: var(--wk-fs-h3);
+  font-weight: var(--wk-fw-bold);
+  letter-spacing: -0.01em;
+}
+h4 {
+  font-size: var(--wk-fs-body);
+  font-weight: var(--wk-fw-bold);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+p {
+  margin: 0;
+  line-height: var(--wk-lh-body);
+  color: var(--wk-ink-soft);
+}
+
+.lead {
+  font-size: var(--wk-fs-h3);
+  font-family: var(--wk-font-display);
+  font-weight: var(--wk-fw-regular);
+  color: var(--wk-ink-soft);
+  line-height: var(--wk-lh-snug);
+}
+
+/* The signature mono eyebrow — wide tracking, amber, uppercase */
+.eyebrow {
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-micro);
+  font-weight: var(--wk-fw-bold);
+  letter-spacing: var(--wk-ls-mono-wide);
+  text-transform: uppercase;
+  color: var(--wk-amber);
+}
+
+/* Smaller mono label */
+.label {
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-micro);
+  font-weight: var(--wk-fw-bold);
+  letter-spacing: var(--wk-ls-mono);
+  text-transform: uppercase;
+  color: var(--wk-ink-soft);
+}
+
+/* Nano mono — timestamps, serial numbers, footer */
+.nano {
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-nano);
+  letter-spacing: var(--wk-ls-mono);
+  text-transform: uppercase;
+  color: var(--wk-ink-muted);
+}
+
+/* Display utility — for hero copy */
+.display {
+  font-family: var(--wk-font-display);
+  font-weight: var(--wk-fw-black);
+  font-size: clamp(var(--wk-fs-h1), 6vw + 1rem, var(--wk-fs-hero));
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--wk-ink);
+}

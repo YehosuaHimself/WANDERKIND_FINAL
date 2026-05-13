@@ -1,0 +1,184 @@
+/* ─────────────────────────────────────────────────────────────────────
+ *  Wanderkind PPWA · Design Tokens
+ *  Sourced from Wanderkind Embassy · Design Guidelines V3 · April 2026
+ *
+ *  Every visual decision in this codebase is rooted here. Numbers come
+ *  from V3 verbatim — palette, type scale (1.25× ratio), 8-point grid,
+ *  WCAG-verified contrast ratios.
+ *
+ *  Scarcity is the system.
+ * ─────────────────────────────────────────────────────────────────────*/
+
+:root {
+  /* ─── LIGHT MODE (default) ──────────────────────────────────────── */
+
+  /* Surface */
+  --wk-bg:            #FAFAF5;   /* Stage cream */
+  --wk-bg-2:          #F3EDE0;   /* Second layer (sections, alt-bg) */
+  --wk-bg-elevated:   #FFFFFF;   /* Cards, sheets, modals */
+
+  /* Ink (text + iconography) */
+  --wk-ink:           #1A120A;   /* Primary text — 14.2:1 on bg (AAA) */
+  --wk-ink-soft:      #6B5A3E;   /* Secondary text — 5.6:1 on bg (AA) */
+  --wk-ink-muted:     #9A8B73;   /* Tertiary, captions */
+
+  /* Lines */
+  --wk-line:          rgba(26,18,10,0.10);
+  --wk-line-soft:     rgba(26,18,10,0.06);
+  --wk-amber-line:    rgba(200,118,42,0.20);
+
+  /* Amber system (Wanderkind's signature) */
+  --wk-amber:         #C8762A;   /* 4.6:1 on bg (AA) */
+  --wk-amber-hi:      #E09A52;   /* Hover state */
+  --wk-amber-press:   #A0611E;   /* Active state */
+  --wk-amber-soft:    rgba(200,118,42,0.10);
+  --wk-wick:          #E5A94E;   /* Warm accent */
+  --wk-parchment:     #F3E7CC;   /* Pass background, soft canvas */
+
+  /* Pass system palettes (independent of app theme) */
+  --wk-navy:          #080E1F;   /* Wanderkind Pass primary */
+  --wk-gold:          #C9A84C;   /* Wanderkind Pass accent — 6.8:1 on navy (AA) */
+  --wk-brown:         #1A0F08;   /* Food Pass primary */
+  --wk-warm-amber:    #E09A52;   /* Food Pass accent */
+  --wk-forest:        #0A1208;   /* Hospitality Pass primary */
+  --wk-sage-gold:     #B8A04C;   /* Hospitality Pass accent */
+  --wk-deep-blue:     #08111F;   /* Water Pass primary */
+  --wk-water-silver:  #A8B8C8;   /* Water Pass accent */
+
+  /* Semantic state colors (V3 verified) */
+  --wk-success:       #5A7A2B;   /* 4.7:1 on bg */
+  --wk-error:         #B03A3A;   /* 5.8:1 on bg */
+  --wk-warning:       #C8762A;   /* same as amber */
+  --wk-info:          #5A8AB0;   /* 4.5:1 on bg */
+
+  /* ─── TYPOGRAPHY ────────────────────────────────────────────────── */
+  /* Two families. Absolute roles. Mixing them is a design violation.   */
+
+  --wk-font-display:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --wk-font-body:     'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --wk-font-mono:     'Courier New', Courier, monospace;
+
+  /* Type scale (1.25× major-third ratio · V3 verbatim)
+     11 → 14 → 16 → 18 → 20 → 24 → 32 → 42                            */
+  --wk-fs-nano:       0.6875rem;  /* 11px — timestamps, serial nrs */
+  --wk-fs-micro:      0.75rem;    /* 12px — mono labels */
+  --wk-fs-small:      0.875rem;   /* 14px — secondary info */
+  --wk-fs-body:       1rem;       /* 16px — readable content (floor) */
+  --wk-fs-h3:         1.125rem;   /* 18px — subsection headers */
+  --wk-fs-h2:         1.5rem;     /* 24px — section headers, card titles */
+  --wk-fs-h1:         2rem;       /* 32px — page titles */
+  --wk-fs-hero:       2.625rem;   /* 42px — landing title only */
+
+  /* Weights (Helvetica) */
+  --wk-fw-regular:    400;
+  --wk-fw-medium:     500;
+  --wk-fw-semi:       600;
+  --wk-fw-bold:       700;
+  --wk-fw-black:      900;
+
+  /* Letter spacing */
+  --wk-ls-display:    -0.02em;    /* H1–H2 tight */
+  --wk-ls-body:       0;
+  --wk-ls-mono:       0.12em;
+  --wk-ls-mono-wide:  0.2em;      /* Eyebrow labels */
+  --wk-ls-mono-xwide: 0.25em;     /* Section markers */
+
+  /* Line heights */
+  --wk-lh-tight:      1.15;
+  --wk-lh-snug:       1.35;
+  --wk-lh-body:       1.65;
+  --wk-lh-relaxed:    1.75;
+
+  /* ─── SPACING · 8-POINT GRID (V3 verbatim) ──────────────────────── */
+  --wk-space-xs:      4px;
+  --wk-space-sm:      8px;
+  --wk-space-md:      16px;
+  --wk-space-lg:      24px;
+  --wk-space-xl:      32px;
+  --wk-space-2xl:     48px;
+
+  /* Page-level */
+  --wk-page-x:        22px;       /* horizontal padding */
+  --wk-page-top:      54px;       /* includes safe area */
+  --wk-page-bottom:   100px;      /* nav clearance */
+
+  /* ─── RADII ─────────────────────────────────────────────────────── */
+  --wk-r-sm:          6px;
+  --wk-r-md:          10px;       /* V3 card radius */
+  --wk-r-lg:          12px;
+  --wk-r-pill:        999px;
+
+  /* ─── ELEVATION ─────────────────────────────────────────────────── */
+  --wk-e-0:           none;
+  --wk-e-1:           0 2px 12px rgba(26,18,10,0.06);
+  --wk-e-2:           0 4px 12px rgba(26,18,10,0.10);
+  --wk-e-3:           0 16px 32px rgba(26,18,10,0.18);
+
+  /* ─── MOTION (V3 verbatim) ──────────────────────────────────────── */
+  --wk-duration-fast:    150ms;   /* Toggle, focus, hover */
+  --wk-duration-normal:  300ms;   /* Page transitions, card expand */
+  --wk-duration-slow:    600ms;   /* Entry animations, shimmer */
+  --wk-duration-drift:   1200ms;  /* Ambient pass effects */
+
+  --wk-ease-out:         cubic-bezier(0.2, 0.8, 0.2, 1);
+  --wk-ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+  --wk-ease-smooth:      cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  /* ─── TOUCH ─────────────────────────────────────────────────────── */
+  --wk-touch-min:        44px;    /* Apple HIG minimum */
+  --wk-button-min:       48px;    /* Primary actions */
+
+  /* ─── LAYOUT ────────────────────────────────────────────────────── */
+  --wk-max-content:      720px;
+  --wk-max-screen:       1024px;
+  --wk-tab-bar-h:        72px;
+  --wk-header-h:         56px;
+  --wk-safe-top:         env(safe-area-inset-top, 0px);
+  --wk-safe-bottom:      env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── DARK MODE (designed, not inverted · V3 verbatim) ───────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wk-bg:           #0B0705;
+    --wk-bg-2:         #140D08;
+    --wk-bg-elevated:  #1A120A;
+
+    --wk-ink:          #F3E7CC;   /* 13.8:1 on dark bg (AAA) */
+    --wk-ink-soft:     #8A7B63;   /* 4.7:1 on dark bg (AA) */
+    --wk-ink-muted:    #6B5A3E;
+
+    --wk-line:         rgba(243,231,204,0.10);
+    --wk-line-soft:    rgba(243,231,204,0.06);
+    --wk-amber-line:   rgba(200,118,42,0.30);
+
+    --wk-amber:        #C8762A;   /* 4.9:1 on dark bg (AA) */
+    --wk-amber-soft:   rgba(200,118,42,0.14);
+
+    /* Shadows deeper in dark */
+    --wk-e-1:          0 2px 12px rgba(0,0,0,0.40);
+    --wk-e-2:          0 4px 16px rgba(0,0,0,0.55);
+    --wk-e-3:          0 18px 40px rgba(0,0,0,0.65);
+
+    /* Pass palettes do NOT invert — they keep their own colors with
+       a subtle amber-glow border to lift them from the dark canvas.   */
+  }
+}
+
+/* ─── REDUCED MOTION (animations off, not damped) ────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --wk-duration-fast:    0ms;
+    --wk-duration-normal:  0ms;
+    --wk-duration-slow:    0ms;
+    --wk-duration-drift:   0ms;
+  }
+}
+
+/* ─── HIGH CONTRAST ──────────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --wk-ink-soft:     #1A120A;
+    --wk-line:         rgba(26,18,10,0.40);
+  }
+}

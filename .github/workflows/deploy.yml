@@ -1,0 +1,51 @@
+# Deploy to GitHub Pages on push to main.
+# Only runs after the Quality Gate passes.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+
+  build:
+    name: Build version.json + ship static
+    runs-on: ubuntu-latest
+    needs: []
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stamp version.json with commit SHA
+        run: |
+          cat > version.json <<EOF
+          {
+            "bundle": "${GITHUB_SHA::8}",
+            "builtAt": "$(date -u +%FT%TZ)",
+            "doctrine": "Every Way begins at your door"
+          }
+          EOF
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

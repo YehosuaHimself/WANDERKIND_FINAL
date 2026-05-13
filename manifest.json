@@ -1,0 +1,25 @@
+{
+  "name": "Wanderkind",
+  "short_name": "Wanderkind",
+  "description": "Every Way begins at your door. A community of doors for walkers.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAFAF5",
+  "theme_color": "#8B1A2B",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["travel", "lifestyle", "social"],
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Map", "short_name": "Map", "url": "/?tab=map&source=shortcut", "description": "Find a door tonight" },
+    { "name": "My Pass", "short_name": "Pass", "url": "/?tab=pass&source=shortcut", "description": "Your wanderkind pass" },
+    { "name": "My House", "short_name": "House", "url": "/?tab=house&source=shortcut", "description": "Your door, your guests" }
+  ],
+  "screenshots": []
+}

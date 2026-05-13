@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WANDERKIND · Persona Profiles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-light: #FAFAF5;
+            --bg-white: #FFFFFF;
+            --text-primary: #1A120A;
+            --text-secondary: #6B5A3E;
+            --text-muted: rgba(26, 18, 10, 0.5);
+            --amber: #C8762A;
+            --accent: #C8762A;
+            --border-light: rgba(200, 118, 42, 0.12);
+            --border-subtle: rgba(200, 118, 42, 0.2);
+            --overlay-dark: rgba(26, 18, 10, 0.85);
+            --shadow-light: 0 2px 12px rgba(26, 18, 10, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body {
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 60px 0 40px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Controls */
+        .controls {
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            background: var(--bg-white);
+            border-color: var(--amber);
+            box-shadow: 0 0 20px rgba(200, 118, 42, 0.15);
+        }
+
+        /* Filter chips */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: #F5F1E8;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-chip:hover {
+            background: #EDE6D9;
+            border-color: var(--amber);
+            color: var(--text-primary);
+        }
+
+        .filter-chip.active {
+            background: var(--amber);
+            color: var(--bg-white);
+            border-color: var(--amber);
+        }
+
+        /* Grid */
+        .personas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .persona-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-light);
+        }
+
+        .persona-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--amber);
+            box-shadow: 0 12px 28px rgba(26, 18, 10, 0.12);
+        }
+
+        .persona-photo {
+            width: 100%;
+            height: 280px;
+            background: #F0E8DC;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .persona-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05) saturate(1.1);
+        }
+
+        .persona-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .persona-header {
+            margin-bottom: 16px;
+        }
+
+        .persona-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .persona-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .persona-archetype {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            background: #FEF3E8;
+            border-radius: 12px;
+            color: var(--amber);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 12px;
+        }
+
+        .persona-quote {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+        }
+
+        .stat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-visual {
+            display: flex;
+            gap: 3px;
+            height: 6px;
+        }
+
+        .stat-pip {
+            flex: 1;
+            background: #E8DFD0;
+            border-radius: 2px;
+        }
+
+        .stat-pip.filled {
+            background: var(--amber);
+        }
+
+        .expand-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay-dark);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            max-width: 700px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideUp 0.4s ease-out;
+            box-shadow: 0 20px 60px rgba(26, 18, 10, 0.2);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 20px;
+            padding: 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .modal-photo {
+            width: 120px;
+            height: 160px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05) saturate(1.1);
+        }
+
+        .modal-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .modal-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .modal-meta {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .modal-occupations {
+            font-size: 0.9rem;
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-section {
+            margin-bottom: 24px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section-title {
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--amber);
+            margin-bottom: 12px;
+        }
+
+        .modal-section-content {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            padding-left: 16px;
+            margin-bottom: 8px;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .bullet-list li:before {
+            content: "▪";
+            position: absolute;
+            left: 0;
+            color: var(--amber);
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .device-item {
+            padding: 8px 12px;
+            background: #FEF3E8;
+            border-radius: 6px;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: #F5F1E8;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--amber);
+            color: var(--bg-white);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-text {
+            margin-bottom: 8px;
+        }
+
+        .footer-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results-title {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .personas-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-header {
+                grid-template-columns: 100px 1fr;
+                padding: 20px;
+            }
+
+            .modal-photo {
+                width: 100px;
+                height: 140px;
+            }
+
+            .modal-name {
+                font-size: 1.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .filters {
+                gap: 8px;
+            }
+
+            .filter-chip {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+
+        /* Print */
+        @media print {
+            .controls,
+            .close-btn,
+            .expand-hint,
+            .modal {
+                display: none !important;
+            }
+
+            .persona-card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="container">
+        <h1>WANDERKIND</h1>
+        <p class="subtitle">Persona Profiles · 38 Personas · Königsweg Edition · MMXXVI</p>
+    </header>
+
+    <main class="container">
+        <div class="controls">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search by name or archetype…"
+                >
+            </div>
+            <div class="filters" id="filterContainer"></div>
+        </div>
+
+        <div class="personas-grid" id="personasGrid"></div>
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-title">No personas found</div>
+            <p>Try adjusting your search or filters</p>
+        </div>
+    </main>
+
+    <div class="modal" id="modal">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+
+    <footer class="container">
+        <div class="footer-text">WANDERKIND Persona Profiles · Professional Development Resource</div>
+        <div class="footer-date" id="generationDate"></div>
+    </footer>
+
+    <script>
+        // High-quality portrait photo URLs (Unsplash)
+        const photoUrls = {
+            1: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+            2: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
+            3: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
+            4: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+            5: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+            6: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
+            7: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=face',
+            8: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face',
+            9: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face',
+            10: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=face',
+            11: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=400&h=400&fit=crop&crop=face',
+            12: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=face',
+            13: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
+            14: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop&crop=face',
+            15: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face',
+            16: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+            17: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face',
+            18: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=400&h=400&fit=crop&crop=face',
+            19: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop&crop=face',
+            20: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=400&fit=crop&crop=face',
+            21: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&h=400&fit=crop&crop=face',
+            22: 'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=400&fit=crop&crop=face',
+            23: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop&crop=face',
+            24: 'https://images.unsplash.com/photo-1520975954732-35dd22299614?w=400&h=400&fit=crop&crop=face',
+            25: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop&crop=face',
+            26: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face',
+            27: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&crop=face',
+            28: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop&crop=face',
+            29: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&h=400&fit=crop&crop=face',
+            30: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400&h=400&fit=crop&crop=face',
+            31: 'https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?w=400&h=400&fit=crop&crop=face',
+            32: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400&h=400&fit=crop&crop=face',
+            33: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&h=400&fit=crop&crop=face',
+            54: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+            55: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
+            56: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
+            57: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+            58: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+        };
+
+        // Persona data
+        const personas = [
+            {
+                id: 1,
+                name: "Jakob Müller",
+                age: 31,
+                location: "Regensburg, Germany",
+                archetype: "Modern Pilgrim",
+                occupation: "Software Developer",
+                gender: "male",
+                photoNum: 1,
+                digitalFluency: 5,
+                travelExperience: 4,
+                budgetLevel: 3,
+                device: "iPhone 15",
+                quote: "I walk to find clarity I can't find in code.",
+                bio: "Jakob left a high-stress startup job to walk the Camino three years ago, and never really stopped walking. He plans tech-light retreats where he combines walking with meditation apps and offline maps. He's building WANDERKIND as much for himself as for others like him—people who want to stay connected but not overwhelmed.",
+                goals: [
+                    "Plan meaningful multi-week journeys without losing connection",
+                    "Discover routes that balance spiritual reflection with modern convenience",
+                    "Track progress without obsessing over metrics"
+                ],
+                frustrations: [
+                    "Apps that gamify walking make it feel like work",
+                    "No easy way to share experiences without it feeling performative",
+                    "Offline maps are clunky and outdated"
+                ],
+                features: ["Map", "Blog/Journal", "Routes", "Messages"],
+                usagePattern: "Daily check-in for navigation, evening reflection entries, weekly route planning.",
+                tags: ["Pilgrim", "Spiritual", "Professional", "Traveller"],
+                keywords: "Jakob Müller Modern Pilgrim"
+            },
+            {
+                id: 2,
+                name: "Margarethe Schneider",
+                age: 58,
+                location: "Altötting, Germany",
+                archetype: "Christian Pilgrim",
+                occupation: "Retired Teacher",
+                gender: "female",
+                photoNum: 1,
+                digitalFluency: 2,
+                travelExperience: 3,
+                budgetLevel: 3,
+                device: "Samsung Galaxy J2",
+                quote: "Walking to Mary's shrine is how I pray.",
+                bio: "Margarethe has been walking Wallfahrt routes for 30 years, from Altötting to Einsiedeln to Rome. She barely uses email, doesn't have social media, and approached her daughter to help her 'try this app thing.' She knows traditional routes intimately and trusts word-of-mouth guidance from her pilgrim community more than any GPS.",
+                goals: [
+                    "Find fellow pilgrims on traditional routes without needing to understand tech",
+                    "Access reliable information about rest stops and safe accommodations",
+                    "Share family pilgrimage stories"
+                ],
+                frustrations: [
+                    "Smartphones are confusing and she's afraid of doing something wrong",
+                    "Routes recommended online aren't the 'true' historical Wallfahrt paths",
+                    "Can't find information in German about traditional stopping points"
+                ],
+                features: ["Routes", "Hosting", "Blog/Journal"],
+                usagePattern: "Weekly check-ins with daughter, reference maps once before each trip, post-journey photo sharing.",
+                tags: ["Pilgrim", "Spiritual"],
+                keywords: "Margarethe Schneider Christian Pilgrim"
+            },
+            {
+                id: 3,
+                name: "Sophie Wagner",
+                age: 38,
+                location: "Berlin, Germany",
+                archetype: "Weekend Wanderer",
+                occupation: "Marketing Manager",
+                gender: "female",
+                photoNum: 2,
+                digitalFluency: 5,
+                travelExperience: 4,
+                budgetLevel: 4,
+                device: "iPhone 15 Pro",
+                quote: "Every weekend in nature keeps me sane.",
+                bio: "Sophie walks 30km every weekend, mostly around Brandenburg and into the Alps twice a year. She's deeply connected to Instagram nature aesthetic, loves logging her walks, and is always testing the latest fitness apps. She's looking for something that feels more personal and less competitive than Strava.",
+                goals: [
+                    "Track weekly walking fitness without the competitive leaderboard vibe",
+                    "Discover lesser-known routes from other experienced walkers",
+                    "Create beautiful memory documentation of walks"
+                ],
+                frustrations: [
+                    "Fitness apps make walking feel like a race or workout",
+                    "Most route apps are designed for serious hikers, not casual weekenders",
+                    "Photo archiving feels separate from the actual experience"
+                ],
+                features: ["Map", "Feed/Memories", "Routes", "Stamps"],
+                usagePattern: "Pre-walk route check, live tracking on long walks, detailed post-walk journal with photos.",
+                tags: ["Traveller", "Youth", "Professional"],
+                keywords: "Sophie Wagner Weekend Wanderer"
+            },
+            {
+                id: 4,
+                name: "Hans Dieter Richter",
+                age: 47,
+                location: "Grindelwald, Switzerland",
+                archetype: "Hobby Hiker",
+                occupation: "Electrician",
+                gender: "male",
+                photoNum: 2,
+                digitalFluency: 3,
+                travelExperience: 3,
+                budgetLevel: 3,
+                device: "Google Pixel 6",
+                quote: "Walking clears my head after a week of work.",
+                bio: "Hans has never taken a serious hiking course but knows the Swiss valleys intimately. He walks 2-3 times a month, mostly familiar routes. He's comfortable with maps and GPS basics but doesn't obsess over optimization. He enjoys the social aspect of walking—meeting friends at mountain huts.",
+                goals: [
+                    "Share walks easily with his regular walking group",
+                    "Find new routes at his skill level nearby",
+                    "Know where reliable mountain huts are"
+                ],
+                frustrations: [
+                    "Can't tell from route descriptions if a trail is right for his fitness level",
+                    "Getting lost on new routes wastes time he'd rather spend walking",
+                    "No way to coordinate meetups with friends in one place"
+                ],
+                features: ["Routes", "Groups", "Messages", "Map"],
+                usagePattern: "Monthly route browsing, meets friends for walks, occasional photo sharing.",
+                tags: ["Traveller", "Professional"],
+                keywords: "Hans Dieter Richter Hobby Hiker"
+            },
+            {
+                id: 5,
+                name: "Alexander Koenig",
+                age: 32,
+                location: "Chamonix, France",
+                archetype: "Professional Mountaineer",
+                occupation: "Mountain Guide",
+                gender: "male",
+                photoNum: 3,
+                digitalFluency: 5,
+                travelExperience: 5,
+                budgetLevel: 4,
+                device: "iPhone 15 Pro Max",
+                quote: "Data is how I stay alive up here.",
+                bio: "Alexander is IFMGA-certified and climbs year-round. He uses precise GPS, weather data, and altitude tracking obsessively. Every route is documented, analyzed, shared with colleagues. He's looking for professional tools that other guides use, not consumer hiking apps.",
+                goals: [
+                    "Share real-time location and critical data with clients and rescue contacts",
+                    "Access and contribute expert-level route documentation",
+                    "Integrate professional weather and hazard reporting"
+                ],
+                frustrations: [
+                    "Casual hiking apps don't have the precision or safety features professionals need",
+                    "Can't easily collaborate with other guides on route intelligence",
+                    "Battery consumption on GPS-intensive work is a real problem"
+                ],
+                features: ["Map", "Messages", "Routes", "Groups"],
+                usagePattern: "Continuous real-time tracking during climbs, frequent route updates, team coordination.",
+                tags: ["Professional"],
+                keywords: "Alexander Koenig Professional Mountaineer"
+            },
+            {
+                id: 6,
+                name: "Petra Hoffmann",
+                age: 28,
+                location: "Vienna, Austria",
+                archetype: "Travel Professional",
+                occupation: "Travel Agency Owner",
+                gender: "female",
+                photoNum: 3,
+                digitalFluency: 5,
+                travelExperience: 5,
+                budgetLevel: 4,
+                device: "iPhone 15 Pro",
+                quote: "I sell experiences, so I need to know them deeply.",
+                bio: "Petra runs a boutique travel agency specializing in walking holidays. She scouts every route personally, photographs accommodations, and tests apps to recommend to clients. She's looking for tools that help her create curated experiences and share them professionally.",
+                goals: [
+                    "Evaluate routes for client groups with different fitness levels",
+                    "Document accommodation quality and hospitality details",
+                    "Create shareable route guides with rich media"
+                ],
+                frustrations: [
+                    "Generic route apps don't capture what makes a walk special",
+                    "No good way to share professional route documentation with clients",
+                    "Can't easily filter routes by accommodation quality"
+                ],
+                features: ["Routes", "Blog/Journal", "Hosting", "Feed/Memories"],
+                usagePattern: "Intensive route research pre-trip, detailed documentation during scouting, client-facing curation.",
+                tags: ["Professional", "Traveller"],
+                keywords: "Petra Hoffmann Travel Professional"
+            },
+            {
+                id: 7,
+                name: "Clara Hofmann",
+                age: 21,
+                location: "Berlin, Germany",
+                archetype: "Backpacker Beginner",
+                occupation: "Student",
+                gender: "female",
+                photoNum: 4,
+                digitalFluency: 5,
+                travelExperience: 1,
+                budgetLevel: 1,
+                device: "iPhone 13",
+                quote: "I'm terrified and excited about doing this alone.",
+                bio: "Clara just finished her first year at Humboldt University and is taking a solo trip across the Alps and Balkans for 6 weeks. This is her first major trip alone. She's digitally fluent (Discord, TikTok, Instagram) but nervous about practical travel — she's never even booked a hostel herself before. She researches obsessively online and needs reassurance from real people, not algorithms.",
+                goals: [
+                    "Find safe, budget-friendly hostels and accommodation",
+                    "Connect with other solo travelers for safety and friendship",
+                    "Document her trip for family back home"
+                ],
+                frustrations: [
+                    "Worried about getting truly lost and running out of money",
+                    "Feels isolated and wants community but doesn't want strangers knowing her location",
+                    "Maps are confusing when she's overwhelmed"
+                ],
+                features: ["Map", "Hosting", "Groups", "Messages"],
+                usagePattern: "Obsessive pre-planning, daily check-ins with family, evening journaling.",
+                tags: ["Youth", "Backpacker", "Traveller"],
+                keywords: "Clara Hofmann Backpacker Beginner"
+            },
+            {
+                id: 8,
+                name: "Sofia Rossi",
+                age: 25,
+                location: "Barcelona, Spain",
+                archetype: "Backpacker Intermediate",
+                occupation: "Freelance Graphic Designer",
+                gender: "female",
+                photoNum: 5,
+                digitalFluency: 5,
+                travelExperience: 3,
+                budgetLevel: 2,
+                device: "Samsung Galaxy A13",
+                quote: "I know what I want, and I'm not paying too much for it.",
+                bio: "Sofia has done 4 solo trips across Europe and knows exactly what she wants: authentic routes that locals walk, not tourist corridors. She budgets ruthlessly — €25/day including accommodation — and uses a mix of CouchSurfing, camping, and farm stays. She's planning a 2-month walk from Budapest through Serbia and Bosnia, and needs route intelligence that tourist apps simply don't have.",
+                goals: [
+                    "Find routes locals actually walk, not the tourist-marked trails",
+                    "Access a trusted network for cheap beds, free camping, and €5 meals",
+                    "Track daily spending to stay within her strict €25/day budget"
+                ],
+                frustrations: [
+                    "Route apps only show well-maintained tourist paths with entrance fees",
+                    "Hosting platforms are either expensive or full of fake reviews",
+                    "No way to filter by 'real cost of walking this route' — transport, food, beds"
+                ],
+                features: ["Routes", "Hosting", "Messages", "Groups"],
+                usagePattern: "Pre-trip routing, daily navigation, evening budget tracking and local tips sharing.",
+                tags: ["Youth", "Backpacker", "Traveller"],
+                keywords: "Sofia Rossi Backpacker Intermediate"
+            },
+            {
+                id: 9,
+                name: "Marco Benedetti",
+                age: 30,
+                location: "Bolzano, Italy",
+                archetype: "Backpacker Advanced",
+                occupation: "Freelance Photographer",
+                gender: "male",
+                photoNum: 4,
+                digitalFluency: 4,
+                travelExperience: 5,
+                budgetLevel: 2,
+                device: "OnePlus 11",
+                quote: "I carry almost nothing and take the road less traveled.",
+                bio: "Marco has been traveling continuously for 8 years with a 6kg pack and no fixed address. He's the person other backpackers ask for advice — he knows unmarked trails through the Dolomites, free shepherd huts in Albania, and which mountain passes are crossable in November. He uses apps reluctantly, preferring word-of-mouth and trail journals. He's interested in becoming a WANDERKIND community guide — sharing knowledge with people who deserve it, not selling it to tourists.",
+                goals: [
+                    "Share hard-won route knowledge with a trusted inner circle, not the masses",
+                    "Find travelers who respect trails and communities, not just consume them",
+                    "Earn modestly as a community guide without compromising authenticity"
+                ],
+                frustrations: [
+                    "Every secret route he shares online gets overrun within a season",
+                    "Apps reduce nuanced trail knowledge to star ratings and difficulty numbers",
+                    "No way to vet who gets access to sensitive route information"
+                ],
+                features: ["Routes", "Groups", "Blog/Journal", "Messages"],
+                usagePattern: "Occasionally uploads routes, active community moderation, sporadic check-ins.",
+                tags: ["Backpacker", "Craftsman", "Traveller"],
+                keywords: "Marco Benedetti Backpacker Advanced"
+            },
+            {
+                id: 10,
+                name: "Tobias Hoffmann",
+                age: 27,
+                location: "Innsbruck, Austria",
+                archetype: "Service Worker",
+                occupation: "Seasonal Chef",
+                gender: "male",
+                photoNum: 5,
+                digitalFluency: 3,
+                travelExperience: 3,
+                budgetLevel: 2,
+                device: "iPhone SE",
+                quote: "I walk between jobs and eat my way across countries.",
+                bio: "Tobias trained as a cook and works seasonal jobs in Alpine restaurants, farm-to-table operations, and food festivals. Walking is how he moves between jobs and discovers new culinary traditions. He needs practical planning tools but isn't tech-obsessed.",
+                goals: [
+                    "Find seasonal work opportunities along walking routes",
+                    "Connect with other service workers doing similar journeys",
+                    "Discover local food culture while walking"
+                ],
+                frustrations: [
+                    "Hard to coordinate seasonal work across countries",
+                    "Route apps don't show where to eat well or work opportunities",
+                    "No community for people like him—most apps are for leisure travelers"
+                ],
+                features: ["Routes", "Groups", "Messages", "Blog/Journal"],
+                usagePattern: "Route planning before job changes, occasional community check-ins, food discovery posts.",
+                tags: ["Craftsman", "Youth", "Traveller"],
+                keywords: "Tobias Hoffmann Service Worker"
+            },
+            {
+                id: 11,
+                name: "Werner Bachmeier",
+                age: 62,
+                location: "Munich, Germany",
+                archetype: "Spiritual Seeker Boomer",
+                occupation: "Retired Professor",
+                gender: "male",
+                photoNum: 6,
+                digitalFluency: 3,
+                travelExperience: 3,
+                budgetLevel: 4,
+                device: "iPad",
+                quote: "Walking helps me understand what I missed at the desk.",
+                bio: "Werner taught philosophy at LMU Munich for 40 years and retired to explore what a meaningful life looks like when you stop lecturing about it. He's carrying Hesse, Rilke, and a worn copy of the Dhammapada through Eastern Europe, walking 12-15km per day at a pace that lets him think. He writes longhand in a Moleskine every evening and only uses his iPad to send these reflections to his grown children. He wants depth, not features.",
+                goals: [
+                    "Find walking companions who discuss ideas, not just logistics",
+                    "Write reflections in a journal that feels literary, not like a fitness log",
+                    "Walk routes with historical or philosophical resonance — monastery paths, trade roads"
+                ],
+                frustrations: [
+                    "Every app assumes walkers care about speed, distance, and calories",
+                    "Meaningful conversation about walking is drowned out by gear talk and optimization",
+                    "Sharing a reflection online feels like shouting into a void"
+                ],
+                features: ["Blog/Journal", "Groups", "Routes", "Messages"],
+                usagePattern: "Weekly reflective journaling, monthly philosophical discussion group meetups online, occasional route planning.",
+                tags: ["Spiritual", "Professional"],
+                keywords: "Werner Bachmeier Spiritual Seeker Boomer"
+            },
+            {
+                id: 12,
+                name: "Lena Berger",
+                age: 29,
+                location: "Zurich, Switzerland",
+                archetype: "Spiritual Seeker Millennial",
+                occupation: "Yoga Instructor",
+                gender: "female",
+                photoNum: 6,
+                digitalFluency: 5,
+                travelExperience: 4,
+                budgetLevel: 3,
+                device: "iPhone 15",
+                quote: "Walking is my meditation practice moving through the world.",
+                bio: "Lena teaches yoga and wellness retreats along the Swiss lakes and incorporates walking into her practice philosophy. She did her first Camino at 25 and now designs walking-meditation programs for her retreat clients. She's yoga-Instagram savvy, integrates technology with spirituality, and needs a platform that treats movement as sacred rather than athletic.",
+                goals: [
+                    "Create curated walking-meditation experiences for retreat clients",
+                    "Share mindfulness content integrated with route documentation",
+                    "Find like-minded practitioners for collaboration"
+                ],
+                frustrations: [
+                    "Fitness apps gamify movement in ways that contradict mindfulness",
+                    "No good way to share experiential content (not just photos)",
+                    "Can't easily create retreat guides that integrate the whole experience"
+                ],
+                features: ["Blog/Journal", "Routes", "Feed/Memories", "Groups"],
+                usagePattern: "Daily practice documentation, weekly retreat planning, community sharing of curated experiences.",
+                tags: ["Spiritual", "Professional", "Youth"],
+                keywords: "Lena Berger Spiritual Seeker Millennial"
+            },
+            {
+                id: 13,
+                name: "Florian Kraft",
+                age: 24,
+                location: "Hamburg, Germany",
+                archetype: "Craftsman in Employment",
+                occupation: "Carpenter",
+                gender: "male",
+                photoNum: 7,
+                digitalFluency: 2,
+                travelExperience: 2,
+                budgetLevel: 2,
+                device: "Samsung Galaxy A12",
+                quote: "Walking on weekends is my break from construction sites.",
+                bio: "Florian completed a 3-year carpentry apprenticeship and is now working full-time at a construction company. He walks on weekends around Hamburg and on his vacation weeks. He's from a traditional working-class background and is skeptical of too much tech but wants to explore beyond his local area.",
+                goals: [
+                    "Find reliable routes for weekend walks from home",
+                    "Share walks with coworkers without overthinking it",
+                    "Discover new areas for his annual vacation"
+                ],
+                frustrations: [
+                    "Can't tell if routes are realistic for his fitness level from descriptions",
+                    "Tech usually feels designed for people different from him",
+                    "Too much information online makes choosing a walk harder, not easier"
+                ],
+                features: ["Routes", "Groups", "Map"],
+                usagePattern: "Weekly route browsing, occasional group walk coordination, monthly photo sharing.",
+                tags: ["Craftsman", "Youth", "Professional"],
+                keywords: "Florian Kraft Craftsman in Employment"
+            },
+            {
+                id: 14,
+                name: "Mira Zahn",
+                age: 22,
+                location: "Vienna, Austria",
+                archetype: "Wanderschaft Journeywoman",
+                occupation: "Carpenter on Wanderschaft",
+                gender: "female",
+                photoNum: 7,
+                digitalFluency: 2,
+                travelExperience: 3,
+                budgetLevel: 1,
+                device: "Old Samsung phone",
+                quote: "I walk to learn the tradition my grandfather taught.",
+                bio: "Mira is one of the rare women doing a traditional Gesellenwanderung—the old journeyman tradition of walking between cities as a craftsman. She's a carpenter, intentionally living low-tech, walking through Central Europe with minimal possessions. She's documenting her journey the old way—through letters and sketches.",
+                goals: [
+                    "Document her Wanderschaft in traditional ways that honor the practice",
+                    "Connect with other craftspeople on similar journeys",
+                    "Find towns with workshops where tradition is still alive"
+                ],
+                frustrations: [
+                    "Technology often contradicts the spirit of Wanderschaft",
+                    "Hard to find community that values tradition over optimization",
+                    "Most apps are designed for tourist hiking, not working journeys"
+                ],
+                features: ["Blog/Journal", "Routes", "Messages"],
+                usagePattern: "Weekly photo and reflection posts, monthly route updates, occasional correspondence with other Gesellen.",
+                tags: ["Craftsman", "Youth", "Traveller"],
+                keywords: "Mira Zahn Wanderschaft Journeywoman"
+            },
+            {
+                id: 15,
+                name: "Julian Neumann",
+                age: 31,
+                location: "Berlin, Germany",
+                archetype: "Digital Nomad Founder",
+                occupation: "SaaS Startup Founder",
+                gender: "male",
+                photoNum: 8,
+                digitalFluency: 5,
+                travelExperience: 5,
+                budgetLevel: 4,
+                device: "MacBook + iPhone 15 Pro",
+                quote: "I walk to think through the hard problems.",
+                bio: "Julian is building an AI company and works remotely from anywhere. He walks daily as his thinking tool and is planning a 3-month solo journey across Scandinavia while maintaining his startup. He needs reliable connectivity and productivity tools integrated with travel.",
+                goals: [
+                    "Find accommodations with fast, reliable WiFi for work continuity",
+                    "Use walking as structured thinking time without losing productivity",
+                    "Meet other founders and remote workers doing similar journeys"
+                ],
+                frustrations: [
+                    "Choosing accommodations based on WiFi quality is time-consuming",
+                    "Walking and working don't easily integrate into one workflow",
+                    "Most digital nomad tools are designed for cities, not walking journeys"
+                ],
+                features: ["Hosting", "Routes", "Groups", "Messages"],
+                usagePattern: "Morning route planning with connectivity checks, evening work-walk reflection logs, community founder meetups.",
+                tags: ["Digital Nomad", "Professional"],
+                keywords: "Julian Neumann Digital Nomad Founder"
+            },
+            {
+                id: 16,
+                name: "Marie Dupont",
+                age: 28,
+                location: "Lisbon, Portugal",
+                archetype: "Digital Nomad Remote Worker",
+                occupation: "Customer Success Manager",
+                gender: "female",
+                photoNum: 8,
+                digitalFluency: 5,
+                travelExperience: 4,
+                budgetLevel: 3,
+                device: "MacBook Air + iPhone 14",
+                quote: "I work 9-to-5 from different countries every month.",
+                bio: "Marie grew up in Strasbourg, studied in Brussels, and now works for a remote-first SaaS company from wherever she lands. She maintains customer accounts across time zones while living out of a 40L backpack. She stays in co-working-adjacent hostels and finds routes during lunch breaks and weekends — her walks are the boundary between work-brain and travel-brain.",
+                goals: [
+                    "Find routes close to accommodations with work-friendly hours",
+                    "Connect with other remote workers for co-working spaces and social connection",
+                    "Maintain work focus while embracing travel"
+                ],
+                frustrations: [
+                    "Hard to find hostels that understand professional work needs",
+                    "Guilt about not 'really' traveling because she's working",
+                    "Isolation from work colleagues across time zones"
+                ],
+                features: ["Hosting", "Routes", "Groups", "Messages"],
+                usagePattern: "Lunch-break route discovery, evening community meetups, weekly work-travel journaling.",
+                tags: ["Digital Nomad", "Youth", "Professional"],
+                keywords: "Marie Dupont Digital Nomad Remote Worker"
+            },
+            {
+                id: 17,
+                name: "Christina Adler",
+                age: 34,
+                location: "Frankfurt, Germany",
+                archetype: "Scout Leader",
+                occupation: "Pfadfinder Group Leader",
+                gender: "female",
+                photoNum: 9,
+                digitalFluency: 4,
+                travelExperience: 4,
+                budgetLevel: 2,
+                device: "iPhone 12",
+                quote: "Planning youth adventures is my second job, and I love it.",
+                bio: "Christina leads a Pfadfinder group of 30+ teenagers and young adults. She's responsible for planning multi-day expeditions, managing safety, coordinating logistics for large groups. She's looking for tools that make group coordination easier and help her document youth experiences.",
+                goals: [
+                    "Coordinate group logistics and safety for expeditions",
+                    "Find routes appropriate for different age groups and skill levels",
+                    "Create lasting memories and documentation of youth experiences"
+                ],
+                frustrations: [
+                    "Managing 30 people on group chat is chaotic",
+                    "No good way to check route difficulty and hazard info for youth groups",
+                    "Capturing and sharing group memories is time-consuming"
+                ],
+                features: ["Groups", "Routes", "Messages", "Feed/Memories"],
+                usagePattern: "Weekly troop coordination, monthly expeditions, intensive pre-trip planning.",
+                tags: ["Scout", "Youth", "Professional"],
+                keywords: "Christina Adler Scout Leader"
+            },
+            {
+                id: 18,
+                name: "Lukas Schneider",
+                age: 15,
+                location: "Zurich, Switzerland",
+                archetype: "Scout Participant",
+                occupation: "Student",
+                gender: "male",
+                photoNum: 9,
+                digitalFluency: 5,
+                travelExperience: 3,
+                budgetLevel: 1,
+                device: "iPhone 11",
+                quote: "Scouts is where I feel alive and challenged.",
+                bio: "Lukas is part of a competitive scout troop and loves the challenge of expeditions. He's deeply interested in maps, navigation, outdoor skills, and is borderline obsessed with tracking his walking stats. He's comfortable with apps but not interested in social media nonsense.",
+                goals: [
+                    "Compete fairly on leaderboards and skill tracking with peers",
+                    "Navigate harder routes accurately and impressively",
+                    "Connect with scouts across regions"
+                ],
+                frustrations: [
+                    "Fitness apps are designed for adults, not age-appropriate for teens",
+                    "Competitive walking feels uncool compared to sports",
+                    "Can't easily compare skills with scouts in other troops"
+                ],
+                features: ["Routes", "Stamps", "Groups", "Map"],
+                usagePattern: "Daily navigation practice, expedition logging, weekly leaderboard checking.",
+                tags: ["Scout", "Youth"],
+                keywords: "Lukas Schneider Scout Participant"
+            },
+            {
+                id: 19,
+                name: "Emma Larsson",
+                age: 20,
+                location: "Stockholm, Sweden",
+                archetype: "Work-and-Travel Beginner",
+                occupation: "Working Holiday Visa Holder",
+                gender: "female",
+                photoNum: 10,
+                digitalFluency: 5,
+                travelExperience: 1,
+                budgetLevel: 1,
+                device: "iPhone 12",
+                quote: "I'm learning to be independent on my own terms.",
+                bio: "Emma just started a working holiday year in Central Europe. She's doing seasonal work (hostel management, farm work, tourism) to fund her travel. This is her first time abroad for an extended period and she's figuring out who she is away from family and childhood friends.",
+                goals: [
+                    "Find working opportunities integrated with travel routes",
+                    "Connect with other young travelers for friendship and safety",
+                    "Document personal growth through this year"
+                ],
+                frustrations: [
+                    "Work and travel seem like separate categories in most apps",
+                    "Worried about safety when working with strangers",
+                    "Financial stress makes every decision feel high-stakes"
+                ],
+                features: ["Routes", "Hosting", "Messages", "Groups"],
+                usagePattern: "Pre-trip work research, daily check-ins with home, weekend exploration.",
+                tags: ["Work-and-Travel", "Youth", "Traveller"],
+                keywords: "Emma Larsson Work-and-Travel Beginner"
+            },
+            {
+                id: 20,
+                name: "Pierre Dubois",
+                age: 26,
+                location: "Lyon, France",
+                archetype: "Work-and-Travel Advanced",
+                occupation: "Seasonal Worker / Photographer",
+                gender: "male",
+                photoNum: 10,
+                digitalFluency: 4,
+                travelExperience: 5,
+                budgetLevel: 2,
+                device: "Sony a6400 + iPhone 13",
+                quote: "I've perfected the art of working just enough to travel.",
+                bio: "Pierre has been working and traveling for 5 years. He does seasonal work in agriculture, tourism, and event production, timing his work around walking seasons. He's built a network of employers and friends across Europe and has optimized his logistics to a science.",
+                goals: [
+                    "Expand his network of work-travel connections",
+                    "Share his knowledge with other work-travelers",
+                    "Integrate his photography into travel documentation"
+                ],
+                frustrations: [
+                    "Each region has different work platforms and no central resource",
+                    "Most walking apps don't connect with livelihood opportunities",
+                    "Hard to find mentors or guides for work-travel lifestyle"
+                ],
+                features: ["Routes", "Groups", "Messages", "Blog/Journal"],
+                usagePattern: "Active community contribution, seasonal work coordination, photographic documentation.",
+                tags: ["Work-and-Travel", "Craftsman", "Traveller"],
+                keywords: "Pierre Dubois Work-and-Travel Advanced"
+            },
+            {
+                id: 21,
+                name: "Eva Kellner",
+                age: 19,
+                location: "Prague, Czech Republic",
+                archetype: "Au-Pair",
+                occupation: "Au-Pair in Host Family",
+                gender: "female",
+                photoNum: 11,
+                digitalFluency: 5,
+                travelExperience: 1,
+                budgetLevel: 1,
+                device: "iPhone XS",
+                quote: "I walk on my days off to feel like I'm still discovering this place.",
+                bio: "Eva is an au-pair living with a family in Prague, working as a nanny/housekeeper for pocket money and freedom. She's away from her family for the first time, feels homesick but doesn't want to admit it. Walking is her escape and her way of genuinely exploring the city and surrounding country.",
+                goals: [
+                    "Find routes near her host family home that she can explore on free days",
+                    "Connect with other au-pairs for friendship and mutual understanding",
+                    "Feel less homesick by documenting new experiences"
+                ],
+                frustrations: [
+                    "Doesn't have much money for activities beyond walking",
+                    "Feels isolated from other people her age",
+                    "Language barriers make app navigation harder"
+                ],
+                features: ["Routes", "Groups", "Blog/Journal", "Messages"],
+                usagePattern: "Daily routes from host location, evening FaceTime home, weekly au-pair meetups.",
+                tags: ["Work-and-Travel", "Youth"],
+                keywords: "Eva Kellner Au-Pair"
+            },
+            {
+                id: 22,
+                name: "Reinhold Schäfer",
+                age: 42,
+                location: "Passau, Germany",
+                archetype: "Stamp Seeker",
+                occupation: "Insurance Adjuster",
+                gender: "male",
+                photoNum: 11,
+                digitalFluency: 3,
+                travelExperience: 4,
+                budgetLevel: 3,
+                device: "Garmin handheld GPS",
+                quote: "I collect stamps like they're achievements in a game I love.",
+                bio: "Reinhold is a completionist who has methodically walked and stamped 847 routes across Bavaria, Tyrol, and Salzburg over 15 years. He keeps a spreadsheet of every stamp, photographs each one, and organizes them by region and year. The walking itself is secondary — what drives him is the satisfaction of filling gaps in his collection. He carries a Garmin handheld specifically because phone GPS isn't precise enough for his documentation standards.",
+                goals: [
+                    "Access a complete, searchable database of all stamp locations across Alpine routes",
+                    "Track collection progress with gap analysis — see exactly what's missing",
+                    "Compare collections and trade route tips with fellow completionists"
+                ],
+                frustrations: [
+                    "No single source of truth for stamp locations — each region keeps its own records",
+                    "Stamp systems are inconsistent: some use ink, some emboss, some are digital-only",
+                    "Other collectors are scattered across forums with no unified community"
+                ],
+                features: ["Stamps", "Map", "Routes", "Blog/Journal"],
+                usagePattern: "Methodical route planning, stamp collection tracking, monthly collection updates.",
+                tags: ["Traveller", "Collector"],
+                keywords: "Reinhold Schäfer Stamp Seeker"
+            },
+            {
+                id: 23,
+                name: "Johanna Haas",
+                age: 24,
+                location: "Berlin, Germany",
+                archetype: "Festival Lover",
+                occupation: "Event Coordinator",
+                gender: "female",
+                photoNum: 12,
+                digitalFluency: 5,
+                travelExperience: 4,
+                budgetLevel: 2,
+                device: "iPhone 14 Pro",
+                quote: "I follow the festival circuit like a musical map of Europe.",
+                bio: "Johanna organizes niche music and culture festivals across Germany and Austria, and walks between them when distances allow. She's part of a tight community of festival-circuit people who treat European summer as one continuous journey. She plans her routes around festival calendars and knows every campsite and cheap bed within 20km of every major open-air stage.",
+                goals: [
+                    "Find safe routes between festival destinations",
+                    "Connect with other festival-circuit travelers",
+                    "Document festival experiences and build community memories"
+                ],
+                frustrations: [
+                    "Standard route planners don't account for changing festival calendars",
+                    "Hard to find safe, affordable accommodations for her circuit community",
+                    "No platform to share festival-walking experiences with peers"
+                ],
+                features: ["Routes", "Groups", "Feed/Memories", "Blog/Journal"],
+                usagePattern: "Festival-aligned route planning, daily community check-ins, evening experience sharing.",
+                tags: ["Festival", "Youth", "Traveller"],
+                keywords: "Johanna Haas Festival Lover"
+            },
+            {
+                id: 24,
+                name: "Kevin Kowalski",
+                age: 23,
+                location: "Amsterdam, Netherlands",
+                archetype: "Musician / DJ",
+                occupation: "DJ / Electronic Music Producer",
+                gender: "male",
+                photoNum: 12,
+                digitalFluency: 5,
+                travelExperience: 3,
+                budgetLevel: 2,
+                device: "iPhone 15",
+                quote: "I walk between gigs to stay sane and find sonic inspiration.",
+                bio: "Kevin is a touring DJ, playing festivals and clubs across Europe. He's nocturnal, travels with minimal sleep, and uses daytime walks as his decompression and creative process. He's interested in the sounds and sensory experiences of places, not typical tourist attractions.",
+                goals: [
+                    "Find quiet, evocative walking routes during the day",
+                    "Connect with musicians and artists doing similar touring",
+                    "Use walking as documented creative process"
+                ],
+                frustrations: [
+                    "Walking apps are designed for morning people and fitness goals",
+                    "Can't find routes that feel sonically/sensorily interesting, not just scenic",
+                    "No community for touring musicians exploring by foot"
+                ],
+                features: ["Routes", "Blog/Journal", "Groups", "Messages"],
+                usagePattern: "Daytime route discovery between nightclub gigs, evening production/performance, community connection.",
+                tags: ["Festival", "Youth", "Traveller"],
+                keywords: "Kevin Kowalski Musician DJ"
+            },
+            {
+                id: 25,
+                name: "Gabriele Meier",
+                age: 55,
+                location: "Lucerne, Switzerland",
+                archetype: "Walking Association Member",
+                occupation: "Retired Nurse",
+                gender: "female",
+                photoNum: 13,
+                digitalFluency: 2,
+                travelExperience: 3,
+                budgetLevel: 3,
+                device: "Paper maps + phone for emergencies",
+                quote: "My Wanderverein is my social life and my greatest joy.",
+                bio: "Gabriele has been the heart of her local Wanderverein in Lucerne for 20 years — she organizes the Christmas walk, maintains the club newsletter, and knows every member's knee problems by name. She goes on organized group walks every weekend and leads the easier ones. Her phone is for emergencies and calling her daughter. She finds paper guidebooks more reliable than any screen and doesn't understand why anyone would need an app to go for a walk.",
+                goals: [
+                    "See her Wanderverein's schedule and sign up without calling the secretary",
+                    "Find other association walks when she travels to visit her sister in Bern",
+                    "Share photos from group walks with members who couldn't attend"
+                ],
+                frustrations: [
+                    "Her grandkids installed three apps on her phone and she can't tell them apart",
+                    "Official Wanderverein websites look like they were made in 2005",
+                    "She misses walks because the schedule changed and no one called her"
+                ],
+                features: ["Routes", "Groups"],
+                usagePattern: "Minimal app use, group walk participation, paper documentation preference.",
+                tags: ["Traveller", "Spiritual"],
+                keywords: "Gabriele Meier Walking Association Member"
+            },
+            {
+                id: 26,
+                name: "Victoria Shaw",
+                age: 48,
+                location: "London, United Kingdom",
+                archetype: "Luxury Seeker New Experience",
+                occupation: "Management Consultant",
+                gender: "female",
+                photoNum: 13,
+                digitalFluency: 5,
+                travelExperience: 5,
+                budgetLevel: 5,
+                device: "iPhone 15 Pro Max",
+                quote: "I'm tired of luxury hotels. I want real experiences, but still comfortable.",
+                bio: "Victoria has traveled extensively to luxury destinations but is now seeking 'authentic' experiences. She's interested in walking journeys but with high-comfort accommodations, fine dining, and curated experiences. She has money but doesn't want to be seen as a tourist.",
+                goals: [
+                    "Find curated, authentic walking experiences with luxury accommodations",
+                    "Meet interesting people and gain insider knowledge",
+                    "Document experiences in a way that feels meaningful, not performative"
+                ],
+                frustrations: [
+                    "Most walking routes are either backpacker or hyperlocal, no premium-authentic middle ground",
+                    "Difficulty finding accommodations that are comfortable AND authentic",
+                    "No way to curate experiences without using standard tour operators"
+                ],
+                features: ["Routes", "Hosting", "Blog/Journal", "Groups"],
+                usagePattern: "Curated route research, pre-trip logistics coordination, reflective journaling.",
+                tags: ["Traveller", "Professional"],
+                keywords: "Victoria Shaw Luxury Seeker"
+            },
+            {
+                id: 27,
+                name: "Thomas Braun",
+                age: 18,
+                location: "Vienna, Austria",
+                archetype: "Gap Year Student",
+                occupation: "Post-Secondary, Pre-University",
+                gender: "male",
+                photoNum: 14,
+                digitalFluency: 5,
+                travelExperience: 2,
+                budgetLevel: 1,
+                device: "iPhone 15",
+                quote: "I'm walking to figure out who I actually am before university.",
+                bio: "Thomas just finished his Matura and is taking a year before starting university. He's never traveled independently and is using walking as his coming-of-age journey. He's trying to find authentic experiences and also figure out what he cares about.",
+                goals: [
+                    "Design a meaningful solo journey that feels authentic",
+                    "Meet other young people doing similar explorations",
+                    "Document personal growth and reflection"
+                ],
+                frustrations: [
+                    "Doesn't want a typical 'gap year' itinerary",
+                    "Worried about making mistakes or wrong choices",
+                    "Seeking meaning but doesn't know what that means yet"
+                ],
+                features: ["Routes", "Groups", "Blog/Journal", "Messages"],
+                usagePattern: "Intensive pre-trip planning and research, daily journaling, evening reflection.",
+                tags: ["Youth", "Traveller"],
+                keywords: "Thomas Braun Gap Year Student"
+            },
+            {
+                id: 28,
+                name: "Marta Kováčová",
+                age: 24,
+                location: "Bratislava, Slovakia",
+                archetype: "University Graduate",
+                occupation: "Recently Graduated, Pre-Career",
+                gender: "female",
+                photoNum: 14,
+                digitalFluency: 5,
+                travelExperience: 2,
+                budgetLevel: 2,
+                device: "iPhone 13",
+                quote: "Before I start my real job, I want to remember what freedom feels like.",
+                bio: "Marta just graduated with a degree in environmental science and has a job starting in 6 months. She's using this window to walk across Europe before settling into her career. She's reflective, idealistic, and wants the experience to transform her perspective.",
+                goals: [
+                    "Design a meaningful transition journey before career begins",
+                    "Connect with others in similar life transitions",
+                    "Document transformative insights and growth"
+                ],
+                frustrations: [
+                    "Worries that traveling alone might not be safe",
+                    "Uncertain how to structure a journey that feels meaningful vs. aimless",
+                    "Hard to document experiences without it feeling performative for social media"
+                ],
+                features: ["Routes", "Groups", "Blog/Journal", "Messages"],
+                usagePattern: "Pre-journey planning, daily reflective journaling, weekly community connection.",
+                tags: ["Youth", "Traveller", "Spiritual"],
+                keywords: "Marta Kováčová University Graduate"
+            },
+            {
+                id: 29,
+                name: "Claudia Fischer",
+                age: 43,
+                location: "Frankfurt, Germany",
+                archetype: "Burnout Corporate Reset",
+                occupation: "Business Consultant (on leave)",
+                gender: "female",
+                photoNum: 15,
+                digitalFluency: 5,
+                travelExperience: 3,
+                budgetLevel: 4,
+                device: "iPhone 14 Pro",
+                quote: "I walked away from a life that looked perfect on paper.",
+                bio: "Claudia was a senior partner-track consultant at a Big Four firm, earning six figures and sleeping four hours a night. After her body forced a stop — panic attacks in client meetings — she took a 3-month sabbatical and started walking the Via Alpina. She still catches herself checking emails at mountain huts. The walking is teaching her to tolerate silence, which turns out to be the hardest skill she's ever learned.",
+                goals: [
+                    "Structured daily walks that replace her compulsive work routines",
+                    "Find others who've left prestigious careers and don't regret it",
+                    "Journal her way toward a decision about whether to go back"
+                ],
+                frustrations: [
+                    "Her body has stopped, but her mind is still in a boardroom",
+                    "Everyone she knows thinks sabbatical means vacation — it's not",
+                    "Apps with productivity metrics trigger her achievement addiction"
+                ],
+                features: ["Blog/Journal", "Routes", "Groups", "Messages"],
+                usagePattern: "Intensive journaling, daily digital detox attempts, weekly community connection.",
+                tags: ["Professional", "Spiritual"],
+                keywords: "Claudia Fischer Burnout Corporate Reset"
+            },
+            {
+                id: 30,
+                name: "Dr. Stefan Richter",
+                age: 38,
+                location: "Berlin, Germany",
+                archetype: "Sabbatical Physician",
+                occupation: "Hospital Doctor (on sabbatical)",
+                gender: "male",
+                photoNum: 15,
+                digitalFluency: 4,
+                travelExperience: 2,
+                budgetLevel: 4,
+                device: "iPhone 13 + Garmin watch",
+                quote: "After 12 years in emergency medicine, I needed to remember why I became a doctor.",
+                bio: "Stefan is a senior emergency physician who took a 3-month sabbatical after losing a young patient he shouldn't have lost. Unlike Claudia's burnout, his crisis is moral — he still loves medicine but needs to rebuild his relationship with mortality. He's walking the Camino Portugués and treating it like clinical recovery: measured daily distances, heart rate monitoring, structured journaling. He knows he'll return to the ER. The question is whether he can return whole.",
+                goals: [
+                    "Walk a disciplined daily routine that mirrors clinical shift structure",
+                    "Journal through grief and moral injury in a private, non-performative space",
+                    "Find other healthcare workers who understand without needing explanation"
+                ],
+                frustrations: [
+                    "Wellness apps feel trivializing compared to what he's processing",
+                    "His colleagues think sabbatical means weakness, not recovery",
+                    "No space exists between 'fine' and 'therapy' for people like him"
+                ],
+                features: ["Blog/Journal", "Routes", "Groups", "Messages"],
+                usagePattern: "Daily route walking with fitness tracking, evening journaling, weekly community meetups.",
+                tags: ["Professional", "Spiritual"],
+                keywords: "Stefan Richter Sabbatical Physician"
+            },
+            {
+                id: 31,
+                name: "Francesca Moretti",
+                age: 30,
+                location: "Rome, Italy",
+                archetype: "Professional Guide",
+                occupation: "Tour Guide / Cultural Guide",
+                gender: "female",
+                photoNum: 16,
+                digitalFluency: 5,
+                travelExperience: 5,
+                budgetLevel: 3,
+                device: "iPhone 14",
+                quote: "Every walk is a story, and I'm collecting them to share.",
+                bio: "Francesca is a professional city and cultural tour guide in Rome who is expanding into rural and long-distance route guiding. She's interested in using WANDERKIND to document curated experiences, build her personal brand, and create meaningful group journeys. She's entrepreneurial.",
+                goals: [
+                    "Curate and monetize unique walking experiences",
+                    "Build a following of repeat clients and community",
+                    "Integrate storytelling and cultural knowledge into route documentation"
+                ],
+                frustrations: [
+                    "Existing tools don't support personalized guide services",
+                    "Hard to differentiate from standard tour operators",
+                    "No good platform to build direct client relationships and reputation"
+                ],
+                features: ["Routes", "Blog/Journal", "Groups", "Messages", "Feed/Memories"],
+                usagePattern: "Continuous route curation, client communication, experience documentation.",
+                tags: ["Professional", "Traveller"],
+                keywords: "Francesca Moretti Professional Guide"
+            },
+            {
+                id: 32,
+                name: "Helmut Winkler",
+                age: 62,
+                location: "Dienten am Hochkönig, Austria",
+                archetype: "Dedicated Host",
+                occupation: "Gasthof Owner & Route Volunteer",
+                gender: "male",
+                photoNum: 52,
+                digitalFluency: 2,
+                travelExperience: 2,
+                budgetLevel: 3,
+                device: "Samsung Galaxy A14",
+                quote: "Every pilgrim who sleeps under my roof carries the Königsweg forward.",
+                bio: "Helmut runs a small Gasthof on the Königsweg route with his wife Monika. He volunteered his guesthouse as a host station the day the route was announced. He's hosted over 200 pilgrims in two seasons. His digital skills are minimal — Monika handles the phone — but he stamps every guest's passport personally and considers it the most sacred part of his day. He represents the backbone of the hosting network: the person who never walks far but without whom no one else could walk at all.",
+                goals: [
+                    "See incoming pilgrims on the map so he can prepare beds and meals",
+                    "Stamp departing guests' passports with the weight and dignity of a real border crossing",
+                    "Feel respected by the interface — not talked down to as a 'non-technical user'"
+                ],
+                frustrations: [
+                    "Text is too small and icons are unclear — he mistakes buttons for decorations",
+                    "The host dashboard doesn't show who's heading his way or when they'll arrive",
+                    "Patchy mobile signal at the Gasthof means features that require constant connection fail him"
+                ],
+                features: ["Hosting", "Messages", "Map", "Stamps"],
+                usagePattern: "Checks host dashboard each morning. Stamps departing guests. Reads messages from incoming pilgrims. His wife handles all other digital interaction.",
+                tags: ["Professional", "Pilgrim"],
+                keywords: "Helmut Winkler Dedicated Host Gasthof Owner"
+            },
+            {
+                id: 33,
+                name: "Nina Schober",
+                age: 34,
+                location: "Innsbruck, Austria",
+                archetype: "Walking Mother",
+                occupation: "Part-time Kindergarten Teacher",
+                gender: "female",
+                photoNum: 53,
+                digitalFluency: 4,
+                travelExperience: 3,
+                budgetLevel: 2,
+                device: "iPhone 12",
+                quote: "My daughter thinks every mountain has treasure on top. She's not wrong.",
+                bio: "Nina is a single mother to 7-year-old Lilli. Before Lilli, she hiked seriously — multi-day alpine traverses, hut-to-hut routes across Tyrol. Motherhood paused all that. Now she's rebuilding her walking life with Lilli beside her: shorter sections, kid-friendly terrain, stamps that Lilli treats like a treasure hunt. She represents the family growth vector — the parent who turns WANDERKIND into a weekend ritual that bonds generations. If the app works for Nina and Lilli, it works for every family in the Alps.",
+                goals: [
+                    "Find child-friendly route sections with manageable distances and safe terrain",
+                    "Give Lilli a sense of achievement through stamps — making hikes feel like quests",
+                    "Connect with other parents walking with kids for meetups and shared logistics"
+                ],
+                frustrations: [
+                    "No way to filter routes by child-friendliness, distance, or difficulty",
+                    "The stamp system feels adult-oriented — Lilli wants bigger celebrations, colors, sounds",
+                    "Host profiles don't indicate whether children are welcome or if there's family-friendly space"
+                ],
+                features: ["Map", "Routes", "Stamps", "Groups", "Hosting"],
+                usagePattern: "Plans Saturday hikes on Wednesday evenings. Stamps checkpoints with Lilli holding the phone. Shows the passport to grandparents on video call Sunday evening.",
+                tags: ["Pilgrim", "Traveller"],
+                keywords: "Nina Schober Walking Mother Family Parent Child"
+            },
+            {
+                id: 34,
+                name: "Matteo Ferrara",
+                age: 35,
+                location: "Merano, South Tyrol, Italy",
+                archetype: "Gastronomer Host",
+                occupation: "Chef-owner of a farm-to-table restaurant",
+                gender: "male",
+                photoNum: 54,
+                digitalFluency: 5,
+                travelExperience: 3,
+                budgetLevel: 4,
+                device: "iPhone 15 Pro",
+                quote: "Every wanderer who sits at my table leaves with a story and a full stomach.",
+                bio: "Matteo runs a celebrated farm-to-table restaurant in the heart of South Tyrol's wine country. He sources everything from within 30km and sees hosting wanderkinder as a natural extension of his philosophy: local, generous, human. He discovered WANDERKIND through Instagram, installed it immediately, and listed his restaurant as a \"meal host.\" He keeps a guest book and has started pairing his tasting menus with stories from the road. Digitally fluent — he manages his restaurant's social media, online reservations, and supplier logistics from his phone.",
+                goals: [
+                    "Welcome wanderkinder with meals that tell the story of the land",
+                    "Build his restaurant's reputation as a pilgrimage stop on walking routes",
+                    "Connect with other food hosts along the Königsweg and Via Alpina"
+                ],
+                frustrations: [
+                    "No way to signal 'meal available today' to nearby walkers in real-time",
+                    "The Food Pass system doesn't connect hosts with walkers proactively",
+                    "Can't show his menu or seasonal offerings on his host profile"
+                ],
+                features: ["Hosting", "Food Pass", "Messages", "Map"],
+                usagePattern: "Checks the map each morning for nearby walkers. Responds to messages during kitchen prep. Updates his offering seasonally.",
+                tags: ["Professional", "Pilgrim"],
+                keywords: "Matteo Ferrara Tech-Savvy Gastronomer Host Chef Restaurant"
+            },
+            {
+                id: 35,
+                name: "Gottfried Huber",
+                age: 63,
+                location: "Mittenwald, Germany",
+                archetype: "Traditional Gasthaus Owner",
+                occupation: "Gasthaus owner for 38 years",
+                gender: "male",
+                photoNum: 55,
+                digitalFluency: 1,
+                travelExperience: 2,
+                budgetLevel: 3,
+                device: "Nokia feature phone + wife's tablet occasionally",
+                quote: "My door has been open for 38 years. I don't need an app to tell me to be hospitable.",
+                bio: "Gottfried runs a traditional Bavarian Gasthaus that has welcomed walkers, cyclists, and wanderers since his parents' time. He doesn't own a smartphone — his wife Brigitte handles \"the computer things.\" He's heard about Wanderkind through the local Wanderverein newsletter and is curious but skeptical. He stamps pilgrims' physical credential books with a brass stamp his grandfather made. If someone showed him the app, he'd be moved by the Food Pass concept — \"That's exactly what we do, just on paper.\" He represents the vast untapped host network: gastronomy owners who already welcome wanderers but don't know the digital community exists.",
+                goals: [
+                    "Continue his family tradition of feeding travelers without changing what works",
+                    "Be found by walkers who appreciate authentic Bavarian hospitality",
+                    "Maybe let Brigitte handle the digital part so he can focus on cooking"
+                ],
+                frustrations: [
+                    "Technology feels like it's solving problems he doesn't have",
+                    "He can't read small text on screens and doesn't trust apps with personal data",
+                    "Nobody from the digital world has ever explained why he'd benefit from joining"
+                ],
+                features: ["Hosting", "Food Pass"],
+                usagePattern: "Would not use the app himself. Brigitte might check it once a week. His real engagement is face-to-face when walkers arrive.",
+                tags: ["Professional"],
+                keywords: "Gottfried Huber Traditional Gasthaus Owner"
+            },
+            {
+                id: 36,
+                name: "Sabine Leitner",
+                age: 44,
+                location: "Salzburg, Austria",
+                archetype: "Tourist Office Professional",
+                occupation: "Regional Tourism Manager",
+                gender: "female",
+                photoNum: 56,
+                digitalFluency: 4,
+                travelExperience: 4,
+                budgetLevel: 4,
+                device: "iPhone 14, work laptop",
+                quote: "Every walking route is an economic artery for our villages.",
+                bio: "Sabine manages tourism strategy for the Salzburger Land region. She coordinates with hotels, restaurants, walking associations, and municipal governments to promote the region's outdoor offerings. She's evaluated dozens of hiking apps and platforms, and is intrigued by WANDERKIND's community-first approach — especially the hosting network and route data. She's thinking about whether to recommend it to her network of 200+ accommodation providers. She needs to understand the platform's reliability, data quality, and whether it serves the region's brand. She doesn't walk much herself but deeply understands what walkers need.",
+                goals: [
+                    "Evaluate WANDERKIND as a tourism channel for the Salzburg region",
+                    "Understand how the hosting network could integrate with existing accommodation providers",
+                    "Assess data quality of route information against official tourism databases"
+                ],
+                frustrations: [
+                    "Most walking apps have inaccurate or outdated route data for her region",
+                    "No way to verify host quality or enforce tourism standards through the platform",
+                    "The app doesn't have a B2B or institutional interface for tourism partners"
+                ],
+                features: ["Map", "Routes", "Hosting", "About"],
+                usagePattern: "Downloads it once, spends 45 minutes evaluating every feature, takes notes, presents findings to her tourism board.",
+                tags: ["Professional"],
+                keywords: "Sabine Leitner Tourist Office Regional Tourism Manager"
+            },
+            {
+                id: 37,
+                name: "Markus Steiner",
+                age: 41,
+                location: "Graz, Austria",
+                archetype: "Jogging Enthusiast",
+                occupation: "Financial Controller",
+                gender: "male",
+                photoNum: 57,
+                digitalFluency: 4,
+                travelExperience: 3,
+                budgetLevel: 4,
+                device: "iPhone 14 + Apple Watch",
+                quote: "Running taught me to love being outside. Walking is teaching me to love being slow.",
+                bio: "Markus has run 12 half-marathons and trains 4 times a week. He discovered walking last year when a knee injury forced him to slow down — and he was surprised to find he loved it. He's now doing weekend walking tours of 25-35km, treating them like long slow runs without the impact. He uses Strava obsessively and is evaluating WANDERKIND as a complement. He's interested in the route discovery and community aspects but misses the fitness tracking he's used to. He represents the fitness crossover — runners who discover walking as its own practice.",
+                goals: [
+                    "Find challenging long-distance routes that satisfy his endurance appetite",
+                    "Track walking data alongside his running stats",
+                    "Discover the walking community beyond fitness circles"
+                ],
+                frustrations: [
+                    "WANDERKIND has no pace, elevation, or heart rate integration",
+                    "The routes section doesn't show elevation profiles or technical difficulty",
+                    "He misses leaderboards and performance comparisons from Strava"
+                ],
+                features: ["Routes", "Map", "Stamps", "Blog/Journal"],
+                usagePattern: "Plans weekend walks on Wednesday, walks Saturday, reviews route on Sunday. Checks the app 3-4 times per week.",
+                tags: ["Traveller", "Professional"],
+                keywords: "Markus Steiner Half-Marathon Runner Jogging Enthusiast"
+            },
+            {
+                id: 38,
+                name: "Giulia Marchetti",
+                age: 29,
+                location: "Verona, Italy",
+                archetype: "Cycling Adventurer",
+                occupation: "UX Designer at a tech company",
+                gender: "female",
+                photoNum: 58,
+                digitalFluency: 5,
+                travelExperience: 4,
+                budgetLevel: 3,
+                device: "iPhone 15 + Wahoo cycling computer",
+                quote: "Two wheels, three days, and the Dolomites — that's my idea of a perfect weekend.",
+                bio: "Giulia does 2-3 day cycling tours around Lago di Garda and through the Dolomites several times a year. She's a UX designer by trade, so she evaluates every app with a critical eye. She discovered WANDERKIND through a friend who walks and was intrigued by the hospitality network — finding places to sleep on multi-day tours is her biggest logistical headache. She's testing whether the hosting network works for cyclists too, even though the app is clearly built for walkers. She represents the adjacent mobility community — people who travel slowly but not on foot.",
+                goals: [
+                    "Find overnight hosts along cycling routes through the Alps",
+                    "Use the hospitality network for multi-day cycling tours",
+                    "Connect with other slow-travel enthusiasts regardless of transport mode"
+                ],
+                frustrations: [
+                    "The app's identity is 'walking' — she feels like an outsider as a cyclist",
+                    "Routes are walking-only; no cycling route data or cycling-specific filters",
+                    "Host profiles don't indicate whether they welcome cyclists with bike storage needs"
+                ],
+                features: ["Hosting", "Map", "Messages", "Routes"],
+                usagePattern: "Plans multi-day tours monthly. Uses the map to find hosts along her cycling route. Messages hosts to ask about bike storage.",
+                tags: ["Traveller", "Youth", "Professional"],
+                keywords: "Giulia Marchetti Cycling Adventurer UX Designer"
+            }
+        ];
+
+        // Get all unique tags
+        const allTags = [...new Set(personas.flatMap(p => p.tags))].sort();
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFilters();
+            renderPersonas(personas);
+            setGenerationDate();
+
+            document.getElementById('searchInput').addEventListener('input', filterPersonas);
+        });
+
+        function initializeFilters() {
+            const container = document.getElementById('filterContainer');
+            allTags.forEach(tag => {
+                const chip = document.createElement('button');
+                chip.className = 'filter-chip';
+                chip.textContent = tag;
+                chip.dataset.tag = tag;
+                chip.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    filterPersonas();
+                });
+                container.appendChild(chip);
+            });
+        }
+
+        function filterPersonas() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const activeFilters = Array.from(document.querySelectorAll('.filter-chip.active'))
+                .map(chip => chip.dataset.tag);
+
+            const filtered = personas.filter(persona => {
+                const matchesSearch = persona.keywords.toLowerCase().includes(searchTerm);
+                const matchesFilters = activeFilters.length === 0 ||
+                    activeFilters.some(filter => persona.tags.includes(filter));
+                return matchesSearch && matchesFilters;
+            });
+
+            renderPersonas(filtered);
+            document.getElementById('noResults').style.display = filtered.length === 0 ? 'block' : 'none';
+        }
+
+        function renderPersonas(personasToRender) {
+            const grid = document.getElementById('personasGrid');
+            grid.innerHTML = '';
+
+            personasToRender.forEach(persona => {
+                const photoUrl = photoUrls[persona.id] || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22280%22%3E%3Crect fill=%22%23E8DFD0%22 width=%22280%22 height=%22280%22/%3E%3C/svg%3E';
+
+                const card = document.createElement('div');
+                card.className = 'persona-card';
+                card.onclick = () => openModal(persona);
+
+                const statsHtml = `
+                    <div class="stat">
+                        <span class="stat-label">Digital</span>
+                        <div class="stat-visual">
+                            ${Array(5).fill(0).map((_, i) =>
+                                `<div class="stat-pip ${i < persona.digitalFluency ? 'filled' : ''}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Travel</span>
+                        <div class="stat-visual">
+                            ${Array(5).fill(0).map((_, i) =>
+                                `<div class="stat-pip ${i < persona.travelExperience ? 'filled' : ''}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Budget</span>
+                        <div class="stat-visual">
+                            ${Array(5).fill(0).map((_, i) =>
+                                `<div class="stat-pip ${i < persona.budgetLevel ? 'filled' : ''}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="persona-photo">
+                        <img src="${photoUrl}" alt="${persona.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22280%22%3E%3Crect fill=%22%231A120A%22 width=%22280%22 height=%22280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22Arial%22 font-size=%2224%22 fill=%22%238A7B63%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3E${persona.name}%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="persona-content">
+                        <div class="persona-header">
+                            <div class="persona-name">${persona.name}</div>
+                            <div class="persona-meta">${persona.age} · ${persona.location}</div>
+                            <span class="persona-archetype">${persona.archetype}</span>
+                        </div>
+                        <div class="persona-quote">"${persona.quote}"</div>
+                        <div class="stats-bar">
+                            ${statsHtml}
+                        </div>
+                        <div class="expand-hint">Click to expand</div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function openModal(persona) {
+            const photoUrl = photoUrls[persona.id] || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22160%22%3E%3Crect fill=%22%23E8DFD0%22 width=%22120%22 height=%22160%22/%3E%3C/svg%3E';
+
+            const featuresList = persona.features.join(', ');
+
+            const content = `
+                <div class="modal-header">
+                    <div class="modal-photo">
+                        <img src="${photoUrl}" alt="${persona.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22160%22%3E%3Crect fill=%22%231A120A%22 width=%22120%22 height=%22160%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22Arial%22 font-size=%2212%22 fill=%22%238A7B63%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3E${persona.name}%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="modal-info">
+                        <div class="modal-name">${persona.name}</div>
+                        <div class="modal-meta">${persona.age} years old</div>
+                        <div class="modal-meta">${persona.location}</div>
+                        <div class="modal-occupations">${persona.occupation}</div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-section">
+                        <div class="modal-section-title">Archetype</div>
+                        <div class="modal-section-content">${persona.archetype}</div>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Biography</div>
+                        <div class="modal-section-content">${persona.bio}</div>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Goals · What they want from WANDERKIND</div>
+                        <ul class="bullet-list">
+                            ${persona.goals.map(g => `<li>${g}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Frustrations · What blocks them</div>
+                        <ul class="bullet-list">
+                            ${persona.frustrations.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Key Features</div>
+                        <div class="modal-section-content">${featuresList}</div>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Profile Details</div>
+                        <div class="devices-grid">
+                            <div class="device-item"><strong>Digital Fluency:</strong> ${persona.digitalFluency}/5</div>
+                            <div class="device-item"><strong>Travel Experience:</strong> ${persona.travelExperience}/5</div>
+                            <div class="device-item"><strong>Budget Level:</strong> ${persona.budgetLevel}/5</div>
+                            <div class="device-item"><strong>Device:</strong> ${persona.device}</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Usage Pattern</div>
+                        <div class="modal-section-content">${persona.usagePattern}</div>
+                    </div>
+
+                    <div class="modal-section">
+                        <div class="modal-section-title">Categories</div>
+                        <div class="modal-section-content">${persona.tags.join(' · ')}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        function setGenerationDate() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('generationDate').textContent = `Generated ${date}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Every Way begins at your door</title>
+  <meta name="description" content="A trusting community of wanderers. Walk anywhere. Be welcomed." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Wanderkind — Every Way begins at your door" />
+  <meta property="og:description" content="A trusting community of wanderers. Walk anywhere. Be welcomed." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://wanderkind.love" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Theme -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0B0705" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Wanderkind" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+  <link rel="icon" href="/assets/icons/seal.svg" type="image/svg+xml" />
+
+  <!-- Strict CSP — no third-party JS, no inline eval, no remote fonts -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https://*.supabase.co;
+    font-src 'self';
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+    frame-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+</head>
+<body>
+
+  <a href="#app" class="skip-to-content">Skip to content</a>
+
+  <main id="app" aria-live="polite">
+    <noscript>
+      <p style="padding:32px;text-align:center;font-family:'Helvetica Neue',Helvetica,sans-serif;">
+        Wanderkind needs JavaScript. Enable it and reload.
+      </p>
+    </noscript>
+
+    <section class="boot">
+      <img class="boot-seal" src="/assets/icons/seal.svg" alt="" style="color: var(--wk-amber)" />
+      <div class="boot-mantra">— Wanderkind</div>
+      <p class="boot-line">Every Way begins at your door.</p>
+    </section>
+  </main>
+
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

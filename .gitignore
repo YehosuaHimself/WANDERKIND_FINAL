@@ -1,0 +1,22 @@
+# Build outputs (we don't have any — but be safe)
+dist/
+build/
+
+# Local env
+.env
+.env.local
+
+# Editor
+.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (only for tsc typecheck)
+node_modules/
+
+# Local dev artifacts
+*.log
+.cache/

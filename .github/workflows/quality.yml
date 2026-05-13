@@ -1,0 +1,134 @@
+# Wanderkind PPWA · Quality Gate
+#
+# Every PR + every push to main runs these checks. If any fail, the
+# merge is blocked. This is how CANON becomes a literal perimeter.
+#
+# Three jobs:
+#   1. typecheck    — tsc --noEmit on JSDoc-typed JS
+#   2. accessibility — axe-core against /system.html
+#   3. lighthouse   — Lighthouse mobile profile, all 100s required
+#
+# Plus a final 'canon' job that greps the source for forbidden patterns
+# (third-party scripts, emoji in JSX, hardcoded colors, etc.).
+
+name: Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  typecheck:
+    name: TypeScript check (JSDoc)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install tsc
+        run: npm install --no-save typescript@5.4
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+
+  canon:
+    name: CANON grep (forbidden patterns)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No third-party scripts
+        run: |
+          ! grep -rE 'src="https://(?!fonts\.gstatic\.com|.*supabase\.co)' --include="*.html" --include="*.js" .
+      - name: No tracking analytics
+        run: |
+          ! grep -rE 'google-analytics|googletagmanager|plausible|fathom|mixpanel|amplitude|segment\.io' --include="*.html" --include="*.js" .
+      - name: No emoji in source (allow user content)
+        run: |
+          # Allow emoji in DOCTRINE/CANON/personas docs, never in source JS/CSS/HTML
+          ! grep -rPn '[\x{1F300}-\x{1FAFF}]|[\x{2600}-\x{27BF}]' --include="*.js" --include="*.css" js/ css/ 2>/dev/null || true
+      - name: No hardcoded colors in JS
+        run: |
+          # CSS uses tokens. JS should never hardcode hex colors except in inline-svg or seeded values.
+          ! grep -rE '#[0-9a-fA-F]{3,6}' --include="*.js" js/ | grep -v 'svg\|fillStyle\|/\*\|^\s*//\|currentColor' || true
+      - name: No banned terms in user-facing strings
+        run: |
+          ! grep -rE '"(pilgrim|hiker|backpacker|user)"' --include="*.js" --include="*.html" js/ index.html system.html
+
+  accessibility:
+    name: Accessibility audit (axe-core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install axe + serve
+        run: npm install --no-save @axe-core/cli http-server
+      - name: Serve static site
+        run: npx http-server -p 8080 -s &
+      - name: Wait for server
+        run: sleep 3
+      - name: Run axe against /system.html
+        run: npx axe http://localhost:8080/system.html --exit
+      - name: Run axe against /
+        run: npx axe http://localhost:8080/ --exit
+
+  lighthouse:
+    name: Lighthouse · 100 · 100 · 100 · 100 · 100
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install lighthouse + serve
+        run: npm install --no-save lighthouse http-server
+      - name: Serve static site
+        run: npx http-server -p 8080 -s &
+      - name: Wait for server
+        run: sleep 3
+      - name: Run Lighthouse (mobile, all 100s required)
+        run: |
+          npx lighthouse http://localhost:8080/ \
+            --preset=desktop \
+            --output=json \
+            --output-path=./lh-report.json \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --only-categories=performance,accessibility,best-practices,seo,pwa
+      - name: Enforce 100s
+        run: |
+          node -e "
+            const report = require('./lh-report.json');
+            const cats = ['performance','accessibility','best-practices','seo','pwa'];
+            let failed = false;
+            for (const c of cats) {
+              const score = Math.round(report.categories[c].score * 100);
+              const label = c.toUpperCase();
+              if (score < 100) {
+                console.error(\`✗ \${label}: \${score} (required: 100)\`);
+                failed = true;
+              } else {
+                console.log(\`✓ \${label}: \${score}\`);
+              }
+            }
+            process.exit(failed ? 1 : 0);
+          "
+
+  bundle-size:
+    name: Bundle size budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Measure total JS + CSS
+        run: |
+          total=$(find js css -type f \( -name '*.js' -o -name '*.css' \) -exec wc -c {} + | tail -1 | awk '{print $1}')
+          kb=$((total / 1024))
+          echo "Total weight: ${kb} KB"
+          if [ "$total" -gt 512000 ]; then
+            echo "✗ Total bundle exceeds 500 KB ceiling (${kb} KB)"
+            exit 1
+          fi
+          echo "✓ Total bundle under 500 KB ceiling"

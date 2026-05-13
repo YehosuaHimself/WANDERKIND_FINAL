@@ -1,0 +1,142 @@
+/* ─────────────────────────────────────────────────────────────────────
+ *  Base reset + element styling — V3 aligned
+ * ─────────────────────────────────────────────────────────────────────*/
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: 100%;          /* respect user preference */
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--wk-bg);
+  color: var(--wk-ink);
+  font-family: var(--wk-font-body);
+  font-size: var(--wk-fs-body);
+  line-height: var(--wk-lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+main { display: block; }
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  /* per-element touch — never global */
+  touch-action: manipulation;
+}
+
+input, select, textarea {
+  font: inherit;
+  color: inherit;
+  font-size: 16px;          /* prevent iOS zoom on focus */
+}
+
+a {
+  color: var(--wk-amber);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(200,118,42,0.40);
+  transition: text-decoration-color var(--wk-duration-fast) var(--wk-ease-out);
+}
+a:hover { text-decoration-color: var(--wk-amber); }
+
+::selection {
+  background: var(--wk-amber);
+  color: var(--wk-bg);
+}
+
+/* Focus rings — V3: 2px amber, offset 2px, never removed */
+:focus-visible {
+  outline: 2px solid var(--wk-amber);
+  outline-offset: 2px;
+  border-radius: var(--wk-r-sm);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* Visually-hidden but screen-reader-accessible */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+/* Skip-to-content link — for keyboard / screen-reader navigation */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: var(--wk-space-md);
+  background: var(--wk-amber);
+  color: var(--wk-ink);
+  padding: var(--wk-space-sm) var(--wk-space-md);
+  border-radius: var(--wk-r-md);
+  text-decoration: none;
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-micro);
+  letter-spacing: var(--wk-ls-mono-wide);
+  text-transform: uppercase;
+  transition: top var(--wk-duration-fast) var(--wk-ease-out);
+  z-index: 1000;
+}
+.skip-to-content:focus { top: var(--wk-space-md); }
+
+/* Boot screen — the only thing visible before main.js runs */
+.boot {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wk-space-lg);
+  padding: var(--wk-space-xl);
+  text-align: center;
+}
+.boot-seal {
+  width: 80px; height: 80px;
+}
+.boot-line {
+  font-family: var(--wk-font-display);
+  font-weight: var(--wk-fw-bold);
+  font-size: var(--wk-fs-body);
+  font-style: italic;
+  color: var(--wk-ink-soft);
+  max-width: 320px;
+  line-height: var(--wk-lh-snug);
+}
+.boot-mantra {
+  font-family: var(--wk-font-mono);
+  font-size: var(--wk-fs-nano);
+  letter-spacing: var(--wk-ls-mono-xwide);
+  text-transform: uppercase;
+  color: var(--wk-amber);
+}
+
+/* Print stylesheet — beautiful PDFs from any page */
+@media print {
+  body { background: white; color: black; }
+  .boot, nav, header > button, footer { display: none !important; }
+  main { padding: 0; }
+  a { color: black; text-decoration: underline; }
+}

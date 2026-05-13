@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wanderkind · Design System</title>
+  <meta name="description" content="The living design system. Every token, every state, every component, all visible at /system.html." />
+  <link rel="icon" href="/assets/icons/seal.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    body { padding: var(--wk-space-2xl) var(--wk-page-x) var(--wk-space-2xl); max-width: var(--wk-max-screen); margin: 0 auto; }
+    .sys-h { margin-bottom: var(--wk-space-2xl); }
+    .sys-h .display { font-size: clamp(2rem, 6vw + 0.5rem, 2.625rem); margin-bottom: var(--wk-space-sm); }
+    .sys-h .lead { max-width: 560px; }
+    section.s { margin-bottom: var(--wk-space-2xl); border-top: 1px solid var(--wk-line); padding-top: var(--wk-space-xl); }
+    section.s h2 { font-size: var(--wk-fs-h2); margin-bottom: var(--wk-space-sm); }
+    section.s > .eyebrow { display: block; margin-bottom: var(--wk-space-sm); }
+    section.s > p { max-width: 600px; margin-bottom: var(--wk-space-lg); }
+
+    .grid { display: grid; gap: var(--wk-space-md); }
+    .grid-tokens { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .grid-2 { grid-template-columns: 1fr 1fr; gap: var(--wk-space-lg); }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .swatch {
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      overflow: hidden;
+      background: var(--wk-bg-elevated);
+    }
+    .swatch-color { height: 72px; }
+    .swatch-meta { padding: var(--wk-space-sm) var(--wk-space-md) var(--wk-space-md); }
+    .swatch-name { font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); font-weight: var(--wk-fw-bold); letter-spacing: var(--wk-ls-mono); text-transform: uppercase; color: var(--wk-ink); display: block; }
+    .swatch-hex { font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); color: var(--wk-ink-muted); }
+    .swatch-ratio { font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); font-weight: var(--wk-fw-bold); color: var(--wk-success); display: block; margin-top: 2px; }
+
+    .type-row { border-bottom: 1px solid var(--wk-line); padding: var(--wk-space-md) 0; }
+    .type-row .label { display: block; margin-bottom: var(--wk-space-sm); }
+    .type-row .spec { font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); color: var(--wk-ink-muted); margin-top: var(--wk-space-xs); }
+
+    .spacing-row { display: flex; align-items: center; gap: var(--wk-space-md); padding: var(--wk-space-sm) 0; }
+    .spacing-bar { height: 18px; background: var(--wk-amber); border-radius: 2px; }
+    .spacing-label { font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); color: var(--wk-ink-soft); letter-spacing: var(--wk-ls-mono); min-width: 120px; }
+    .spacing-value { font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); color: var(--wk-amber); }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: var(--wk-space-sm); margin: var(--wk-space-md) 0; }
+    .btn {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0 var(--wk-space-md);
+      height: var(--wk-button-min);
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--wk-amber);
+      color: var(--wk-ink);
+      border-radius: var(--wk-r-md);
+      transition: background var(--wk-duration-fast) var(--wk-ease-out);
+    }
+    .btn:hover { background: var(--wk-amber-hi); }
+    .btn:active { background: var(--wk-amber-press); color: white; }
+    .btn-disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--wk-space-sm); }
+    .icon-cell {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: var(--wk-space-md) var(--wk-space-sm);
+      text-align: center;
+      color: var(--wk-amber);
+    }
+    .icon-cell img { margin: 0 auto var(--wk-space-sm); }
+    .icon-cell .label { display: block; color: var(--wk-ink-soft); }
+
+    table.tok { width: 100%; font-size: var(--wk-fs-small); border-collapse: collapse; margin: var(--wk-space-md) 0; }
+    table.tok th { font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono); color: var(--wk-amber); text-transform: uppercase; text-align: left; padding: var(--wk-space-sm); border-bottom: 1px solid var(--wk-line); }
+    table.tok td { padding: var(--wk-space-sm); border-bottom: 1px solid var(--wk-line-soft); vertical-align: top; }
+    table.tok td:first-child { font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); color: var(--wk-amber); white-space: nowrap; }
+
+    .pass-card {
+      border-radius: var(--wk-r-lg);
+      padding: var(--wk-space-lg) var(--wk-space-md);
+      color: var(--wk-gold);
+      text-align: center;
+    }
+    .pass-card .nano { color: inherit; opacity: 0.6; margin-top: 4px; display: block; }
+    .pass-card .title { font-family: var(--wk-font-display); font-weight: var(--wk-fw-black); font-size: var(--wk-fs-body); letter-spacing: var(--wk-ls-mono); text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <header class="sys-h">
+    <span class="eyebrow">— Wanderkind · Living Design System</span>
+    <h1 class="display">The System</h1>
+    <p class="lead">Every token, every type style, every component visible at <code>/system.html</code>. The canonical source. If something exists in the product, it lives here. If it doesn't live here, it shouldn't be in the product.</p>
+  </header>
+
+  <!-- ── 01 · WHY / HOW / WHAT ──────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 01 · Brand DNA</span>
+    <h2>Why · How · What</h2>
+    <p>The Golden Circle is the spine. Every design decision must serve one of these three layers.</p>
+
+    <table class="tok">
+      <tr><th>Layer</th><th>Statement</th></tr>
+      <tr><td>Why</td><td><strong>Walk free forever.</strong></td></tr>
+      <tr><td>How</td><td>A trusting community of like-minded wanderers who love each other like oneself, in recognition that every Wanderkind is also a host.</td></tr>
+      <tr><td>What</td><td>Geo-based, convenient host-matching with a credential-centered sovereign travel ID.</td></tr>
+      <tr><td>Mantra</td><td><strong>Every Way begins at your door.</strong></td></tr>
+    </table>
+  </section>
+
+  <!-- ── 02 · COLOR ─────────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 02 · Colour</span>
+    <h2>The Amber Palette + Semantic States</h2>
+    <p>Light mode is the default. Dark mode is designed, not inverted. Pass palettes (Navy/Brown/Forest/Deep-Blue) are independent of app theme.</p>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Surface · Light Mode</h3>
+    <div class="grid grid-tokens">
+      <div class="swatch"><div class="swatch-color" style="background:#FAFAF5"></div><div class="swatch-meta"><span class="swatch-name">BG</span><span class="swatch-hex">#FAFAF5</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F3EDE0"></div><div class="swatch-meta"><span class="swatch-name">BG-2</span><span class="swatch-hex">#F3EDE0</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FFFFFF;border:1px solid var(--wk-line)"></div><div class="swatch-meta"><span class="swatch-name">Elevated</span><span class="swatch-hex">#FFFFFF</span></div></div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Ink</h3>
+    <div class="grid grid-tokens">
+      <div class="swatch"><div class="swatch-color" style="background:#1A120A"></div><div class="swatch-meta"><span class="swatch-name">Ink</span><span class="swatch-hex">#1A120A</span><span class="swatch-ratio">14.2 : 1 · AAA</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6B5A3E"></div><div class="swatch-meta"><span class="swatch-name">Ink Soft</span><span class="swatch-hex">#6B5A3E</span><span class="swatch-ratio">5.6 : 1 · AA</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#9A8B73"></div><div class="swatch-meta"><span class="swatch-name">Ink Muted</span><span class="swatch-hex">#9A8B73</span></div></div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Amber System</h3>
+    <div class="grid grid-tokens">
+      <div class="swatch"><div class="swatch-color" style="background:#C8762A"></div><div class="swatch-meta"><span class="swatch-name">Amber</span><span class="swatch-hex">#C8762A</span><span class="swatch-ratio">4.6 : 1 · AA</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E09A52"></div><div class="swatch-meta"><span class="swatch-name">Amber Hi</span><span class="swatch-hex">#E09A52</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E5A94E"></div><div class="swatch-meta"><span class="swatch-name">Wick</span><span class="swatch-hex">#E5A94E</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F3E7CC"></div><div class="swatch-meta"><span class="swatch-name">Parchment</span><span class="swatch-hex">#F3E7CC</span></div></div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Semantic States</h3>
+    <div class="grid grid-tokens">
+      <div class="swatch"><div class="swatch-color" style="background:#5A7A2B"></div><div class="swatch-meta"><span class="swatch-name">Success</span><span class="swatch-hex">#5A7A2B</span><span class="swatch-ratio">4.7 : 1 · AA</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#B03A3A"></div><div class="swatch-meta"><span class="swatch-name">Error</span><span class="swatch-hex">#B03A3A</span><span class="swatch-ratio">5.8 : 1 · AA</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#C8762A"></div><div class="swatch-meta"><span class="swatch-name">Warning</span><span class="swatch-hex">#C8762A</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#5A8AB0"></div><div class="swatch-meta"><span class="swatch-name">Info</span><span class="swatch-hex">#5A8AB0</span></div></div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Pass Palettes</h3>
+    <div class="grid grid-2">
+      <div class="pass-card" style="background:#080E1F;color:#C9A84C">
+        <div class="title">Wanderkind Pass</div>
+        <span class="nano">NAVY · GOLD · 6.8 : 1</span>
+      </div>
+      <div class="pass-card" style="background:#1A0F08;color:#E09A52">
+        <div class="title">Food Pass</div>
+        <span class="nano">BROWN · WARM AMBER</span>
+      </div>
+      <div class="pass-card" style="background:#0A1208;color:#B8A04C">
+        <div class="title">Hospitality Pass</div>
+        <span class="nano">FOREST · SAGE GOLD</span>
+      </div>
+      <div class="pass-card" style="background:#08111F;color:#A8B8C8">
+        <div class="title">Water Pass</div>
+        <span class="nano">DEEP BLUE · SILVER</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03 · TYPOGRAPHY ────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 03 · Typography</span>
+    <h2>Helvetica Neue + Courier New</h2>
+    <p>Two families. Absolute roles. Helvetica for all display + body. Courier for labels, metadata, eyebrows.</p>
+
+    <div class="type-row">
+      <span class="label">Display · Hero</span>
+      <span class="display">EVERY WAY BEGINS AT YOUR DOOR.</span>
+      <div class="spec">Helvetica Neue 900 · 42px · -0.03em · uppercase</div>
+    </div>
+
+    <div class="type-row">
+      <span class="label">H1 · Page title</span>
+      <h1 style="font-size:var(--wk-fs-h1)">THE WANDERKIND PASS</h1>
+      <div class="spec">Helvetica Neue 900 · 32px · -0.02em · uppercase</div>
+    </div>
+
+    <div class="type-row">
+      <span class="label">H2 · Section header</span>
+      <h2 style="font-size:var(--wk-fs-h2)">YOUR STAMPS</h2>
+      <div class="spec">Helvetica Neue 900 · 24px · -0.02em · uppercase</div>
+    </div>
+
+    <div class="type-row">
+      <span class="label">H3 · Subsection</span>
+      <h3>Stamps Received</h3>
+      <div class="spec">Helvetica Neue 700 · 18px · -0.01em · sentence-case</div>
+    </div>
+
+    <div class="type-row">
+      <span class="label">Body · readable content</span>
+      <p>A walk through the mountains of Spain. Every door you knock at carries a story. Some open quickly; some take time. Both belong to the journey.</p>
+      <div class="spec">Helvetica Neue 400 · 16px · 0 tracking · 1.65 line-height</div>
+    </div>
+
+    <div class="type-row">
+      <span class="label">Eyebrow · mono</span>
+      <span class="eyebrow">— WANDERKIND EMBASSY · VERIFIED · W-4A8F2C1D</span>
+      <div class="spec">Courier New 700 · 12px · 0.2em · amber · uppercase</div>
+    </div>
+
+    <div class="type-row">
+      <span class="label">Nano · timestamps</span>
+      <span class="nano">14 IV 2026 · 16:30 CET</span>
+      <div class="spec">Courier New 400 · 11px · 0.12em · ink-muted · uppercase</div>
+    </div>
+  </section>
+
+  <!-- ── 04 · SPACING ───────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 04 · Spacing</span>
+    <h2>The 8-Point Grid</h2>
+    <p>All margins, paddings, gaps are multiples of 4 or 8. Hard rule.</p>
+
+    <div class="spacing-row"><span class="spacing-label">--wk-space-xs</span><div class="spacing-bar" style="width:4px"></div><span class="spacing-value">4 px</span></div>
+    <div class="spacing-row"><span class="spacing-label">--wk-space-sm</span><div class="spacing-bar" style="width:8px"></div><span class="spacing-value">8 px</span></div>
+    <div class="spacing-row"><span class="spacing-label">--wk-space-md</span><div class="spacing-bar" style="width:16px"></div><span class="spacing-value">16 px</span></div>
+    <div class="spacing-row"><span class="spacing-label">--wk-space-lg</span><div class="spacing-bar" style="width:24px"></div><span class="spacing-value">24 px</span></div>
+    <div class="spacing-row"><span class="spacing-label">--wk-space-xl</span><div class="spacing-bar" style="width:32px"></div><span class="spacing-value">32 px</span></div>
+    <div class="spacing-row"><span class="spacing-label">--wk-space-2xl</span><div class="spacing-bar" style="width:48px"></div><span class="spacing-value">48 px</span></div>
+  </section>
+
+  <!-- ── 05 · MOTION ────────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 05 · Motion</span>
+    <h2>Subtle. Purposeful. Felt.</h2>
+    <p>Three durations. Three easings. <code>prefers-reduced-motion</code> zeros them all.</p>
+
+    <table class="tok">
+      <tr><th>Token</th><th>Duration</th><th>Use</th></tr>
+      <tr><td>--wk-duration-fast</td><td>150 ms</td><td>Toggle · focus · hover</td></tr>
+      <tr><td>--wk-duration-normal</td><td>300 ms</td><td>Page transitions · card expand</td></tr>
+      <tr><td>--wk-duration-slow</td><td>600 ms</td><td>Entry animations · shimmer</td></tr>
+      <tr><td>--wk-duration-drift</td><td>1200 ms</td><td>Ambient pass effects only</td></tr>
+    </table>
+  </section>
+
+  <!-- ── 06 · BUTTONS ───────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 06 · Components · Button states</span>
+    <h2>Buttons</h2>
+    <p>48px minimum height for primary actions. 44px absolute floor. Helvetica 700 uppercase.</p>
+
+    <div class="btn-row">
+      <button class="btn">Default</button>
+      <button class="btn" style="background:var(--wk-amber-hi)">Hover</button>
+      <button class="btn" style="background:var(--wk-amber-press);color:white">Active</button>
+      <button class="btn btn-disabled">Disabled</button>
+      <button class="btn" style="outline:2px solid var(--wk-amber-hi);outline-offset:2px">Focus</button>
+    </div>
+  </section>
+
+  <!-- ── 07 · ICONS ─────────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 07 · Iconography</span>
+    <h2>Monoline. 1.5 px stroke. No emoji.</h2>
+    <p>24×24 viewBox · round caps/joins · currentColor. Host-type shelter archetypes. System icons for actions.</p>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Host types</h3>
+    <div class="icon-grid">
+      <div class="icon-cell"><img src="/assets/icons/host-camp.svg" alt="" width="28" height="28" style="color:inherit"><span class="label">Camp</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-albergue.svg" alt="" width="28" height="28"><span class="label">Albergue</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-church.svg" alt="" width="28" height="28"><span class="label">Church</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-hostel.svg" alt="" width="28" height="28"><span class="label">Hostel</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-private.svg" alt="" width="28" height="28"><span class="label">Private</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-donativo.svg" alt="" width="28" height="28"><span class="label">Donativo</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-monastery.svg" alt="" width="28" height="28"><span class="label">Monastery</span></div>
+      <div class="icon-cell"><img src="/assets/icons/host-refuge.svg" alt="" width="28" height="28"><span class="label">Refuge</span></div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">System</h3>
+    <div class="icon-grid">
+      <div class="icon-cell"><img src="/assets/icons/sys-settings.svg" alt="" width="28" height="28"><span class="label">Settings</span></div>
+      <div class="icon-cell"><img src="/assets/icons/sys-search.svg" alt="" width="28" height="28"><span class="label">Search</span></div>
+      <div class="icon-cell"><img src="/assets/icons/sys-filter.svg" alt="" width="28" height="28"><span class="label">Filter</span></div>
+      <div class="icon-cell"><img src="/assets/icons/sys-alert.svg" alt="" width="28" height="28"><span class="label">Alert</span></div>
+      <div class="icon-cell"><img src="/assets/icons/sys-offline.svg" alt="" width="28" height="28"><span class="label">Offline</span></div>
+    </div>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">Brand mark · Seal</h3>
+    <div class="icon-grid">
+      <div class="icon-cell" style="grid-column:span 2"><img src="/assets/icons/seal.svg" alt="Wanderkind seal" width="80" height="80" style="color:var(--wk-amber)"><span class="label">W Seal · 80px</span></div>
+      <div class="icon-cell"><img src="/assets/icons/seal.svg" alt="" width="40" height="40" style="color:var(--wk-amber)"><span class="label">40px</span></div>
+      <div class="icon-cell"><img src="/assets/icons/seal.svg" alt="" width="24" height="24" style="color:var(--wk-amber)"><span class="label">24px</span></div>
+    </div>
+  </section>
+
+  <!-- ── 08 · NAV (3 TABS) ──────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 08 · Navigation</span>
+    <h2>Three Tabs. Map is Home.</h2>
+    <p>The bottom bar holds three buttons. MAP opens on app launch. ME is the personal profile only. MORE holds the six numbered rooms.</p>
+
+    <table class="tok">
+      <tr><th>Position</th><th>Label</th><th>Role</th></tr>
+      <tr><td>Left</td><td>MAP</td><td>Home · find a roof · also surfaces Ways layer</td></tr>
+      <tr><td>Center</td><td>MORE</td><td>Six numbered rooms — Pass · Stamps · My House · Messages · Settings · About</td></tr>
+      <tr><td>Right</td><td>ME</td><td>Your personal profile. Nothing else.</td></tr>
+    </table>
+
+    <h3 style="font-size:var(--wk-fs-h3);margin:var(--wk-space-lg) 0 var(--wk-space-sm);">The Six Rooms (MORE)</h3>
+    <table class="tok">
+      <tr><th>No.</th><th>Room</th><th>Contains</th></tr>
+      <tr><td>01</td><td>WANDERKIND PASS</td><td>Main pass + Food · Hospitality · Water sub-passes</td></tr>
+      <tr><td>02</td><td>STAMPS</td><td>Bilateral memory · received + given</td></tr>
+      <tr><td>03</td><td>MY HOUSE</td><td>Host profile · settings · Gästebuch · hosting history</td></tr>
+      <tr><td>04</td><td>MESSAGES</td><td>E2E encrypted · 1:1 + hosting requests</td></tr>
+      <tr><td>05</td><td>SETTINGS</td><td>Trust · privacy · emergency · app · account</td></tr>
+      <tr><td>06</td><td>ABOUT</td><td>The story · legal · acknowledgments</td></tr>
+    </table>
+  </section>
+
+  <!-- ── 09 · WAYS ──────────────────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 09 · Ways</span>
+    <h2>Single-player + Multiplayer</h2>
+    <p>Ways live as a layer inside MAP. Two coexisting modes:</p>
+
+    <table class="tok">
+      <tr><th>Mode</th><th>Status</th><th>Description</th></tr>
+      <tr><td>Multiplayer</td><td>Default</td><td>Open the map, find a host, walk. Anywhere. The community is the journey. "Every way begins at your door."</td></tr>
+      <tr><td>Königsweg</td><td>Flagship</td><td>The curated single-player Way. Pilot of the medium. Schnitzeljagd elements eventually.</td></tr>
+      <tr><td>Other Ways</td><td>Discovery</td><td>Camino Francés · Via Francigena · Jakobsweg · etc. Catalogued for inspiration, walkable single-player.</td></tr>
+    </table>
+  </section>
+
+  <!-- ── 10 · PERFORMANCE BUDGET ────────────────────────────────────── -->
+  <section class="s">
+    <span class="eyebrow">— 10 · Performance Budget</span>
+    <h2>The Gate</h2>
+    <p>These numbers are enforced by CI. If a PR pushes any of them red, the merge is blocked.</p>
+
+    <table class="tok">
+      <tr><th>Metric</th><th>Budget</th></tr>
+      <tr><td>Lighthouse</td><td>100 · 100 · 100 · 100 · 100</td></tr>
+      <tr><td>First Contentful Paint</td><td>&lt; 800 ms (slow 4G)</td></tr>
+      <tr><td>Largest Contentful Paint</td><td>&lt; 1.8 s (slow 4G)</td></tr>
+      <tr><td>Cumulative Layout Shift</td><td>= 0 (zero)</td></tr>
+      <tr><td>INP / First Input Delay</td><td>&lt; 100 ms</td></tr>
+      <tr><td>Initial paint weight</td><td>&lt; 250 KB</td></tr>
+      <tr><td>Total bundle weight</td><td>&lt; 500 KB</td></tr>
+    </table>
+  </section>
+
+  <footer style="text-align:center; padding-top:var(--wk-space-2xl); margin-top:var(--wk-space-2xl); border-top:1px solid var(--wk-line);">
+    <img src="/assets/icons/seal.svg" alt="Wanderkind" width="40" height="40" style="color:var(--wk-amber); margin: 0 auto var(--wk-space-sm);" />
+    <span class="eyebrow">— Wanderkind Embassy · Design Division</span>
+    <p class="nano" style="margin-top: var(--wk-space-sm); color: var(--wk-ink-muted);">
+      This page is the canonical source. Every token, every component, every rule.<br>
+      If it isn't here, it isn't in the product.
+    </p>
+  </footer>
+
+</body>
+</html>

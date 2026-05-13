@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Wanderkind">
+  <defs>
+    <filter id="seal-noise" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" scale="0.4"/>
+    </filter>
+  </defs>
+  <g filter="url(#seal-noise)" transform="rotate(-1.5 40 40)">
+    <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="31" fill="none" stroke="currentColor" stroke-width="0.6" stroke-dasharray="2 2" opacity="0.6"/>
+    <!-- The W mark — minimal, geometric -->
+    <path d="M 24 30 L 30 52 L 36 38 L 40 50 L 44 38 L 50 52 L 56 30"
+          fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
