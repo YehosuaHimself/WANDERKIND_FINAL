@@ -45,6 +45,21 @@ const isInApp =
   }
 })();
 
+/* ── 3b. Desktop detection · show QR card, hide mobile-install steps */
+(function desktopDetect() {
+  const isDesktop = !isIOS && !isAndroid &&
+    matchMedia('(hover: hover) and (pointer: fine)').matches &&
+    window.innerWidth >= 768;
+  document.documentElement.setAttribute(
+    'data-pwa-context',
+    isDesktop ? 'desktop' : 'mobile'
+  );
+  if (isDesktop) {
+    const scan = /** @type {HTMLElement|null} */ (document.querySelector('.desktop-scan'));
+    if (scan) scan.hidden = false;
+  }
+})();
+
 /* ── 4. Tab auto-selection ────────────────────────────────────── */
 (function setupTabs() {
   /** @type {HTMLButtonElement[]} */
@@ -122,4 +137,7 @@ const isInApp =
     try { localStorage.setItem('wk-visitor-pass', num); } catch { /* ignore */ }
   }
   el.textContent = num;
+  // Mirror into the MRZ passport strip if it exists
+  const mrz = document.getElementById('mrz-num');
+  if (mrz) mrz.textContent = num + '0000000';
 })();

@@ -490,6 +490,108 @@
       outline: none;
     }
 
+    /* ── Desktop QR · scan-to-install ─────────────────────────── */
+    .desktop-scan { display: none; }
+    html[data-pwa-context="desktop"] .desktop-scan { display: block; }
+    .scan-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: var(--wk-space-lg);
+      align-items: center;
+      background: var(--wk-embassy-bg-2);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-md);
+      padding: var(--wk-space-lg);
+    }
+    @media (max-width: 600px) {
+      .scan-card { grid-template-columns: 1fr; }
+    }
+    .scan-qr {
+      width: 200px;
+      height: 200px;
+      background: var(--wk-embassy-ink);   /* parchment */
+      padding: 14px;
+      border-radius: var(--wk-r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .scan-qr img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      color: var(--wk-embassy-bg);   /* QR pixels themselves */
+    }
+    .scan-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.5rem, 3vw + 0.5rem, 1.875rem);
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink);
+      margin: 0 0 var(--wk-space-sm);
+    }
+    .scan-desc {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-embassy-ink-soft);
+      margin: 0 0 var(--wk-space-sm);
+    }
+    .scan-or {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+    }
+    .scan-or strong {
+      color: var(--wk-embassy-ink);
+      font-weight: var(--wk-fw-bold);
+      text-decoration: underline;
+      text-decoration-color: var(--wk-embassy-amber);
+      text-underline-offset: 2px;
+    }
+
+    /* ── MRZ passport strip ──────────────────────────────────── */
+    .mrz {
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      line-height: 1.5;
+      letter-spacing: 0.15em;
+      color: var(--wk-embassy-ink-muted);
+      opacity: 0.55;
+      margin: 0;
+      padding: 0;
+      white-space: pre;
+      word-break: keep-all;
+      text-align: left;
+      overflow: hidden;
+    }
+    @media (max-width: 380px) {
+      .mrz { font-size: 7px; letter-spacing: 0.08em; }
+    }
+
+    /* ── Entrance choreography ──────────────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .pass-line, .seal-wrap, .mantra, .hero-sub, .promise-grid,
+      .objection-chips, .install h2, .gate-tabs {
+        opacity: 0;
+        transform: translateY(10px);
+        animation: gate-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .pass-line       { animation-delay: 60ms;  }
+      .seal-wrap       { animation-delay: 140ms; }
+      .mantra          { animation-delay: 240ms; }
+      .hero-sub        { animation-delay: 360ms; }
+      .promise-grid    { animation-delay: 460ms; }
+      .objection-chips { animation-delay: 560ms; }
+      .install h2     { animation-delay: 700ms; }
+      .gate-tabs      { animation-delay: 780ms; }
+    }
+    @keyframes gate-rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* Open-in-Safari button on in-app banner */
     .inapp-safari-btn {
       display: inline-flex;
@@ -964,6 +1066,21 @@
 
     </section>
 
+    <!-- ── Desktop · scan to install on phone ──────────────── -->
+    <section class="desktop-scan" data-only="desktop" aria-labelledby="scan-h" hidden>
+      <span class="section-eyebrow">— On a laptop? You'll want this on your phone.</span>
+      <div class="scan-card">
+        <div class="scan-qr">
+          <img src="/assets/icons/qr-wanderkind.svg" alt="QR code linking to https://wanderkind.love" />
+        </div>
+        <div class="scan-body">
+          <h2 id="scan-h" class="scan-title">Scan with your phone.</h2>
+          <p class="scan-desc">Point your camera at this code. Your phone opens wanderkind.love and walks you through Add-to-Home-Screen — Wanderkind is mobile-first by design.</p>
+          <p class="scan-or">— Or type <strong>wanderkind.love</strong> into Safari on your phone.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Voice ──────────────────────────────────────────── -->
     <section class="voice" aria-label="A wanderkind's story">
       <p class="voice-quote">
@@ -991,6 +1108,9 @@
       <p>
         On desktop? Wanderkind is mobile-first. Install it on your phone.
       </p>
+
+      <pre class="mrz" aria-hidden="true">P&lt;WKDEMBASSY&lt;&lt;EVERYWANDERKIND&lt;A&lt;HOST&lt;A&lt;WALKER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+WK<span id="mrz-num">00240000000</span>0&lt;1WLD2611150F4711301WANDERKIND&lt;&lt;&lt;&lt;&lt;06</pre>
 
       <div class="embassy-stamp">
         <svg viewBox="0 0 80 80" aria-hidden="true">

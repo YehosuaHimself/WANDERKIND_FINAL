@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.17-install-master-v2';
+const VERSION = '0.1.18-install-mastery';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -57,6 +57,7 @@ const PRECACHE = [
   '/assets/icons/favicon-16.png',
   '/assets/icons/favicon-32.png',
   '/assets/icons/favicon.ico',
+  '/assets/icons/qr-wanderkind.svg',
 ];
 
 self.addEventListener('install', (event) => {
