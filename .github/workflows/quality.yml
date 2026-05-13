@@ -50,15 +50,17 @@ jobs:
             --include="*.js" --include="*.html" js/ index.html system.html 2>/dev/null
 
   accessibility:
-    name: Accessibility audit (pa11y-ci)
+    name: Accessibility audit (Playwright + axe-core)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install pa11y-ci + http-server
-        run: npm install --no-save pa11y-ci http-server
+      - name: Install playwright + axe-core + http-server
+        run: |
+          npm install --no-save playwright axe-core http-server
+          npx playwright install chromium --with-deps
       - name: Serve static site
         run: |
           npx http-server -p 8080 -s &
@@ -66,12 +68,8 @@ jobs:
             curl -s http://localhost:8080/ > /dev/null && break
             sleep 1
           done
-      - name: Run pa11y against / and /system.html
-        run: |
-          npx pa11y-ci --sitemap-find http://localhost:8080/ \
-            --threshold 0 \
-            http://localhost:8080/ \
-            http://localhost:8080/system.html
+      - name: Run axe-core via Playwright
+        run: node scripts/a11y.mjs
 
   lighthouse:
     name: Lighthouse · 100s required
