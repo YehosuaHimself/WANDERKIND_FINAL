@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.1-day3-map';
+const VERSION = '0.1.2-day3-icons';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
