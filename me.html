@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Me</title>
+  <meta name="description" content="Your Wanderkind pass — trail name, tier, stamps, nights walked, doors opened." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <!-- Strict CSP — Supabase REST is needed for the profiles fetch -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* /me.html — the own-profile surface. Cream register. Tight,
+       passport-feeling layout. JS replaces #me-root once the profile
+       row resolves; until then the skeleton is visible. */
+    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 0;
+    }
+    #me-root {
+      max-width: 460px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        max(var(--wk-space-2xl), env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+
+    /* ── Top bar ───────────────────────────────────────────────── */
+    .me-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--wk-space-sm) 0;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .me-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+    .me-menu {
+      background: transparent; border: none;
+      width: 36px; height: 36px;
+      font-size: 20px; line-height: 1;
+      color: var(--wk-ink-soft);
+      cursor: pointer;
+      border-radius: var(--wk-r-sm);
+    }
+    .me-menu:hover, .me-menu:focus-visible {
+      color: var(--wk-amber-text);
+      outline: 2px solid var(--wk-amber-text);
+      outline-offset: 2px;
+    }
+
+    /* ── Identity ─────────────────────────────────────────────── */
+    .me-identity {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--wk-space-sm);
+      padding: var(--wk-space-md) 0;
+    }
+    .me-avatar {
+      position: relative;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--wk-bg-2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .me-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .me-avatar-initial {
+      font-family: var(--wk-font-display);
+      font-size: 32px;
+      font-weight: var(--wk-fw-black);
+      color: var(--wk-amber-text);
+      letter-spacing: -0.02em;
+    }
+    .me-verified {
+      position: absolute;
+      right: -2px; bottom: -2px;
+      width: 22px; height: 22px;
+      background: var(--wk-host-verified);
+      border: 2px solid var(--wk-bg);
+      border-radius: 50%;
+    }
+    .me-verified::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 8px; height: 5px;
+      border-left: 2px solid white;
+      border-bottom: 2px solid white;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+    .me-name {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.625rem, 4vw + 1rem, 2rem);
+      letter-spacing: var(--wk-ls-display);
+      line-height: var(--wk-lh-tight);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .me-tier {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--wk-r-full);
+      background: color-mix(in srgb, var(--tier) 12%, transparent);
+    }
+    .me-tier-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--tier);
+    }
+    .me-tier-label {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      color: var(--tier);
+      font-weight: var(--wk-fw-bold);
+    }
+    .me-pass-id {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-soft);
+    }
+    .me-bio {
+      color: var(--wk-ink-soft);
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      max-width: 380px;
+      margin: var(--wk-space-sm) auto 0;
+    }
+
+    /* ── Stats ─────────────────────────────────────────────────── */
+    .me-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--wk-line);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      overflow: hidden;
+    }
+    .me-stat {
+      background: var(--wk-bg);
+      padding: var(--wk-space-md) var(--wk-space-sm);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .me-stat-value {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 1.625rem;
+      letter-spacing: -0.02em;
+      color: var(--wk-ink);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .me-stat-label {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      line-height: 1.3;
+    }
+
+    /* ── Status pill ──────────────────────────────────────────── */
+    .me-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: var(--wk-space-sm) var(--wk-space-md);
+      border-radius: var(--wk-r-full);
+      background: var(--wk-bg-2);
+      align-self: center;
+    }
+    .me-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--wk-ink-muted);
+    }
+    .me-status-dot[data-walking="true"] {
+      background: var(--wk-amber-text);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--wk-amber-text) 18%, transparent);
+      animation: status-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes status-pulse {
+      0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 18%, transparent); }
+      50%      { box-shadow: 0 0 0 7px color-mix(in srgb, var(--wk-amber-text) 8%, transparent); }
+    }
+    .me-status-label {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      font-weight: var(--wk-fw-bold);
+    }
+
+    /* ── Actions ──────────────────────────────────────────────── */
+    .me-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+    }
+    .btn-amber, .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: var(--wk-button-min);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--wk-r-sm);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .btn-amber {
+      background: var(--wk-amber-text);
+      color: var(--wk-bg);
+      border: none;
+    }
+    .btn-amber:hover:not(:disabled), .btn-amber:focus-visible:not(:disabled) {
+      background: var(--wk-amber-press);
+    }
+    .btn-amber:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--wk-ink);
+      border: 1px solid var(--wk-line);
+    }
+    .btn-ghost:hover:not(:disabled), .btn-ghost:focus-visible:not(:disabled) {
+      border-color: var(--wk-amber-text);
+      color: var(--wk-amber-text);
+      outline: none;
+    }
+    .btn-ghost:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    .me-foot {
+      text-align: center;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.04em;
+      color: var(--wk-ink-muted);
+      line-height: 1.8;
+      padding-top: var(--wk-space-md);
+      border-top: 1px solid var(--wk-line-soft);
+    }
+    .me-foot .mono { color: var(--wk-ink-soft); }
+    .me-signout {
+      background: transparent;
+      border: none;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      cursor: pointer;
+      padding: 6px 12px;
+      margin-top: var(--wk-space-xs);
+    }
+    .me-signout:hover, .me-signout:focus-visible {
+      color: var(--wk-amber-press);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* ── Empty-state ──────────────────────────────────────────── */
+    .me-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--wk-space-md);
+      padding: var(--wk-space-2xl) 0;
+    }
+    .me-empty-seal {
+      filter: drop-shadow(0 0 8px rgba(200,118,42,0.18));
+    }
+    .me-empty-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.5rem, 4vw + 1rem, 1.875rem);
+      letter-spacing: var(--wk-ls-display);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      margin: 0;
+      max-width: 320px;
+    }
+    .me-empty-sub {
+      color: var(--wk-ink-soft);
+      max-width: 360px;
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+    }
+
+    /* ── Loading skeleton (visible until JS hydrates) ─────────── */
+    .me-skeleton {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--wk-space-md);
+      padding: var(--wk-space-2xl) 0;
+      opacity: 0.5;
+    }
+    .me-skeleton-circle {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--wk-bg-2);
+      animation: skel-pulse 1.6s ease-in-out infinite;
+    }
+    .me-skeleton-bar {
+      width: 60%; max-width: 240px;
+      height: 14px;
+      background: var(--wk-bg-2);
+      border-radius: 4px;
+      animation: skel-pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes skel-pulse {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#me-root" class="skip-to-content">Skip to profile</a>
+
+  <main id="me-root" aria-live="polite">
+    <!-- JS replaces this skeleton with the populated profile -->
+    <div class="me-skeleton" aria-label="Loading your profile">
+      <div class="me-skeleton-circle"></div>
+      <div class="me-skeleton-bar" style="width: 40%"></div>
+      <div class="me-skeleton-bar" style="width: 25%; height: 10px"></div>
+      <div class="me-skeleton-bar" style="width: 60%"></div>
+    </div>
+  </main>
+
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/me.js"></script>
+</body>
+</html>

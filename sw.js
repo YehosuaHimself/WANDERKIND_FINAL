@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.4-day4-auth-loop';
+const VERSION = '0.1.5-day5-me-refresh';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -21,6 +21,7 @@ const PRECACHE = [
   '/app.html',       // the actual PWA shell
   '/map.html',       // map register page
   '/auth.html',      // magic-link sign-in
+  '/me.html',        // signed-in profile
   '/404.html',
   '/manifest.json',
   '/version.json',
@@ -33,6 +34,7 @@ const PRECACHE = [
   '/js/install-gate.js',
   '/js/auth.js',
   '/js/session.js',
+  '/js/me.js',
   '/js/supabase-config.js',
 ];
 

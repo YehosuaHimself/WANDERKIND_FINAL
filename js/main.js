@@ -16,7 +16,7 @@
 // @ts-check
 
 import {
-  getSession,
+  refreshIfNeeded,
   resolveAuthCallback,
   signOut,
 } from './session.js';
@@ -48,8 +48,9 @@ async function boot() {
     return;
   }
 
-  // Either a fresh session from the callback, or the cached one, or null.
-  const session = resolved ?? getSession();
+  // Either a fresh session from the callback, or the cached one
+  // (lazily refreshed if within 5 min of expiry), or null.
+  const session = resolved ?? (await refreshIfNeeded());
 
   if (session) {
     renderSignedIn(/** @type {import('./session.js').WkSession} */ (session));

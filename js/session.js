@@ -119,6 +119,65 @@ export async function fetchUser(accessToken) {
 /**
  * Sign out: best-effort revoke on the server, then wipe local state.
  */
+/**
+ * Refresh the access token if it's within REFRESH_WINDOW_MS of expiring.
+ *
+ * Returns the (possibly refreshed) session, or null if we have no session
+ * to refresh, or if the refresh failed (in which case the session is also
+ * cleared so the next render falls through to signed-out).
+ *
+ * Cheap to call: if the access token has more than 5 min of life, this
+ * is a no-op and returns immediately.
+ *
+ * @returns {Promise<WkSession | null>}
+ */
+export async function refreshIfNeeded() {
+  const s = getSession();
+  if (!s) return null;
+  const remaining = s.expiresAt - Date.now();
+  if (remaining > REFRESH_WINDOW_MS) return s;
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: s.refreshToken }),
+    });
+    if (!res.ok) {
+      // Refresh token is dead — sign the user out so they re-auth.
+      clearSession();
+      return null;
+    }
+    const data = await res.json();
+    if (!data?.access_token || !data?.refresh_token || !data?.expires_in) {
+      clearSession();
+      return null;
+    }
+    /** @type {WkSession} */
+    const next = {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      expiresAt: Date.now() + data.expires_in * 1000,
+      user: data.user ? {
+        id: data.user.id,
+        email: data.user.email,
+        user_metadata: data.user.user_metadata || {},
+      } : s.user,
+    };
+    saveSession(next);
+    return next;
+  } catch {
+    // Network failure — keep the existing session, let the next call retry.
+    return s;
+  }
+}
+
+/** Refresh 5 min before expiry. */
+const REFRESH_WINDOW_MS = 5 * 60 * 1000;
+
 export async function signOut() {
   const s = getSession();
   if (s?.accessToken) {
