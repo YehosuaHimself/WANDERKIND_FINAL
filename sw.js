@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.18-install-mastery';
+const VERSION = '0.1.19-otp-code';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

@@ -190,6 +190,63 @@
       cursor: progress;
     }
 
+    /* Code input — big tracked monospace boxes feel */
+    .auth-input-code {
+      font-family: var(--wk-font-mono);
+      font-size: 28px;
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: 0.4em;
+      text-align: center;
+      padding-left: 0;
+      padding-right: 0;
+      caret-color: var(--wk-embassy-amber);
+    }
+    .auth-input-code::placeholder {
+      letter-spacing: 0.4em;
+      color: rgba(243,231,204,0.18);
+    }
+
+    /* Email echo in the code state */
+    .code-email-echo {
+      color: var(--wk-embassy-ink);
+      font-weight: var(--wk-fw-bold);
+      word-break: break-all;
+    }
+
+    /* Foot links row: resend · change email */
+    .auth-foot-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .auth-foot-sep {
+      color: var(--wk-embassy-ink-muted);
+    }
+    .auth-link-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink-soft);
+      padding: 8px 6px;
+      transition: color 0.15s;
+    }
+    .auth-link-btn:hover, .auth-link-btn:focus-visible {
+      color: var(--wk-embassy-amber);
+      outline: none;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .auth-link-btn:disabled {
+      opacity: 0.5;
+      cursor: progress;
+    }
+
     .auth-error {
       color: #F4B5B5;
       background: rgba(176,58,58,0.15);
@@ -279,16 +336,16 @@
       <img src="/assets/icons/seal-parchment.svg" alt="" width="96" height="96" />
     </div>
 
-    <!-- ── State A · the form ─────────────────────────────────────── -->
-    <div id="state-form">
+    <!-- ── State A · email entry ──────────────────────────────────── -->
+    <div id="state-email">
       <span class="auth-eyebrow">— Open your door</span>
       <h1 class="auth-title" style="margin-top: var(--wk-space-sm)">Sign in to Wanderkind</h1>
       <p class="auth-sub" style="margin-top: var(--wk-space-md)">
-        We'll send you a single-use magic link. No password to remember.
-        One tap and the door opens.
+        We'll email you a six-digit code. Type it in here. No password to
+        remember, no link to click — you never have to leave the app.
       </p>
 
-      <form id="auth-form" class="auth-form" novalidate>
+      <form id="email-form" class="auth-form" novalidate>
         <label class="auth-label" for="email">Email address</label>
         <input
           id="email"
@@ -300,10 +357,10 @@
           spellcheck="false"
           placeholder="you@somewhere.earth"
           class="auth-input"
-          aria-describedby="auth-error"
+          aria-describedby="email-error"
         />
-        <p id="auth-error" class="auth-error" role="alert" hidden></p>
-        <button id="submit" type="submit" class="auth-submit">Send magic link</button>
+        <p id="email-error" class="auth-error" role="alert" hidden></p>
+        <button id="send-btn" type="submit" class="auth-submit">Send code</button>
       </form>
 
       <p class="auth-legal" style="margin-top: var(--wk-space-md)">
@@ -313,20 +370,52 @@
       </p>
     </div>
 
-    <!-- ── State B · success ──────────────────────────────────────── -->
+    <!-- ── State B · code entry ───────────────────────────────────── -->
+    <div id="state-code" hidden>
+      <span class="auth-eyebrow">— Check your inbox</span>
+      <h1 class="auth-title" style="margin-top: var(--wk-space-sm)">Enter the six-digit code.</h1>
+      <p class="auth-sub" style="margin-top: var(--wk-space-md)">
+        Sent to <strong id="code-email-echo" class="code-email-echo">your address</strong>.
+        Look for "Your Wanderkind sign-in code". The code expires in one hour.
+      </p>
+
+      <form id="code-form" class="auth-form" novalidate>
+        <label class="auth-label" for="code">Sign-in code</label>
+        <input
+          id="code"
+          type="text"
+          name="code"
+          autocomplete="one-time-code"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="6"
+          required
+          spellcheck="false"
+          placeholder="000000"
+          class="auth-input auth-input-code"
+          aria-describedby="code-error"
+        />
+        <p id="code-error" class="auth-error" role="alert" hidden></p>
+        <button id="verify-btn" type="submit" class="auth-submit">Sign in</button>
+      </form>
+
+      <div class="auth-foot-row" style="margin-top: var(--wk-space-md)">
+        <button id="resend-btn" type="button" class="auth-link-btn">Resend code</button>
+        <span class="auth-foot-sep" aria-hidden="true">·</span>
+        <button id="change-btn" type="button" class="auth-link-btn">Use a different email</button>
+      </div>
+    </div>
+
+    <!-- ── State C · success ──────────────────────────────────────── -->
     <div id="state-success" class="auth-success" hidden>
       <div class="auth-success-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 12.5l5 5 11-11" />
         </svg>
       </div>
-      <span class="auth-eyebrow">— Check your inbox</span>
-      <h1 class="auth-title">The door is opening</h1>
-      <p class="auth-success-email" id="success-email"></p>
-      <p class="auth-success-hint">
-        We just sent a magic link to that address. Tap it from the same device and you'll land back here, signed in.
-      </p>
-      <a href="/auth.html" class="auth-back">Use a different email</a>
+      <span class="auth-eyebrow">— You're in</span>
+      <h1 class="auth-title">The door opened.</h1>
+      <p class="auth-success-hint">Taking you to your pass…</p>
     </div>
 
     <a href="/" class="auth-back" style="margin-top: var(--wk-space-md)">← Back to wanderkind.love</a>
