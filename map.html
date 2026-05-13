@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Map</title>
+  <meta name="description" content="A map of doors. See which wanderkinds are walking and who is opening their roof tonight." />
+
+  <!-- Theme -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0B0705" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <!-- Strict CSP — same shape as app.html so the SPA can absorb this later -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://*.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* ─── Map page layout ─────────────────────────────────────────
+       Sticky header → sticky filter strip → map canvas → empty state.
+       The map canvas is a stylized parchment placeholder for Day 3;
+       Day 4 swaps in the tile layer + live host markers. */
+    html, body {
+      background: var(--wk-bg);
+      color: var(--wk-ink);
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    /* ── Top bar ─────────────────────────────────────────────────
+       Sits flush at the top respecting iOS safe area. The center
+       holds the W seal + "MAP" eyebrow as the page identity. */
+    .map-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--wk-bg);
+      border-bottom: 1px solid var(--wk-line);
+      padding: max(var(--wk-space-md), env(safe-area-inset-top)) var(--wk-page-x) var(--wk-space-md);
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      gap: var(--wk-space-md);
+    }
+    .map-topbar a, .map-topbar button {
+      width: 44px; height: 44px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--wk-ink);
+      cursor: pointer;
+      border-radius: var(--wk-r-sm);
+    }
+    .map-topbar a:focus-visible,
+    .map-topbar button:focus-visible {
+      outline: 2px solid var(--wk-amber);
+      outline-offset: 2px;
+    }
+    .map-topbar svg { width: 22px; height: 22px; }
+    .map-identity {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .map-identity .seal {
+      width: 18px; height: 18px;
+      color: var(--wk-amber);
+    }
+    .map-identity .title {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+    }
+
+    /* ── Filter chips ────────────────────────────────────────────
+       Horizontally scrollable on narrow screens. The "Tonight"
+       chip is the default and stays first. Host-type chips carry
+       a leading color dot matching tokens.css host encoding. */
+    .filter-strip {
+      position: sticky;
+      top: calc(var(--wk-space-md) + 44px + var(--wk-space-md) + 1px);
+      z-index: 4;
+      background: var(--wk-bg);
+      border-bottom: 1px solid var(--wk-line-soft);
+      padding: var(--wk-space-sm) 0;
+    }
+    .filter-row {
+      display: flex;
+      gap: var(--wk-space-sm);
+      padding: 0 var(--wk-page-x);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      flex-shrink: 0;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      padding: 8px 14px;
+      border-radius: var(--wk-r-full);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      min-height: 36px;
+    }
+    .filter-chip[aria-pressed="true"] {
+      background: var(--wk-ink);
+      color: var(--wk-bg);
+      border-color: var(--wk-ink);
+    }
+    .filter-chip:focus-visible {
+      outline: 2px solid var(--wk-amber);
+      outline-offset: 2px;
+    }
+    .filter-chip .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .filter-chip[data-host="bed"] .dot      { background: var(--wk-host-bed); }
+    .filter-chip[data-host="food"] .dot     { background: var(--wk-host-food); }
+    .filter-chip[data-host="water"] .dot    { background: var(--wk-host-water); }
+    .filter-chip[data-host="verified"] .dot { background: var(--wk-host-verified); }
+    .filter-sep {
+      align-self: center;
+      width: 1px; height: 18px;
+      background: var(--wk-line);
+      flex-shrink: 0;
+    }
+
+    /* ── Map canvas ──────────────────────────────────────────────
+       A parchment-toned placeholder grid for Day 3. Four ghost
+       host markers and a centered "you are here" dot stand in for
+       the real tile layer that lands in Day 4. */
+    .map-canvas {
+      flex: 1;
+      position: relative;
+      min-height: 480px;
+      background:
+        repeating-linear-gradient(0deg, var(--wk-line-soft) 0 1px, transparent 1px 48px),
+        repeating-linear-gradient(90deg, var(--wk-line-soft) 0 1px, transparent 1px 48px),
+        var(--wk-bg-2);
+      overflow: hidden;
+    }
+    .map-canvas::before {
+      /* Faint amber compass-glow at center */
+      content: "";
+      position: absolute;
+      inset: 20% 25%;
+      background: radial-gradient(ellipse, rgba(200,118,42,0.08) 0, transparent 60%);
+      pointer-events: none;
+    }
+    .map-pin {
+      position: absolute;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.55), 0 2px 8px rgba(26,18,10,0.18);
+    }
+    .map-pin[data-self="true"] {
+      background: var(--wk-ink);
+      width: 12px; height: 12px;
+    }
+    .map-pin[data-self="true"]::after {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1px solid var(--wk-ink);
+      opacity: 0.3;
+      animation: self-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes self-pulse {
+      0%   { transform: scale(0.6); opacity: 0.4; }
+      80%  { transform: scale(1.6); opacity: 0; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    .map-pin[data-type="bed"]      { background: var(--wk-host-bed); }
+    .map-pin[data-type="food"]     { background: var(--wk-host-food); }
+    .map-pin[data-type="water"]    { background: var(--wk-host-water); }
+    .map-pin[data-type="verified"] { background: var(--wk-host-verified); }
+
+    /* ── Empty state card ────────────────────────────────────────
+       Slides up over the bottom of the canvas. On wider screens it
+       sits as a centered card. */
+    .empty-sheet {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: var(--wk-space-lg) var(--wk-page-x) max(var(--wk-space-lg), env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(250,250,245,0) 0, var(--wk-bg) 28%);
+      text-align: center;
+      pointer-events: none;
+    }
+    .empty-sheet > * { pointer-events: auto; }
+    .empty-sheet .eyebrow {
+      color: var(--wk-amber-text);
+      margin-bottom: var(--wk-space-xs);
+      display: inline-block;
+    }
+    .empty-sheet .empty-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.25rem, 3vw + 0.5rem, 1.625rem);
+      letter-spacing: var(--wk-ls-display);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      line-height: var(--wk-lh-tight);
+      margin: 0 auto var(--wk-space-sm);
+      max-width: 380px;
+    }
+    .empty-sheet .empty-sub {
+      color: var(--wk-ink-soft);
+      max-width: 360px;
+      margin: 0 auto var(--wk-space-md);
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+    }
+    .empty-sheet .cta-row {
+      display: inline-flex;
+      gap: var(--wk-space-sm);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-amber {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--wk-amber-text);   /* AA-safe */
+      color: var(--wk-bg);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0 var(--wk-space-md);
+      height: var(--wk-button-min);
+      border-radius: var(--wk-r-sm);
+      border: none;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-amber:hover, .btn-amber:focus-visible {
+      background: var(--wk-amber-press);
+      outline: none;
+    }
+    .btn-amber:focus-visible {
+      box-shadow: 0 0 0 3px rgba(200,118,42,0.35);
+    }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--wk-ink);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0 var(--wk-space-md);
+      height: var(--wk-button-min);
+      border-radius: var(--wk-r-sm);
+      border: 1px solid var(--wk-line);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-ghost:focus-visible {
+      outline: 2px solid var(--wk-amber);
+      outline-offset: 2px;
+    }
+
+    /* ── Legend (host-type encoding) ─────────────────────────────
+       Documents what the dot colors mean. Sits between empty-sheet
+       gradient and the canvas. */
+    .map-legend {
+      position: absolute;
+      left: var(--wk-page-x);
+      top: var(--wk-space-md);
+      background: rgba(250,250,245,0.92);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      backdrop-filter: blur(8px);
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <a href="#map-canvas" class="skip-to-content">Skip to map</a>
+
+  <header class="map-topbar" role="banner">
+    <a href="/" aria-label="Back to wanderkind.love">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7" />
+      </svg>
+    </a>
+    <div class="map-identity" aria-hidden="false">
+      <svg class="seal" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4" />
+        <circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.65" />
+        <text x="12" y="16" text-anchor="middle" font-family="Helvetica Neue, Helvetica, sans-serif" font-weight="900" font-size="11" fill="currentColor">W</text>
+      </svg>
+      <span class="title">Map</span>
+    </div>
+    <button type="button" aria-label="Filters" aria-controls="filter-strip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="4" y1="7"  x2="20" y2="7" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="17" x2="20" y2="17" />
+        <circle cx="9"  cy="7"  r="2" fill="var(--wk-bg)" />
+        <circle cx="15" cy="12" r="2" fill="var(--wk-bg)" />
+        <circle cx="7"  cy="17" r="2" fill="var(--wk-bg)" />
+      </svg>
+    </button>
+  </header>
+
+  <nav class="filter-strip" id="filter-strip" aria-label="Map filters">
+    <div class="filter-row" role="group">
+      <button class="filter-chip" type="button" aria-pressed="true">Tonight</button>
+      <button class="filter-chip" type="button" aria-pressed="false">Walking Now</button>
+      <button class="filter-chip" type="button" aria-pressed="false" data-host="verified">
+        <span class="dot" aria-hidden="true"></span>Verified
+      </button>
+      <span class="filter-sep" aria-hidden="true"></span>
+      <button class="filter-chip" type="button" aria-pressed="false" data-host="bed">
+        <span class="dot" aria-hidden="true"></span>Bed
+      </button>
+      <button class="filter-chip" type="button" aria-pressed="false" data-host="food">
+        <span class="dot" aria-hidden="true"></span>Food
+      </button>
+      <button class="filter-chip" type="button" aria-pressed="false" data-host="water">
+        <span class="dot" aria-hidden="true"></span>Water
+      </button>
+    </div>
+  </nav>
+
+  <main class="map-canvas" id="map-canvas" role="main" aria-label="Map of nearby wanderkinds">
+
+    <!-- Legend (host-type encoding) -->
+    <aside class="map-legend" aria-label="Host-type legend">
+      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-bed)"></span> Bed</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-food)"></span> Food</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-water)"></span> Water</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-verified)"></span> Verified</div>
+    </aside>
+
+    <!-- Self pin · center -->
+    <span class="map-pin" data-self="true" style="left:50%;top:48%" aria-label="Your location"></span>
+
+    <!-- Ghost host markers · placeholders until live data lands -->
+    <span class="map-pin" data-type="bed"      style="left:28%;top:38%" aria-hidden="true"></span>
+    <span class="map-pin" data-type="food"     style="left:68%;top:32%" aria-hidden="true"></span>
+    <span class="map-pin" data-type="water"    style="left:38%;top:62%" aria-hidden="true"></span>
+    <span class="map-pin" data-type="verified" style="left:72%;top:58%" aria-hidden="true"></span>
+
+    <!-- Empty / first-visit sheet -->
+    <section class="empty-sheet" aria-labelledby="empty-title">
+      <span class="eyebrow">— Day Zero</span>
+      <p class="empty-title" id="empty-title">No wanderkinds here yet.</p>
+      <p class="empty-sub">Be the first to host your block. Open your door — even just for a glass of water — and you put a pin on this map.</p>
+      <div class="cta-row">
+        <a href="/install.html" class="btn-amber">Open your door</a>
+        <a href="/" class="btn-ghost">What is Wanderkind?</a>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/sw-register.js"></script>
+</body>
+</html>

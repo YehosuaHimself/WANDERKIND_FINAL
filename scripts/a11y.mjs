@@ -16,6 +16,7 @@ const AXE_PATH = resolve(__dirname, '../node_modules/axe-core/axe.min.js');
 const PAGES = [
   'http://localhost:8080/',
   'http://localhost:8080/system.html',
+  'http://localhost:8080/map.html',
 ];
 
 (async () => {

@@ -127,6 +127,7 @@
   --wk-r-sm:          6px;
   --wk-r-md:          10px;       /* V3 card radius */
   --wk-r-lg:          12px;
+  --wk-r-full:        9999px;   /* Pill shape — chips, badges */
   --wk-r-pill:        999px;
 
   /* ─── ELEVATION ─────────────────────────────────────────────────── */

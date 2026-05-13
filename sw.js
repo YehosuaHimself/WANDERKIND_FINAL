@@ -12,13 +12,14 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.0-foundation';
+const VERSION = '0.1.1-day3-map';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
   '/index.html',     // marketing landing (desktop)
   '/install.html',   // mobile gate
   '/app.html',       // the actual PWA shell
+  '/map.html',       // map register page
   '/404.html',
   '/manifest.json',
   '/version.json',
