@@ -28,6 +28,17 @@
     form-action 'self';
   " />
 
+  <script>
+    /* PRIORITY: auth callback — if Supabase already redirected here
+       with tokens in the URL hash (instead of /app.html), bounce
+       through with the hash intact so main.js on /app.html resolves
+       the session. Defense in depth — runs before /js/auth.js. */
+    (function () {
+      if (location.hash && location.hash.indexOf('access_token=') !== -1) {
+        location.replace('/app.html' + location.hash);
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/typography.css" />

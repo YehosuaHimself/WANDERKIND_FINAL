@@ -62,6 +62,14 @@
 
 <script>
   (function () {
+    // ── PRIORITY: auth callback ──────────────────────────────────
+    // Supabase may have redirected here with tokens in the URL hash.
+    // Carry them over to /app.html so main.js can resolve the session.
+    if (location.hash && location.hash.indexOf('access_token=') !== -1) {
+      location.replace('/app.html' + location.hash);
+      return;
+    }
+
     var isStandalone =
       window.matchMedia && window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;

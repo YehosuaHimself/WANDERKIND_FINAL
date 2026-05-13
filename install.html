@@ -41,22 +41,26 @@
     body {
       min-height: 100vh;
       min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      padding: env(safe-area-inset-top) var(--wk-page-x) env(safe-area-inset-bottom);
+      padding:
+        max(var(--wk-space-lg), env(safe-area-inset-top))
+        var(--wk-page-x)
+        max(var(--wk-space-2xl), env(safe-area-inset-bottom));
+      /* No flex centering on body — flex+justify-center on a tall page
+         hides the overflowing top/bottom from the scroller. Normal
+         document flow lets the page scroll naturally on small screens. */
     }
     main.gate {
-      flex: 1;
       max-width: 520px;
       width: 100%;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
       gap: var(--wk-space-lg);
-      padding: var(--wk-space-2xl) 0;
+      /* Visual top breathing space without trapping content above the fold. */
+      padding-top: clamp(var(--wk-space-lg), 6vh, var(--wk-space-2xl));
+      padding-bottom: var(--wk-space-2xl);
     }
 
     /* The W seal at presentation size, with the dust glow around it */
@@ -236,6 +240,18 @@
       border-bottom: 1px solid var(--wk-embassy-amber);
     }
   </style>
+  <script>
+    /* PRIORITY: auth callback — if Supabase landed the user on
+       /install.html with auth tokens in the hash (because /app.html
+       wasn't on the Site URL whitelist), bounce to /app.html with the
+       hash preserved so main.js can resolve the session. Runs before
+       /js/install-gate.js so we never even paint the gate. */
+    (function () {
+      if (location.hash && location.hash.indexOf('access_token=') !== -1) {
+        location.replace('/app.html' + location.hash);
+      }
+    })();
+  </script>
 </head>
 
 <body class="embassy">
