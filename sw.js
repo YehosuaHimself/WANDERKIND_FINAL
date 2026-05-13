@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.13-refine';
+const VERSION = '0.1.14-pwa-mode';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -43,6 +43,7 @@ const PRECACHE = [
   '/js/supabase-config.js',
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
+  '/js/pwa-mode.js',
 
   /* Icons — offline first-load needs these or every seal renders as
      a broken-image. Lightweight (<200KB combined). */

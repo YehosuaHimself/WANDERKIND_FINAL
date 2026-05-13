@@ -55,6 +55,33 @@
       gap: var(--wk-space-lg);
     }
 
+    /* ── Browser-mode hint (data-only=browser) ──────────────────── */
+    .browser-mode-hint {
+      max-width: 480px;
+      margin: 12px auto 0;
+      background: rgba(200,118,42,0.08);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-md);
+      padding: 12px var(--wk-space-md);
+    }
+    .bmh-eyebrow {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
+    }
+    .bmh-body {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-ink-soft);
+      margin: 0;
+    }
+    .bmh-body strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); }
+
     .more-topbar {
       display: flex;
       align-items: center;
@@ -210,6 +237,11 @@
 <body>
   <a href="#more-root" class="skip-to-content">Skip to More</a>
 
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+
   <main id="more-root" aria-labelledby="more-h">
     <header class="more-topbar">
       <span class="more-eyebrow">— More</span>
@@ -321,6 +353,7 @@
 
   <wk-tabbar></wk-tabbar>
 
+  <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/more.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
