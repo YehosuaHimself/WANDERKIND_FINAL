@@ -39,6 +39,7 @@
       const i = tabs.indexOf(tab);
       const next = e.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length;
       const nextTab = tabs[next];
+      if (!nextTab) return;
       nextTab.focus();
       const target = nextTab.getAttribute('data-target');
       if (target) activate(target);
