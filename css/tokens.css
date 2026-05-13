@@ -28,7 +28,8 @@
   --wk-amber-line:    rgba(200,118,42,0.20);
 
   /* Amber system (Wanderkind's signature) */
-  --wk-amber:         #C8762A;   /* 4.6:1 on bg (AA) */
+  --wk-amber:         #C8762A;   /* Display amber — icons, buttons, decorative (3.7:1 on bg) */
+  --wk-amber-text:    #9C5A1E;   /* TEXT amber — small labels/eyebrows on cream (5.2:1 — WCAG AA) */
   --wk-amber-hi:      #E09A52;   /* Hover state */
   --wk-amber-press:   #A0611E;   /* Active state */
   --wk-amber-soft:    rgba(200,118,42,0.10);
@@ -153,6 +154,7 @@
     --wk-amber-line:   rgba(200,118,42,0.30);
 
     --wk-amber:        #C8762A;   /* 4.9:1 on dark bg (AA) */
+    --wk-amber-text:   #E5A94E;   /* Brighter amber for small text on dark bg (AA) */
     --wk-amber-soft:   rgba(200,118,42,0.14);
 
     /* Shadows deeper in dark */

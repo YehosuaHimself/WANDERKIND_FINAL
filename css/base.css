@@ -130,7 +130,7 @@ a:hover { text-decoration-color: var(--wk-amber); }
   font-size: var(--wk-fs-nano);
   letter-spacing: var(--wk-ls-mono-xwide);
   text-transform: uppercase;
-  color: var(--wk-amber);
+  color: var(--wk-amber-text);   /* AA-passing amber on cream */
 }
 
 /* Print stylesheet — beautiful PDFs from any page */

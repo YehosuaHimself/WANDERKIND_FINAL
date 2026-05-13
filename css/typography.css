@@ -56,7 +56,7 @@ p {
   font-weight: var(--wk-fw-bold);
   letter-spacing: var(--wk-ls-mono-wide);
   text-transform: uppercase;
-  color: var(--wk-amber);
+  color: var(--wk-amber-text);   /* AA-passing amber for small text */
 }
 
 /* Smaller mono label */
