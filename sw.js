@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.3-day3-auth';
+const VERSION = '0.1.4-day4-auth-loop';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -32,6 +32,7 @@ const PRECACHE = [
   '/js/sw-register.js',
   '/js/install-gate.js',
   '/js/auth.js',
+  '/js/session.js',
   '/js/supabase-config.js',
 ];
 
