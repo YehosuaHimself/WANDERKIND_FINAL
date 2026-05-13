@@ -75,7 +75,7 @@ p {
   font-size: var(--wk-fs-nano);
   letter-spacing: var(--wk-ls-mono);
   text-transform: uppercase;
-  color: var(--wk-ink-muted);
+  color: var(--wk-ink-soft);   /* AA on cream — was ink-muted (sub-AA) */
 }
 
 /* Display utility — for hero copy */
