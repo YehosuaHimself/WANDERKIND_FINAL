@@ -426,27 +426,9 @@
 
   <wk-tabbar></wk-tabbar>
 
-  <script>
-    /* Signed-in awareness: swap the empty-state CTA from /install.html
-       (for new visitors) to /me-edit.html (for signed-in users who
-       still need to complete their pass). */
-    (function () {
-      try {
-        var raw = localStorage.getItem('wk-session-v1');
-        if (!raw) return;
-        var s = JSON.parse(raw);
-        if (!s || !s.accessToken) return;
-        var cta = document.querySelector('.empty-sheet .cta-row a.btn-amber');
-        if (cta) cta.setAttribute('href', '/me-edit.html');
-        var ghost = document.querySelector('.empty-sheet .cta-row a.btn-ghost');
-        if (ghost) {
-          ghost.setAttribute('href', '/me.html');
-          ghost.textContent = 'View your pass';
-        }
-      } catch (e) { /* never block the page on this */ }
-    })();
-  </script>
+  <script type="module" src="/js/map-session-aware.js"></script>
 
+  <script type="module" src="/js/auth-bypass.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
 </body>

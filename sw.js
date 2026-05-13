@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.11-day7-hotfix3';
+const VERSION = '0.1.12-day7-hotfix4';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -41,6 +41,8 @@ const PRECACHE = [
   '/js/me-edit.js',
   '/js/wk-tabbar.js',
   '/js/supabase-config.js',
+  '/js/auth-bypass.js',
+  '/js/map-session-aware.js',
 ];
 
 self.addEventListener('install', (event) => {

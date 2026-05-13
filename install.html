@@ -38,16 +38,18 @@
       background: var(--wk-embassy-bg);
       color: var(--wk-embassy-ink);
     }
+    /* Defeat base.css's 100dvh floor — on tall install content with
+       iOS Safari's collapsing URL bar, the floor combined with safe-area
+       padding traps content below the fold. */
+    html, body {
+      min-height: 0 !important;
+      height: auto !important;
+    }
     body {
-      min-height: 100vh;
-      min-height: 100dvh;
-      padding:
-        max(var(--wk-space-lg), env(safe-area-inset-top))
-        var(--wk-page-x)
-        max(var(--wk-space-2xl), env(safe-area-inset-bottom));
-      /* No flex centering on body — flex+justify-center on a tall page
-         hides the overflowing top/bottom from the scroller. Normal
-         document flow lets the page scroll naturally on small screens. */
+      margin: 0;
+      padding: 0;
+      /* Let the document scroll naturally — no flex centering, no
+         viewport-anchored min-height. */
     }
     main.gate {
       max-width: 520px;
@@ -58,9 +60,10 @@
       align-items: center;
       text-align: center;
       gap: var(--wk-space-lg);
-      /* Visual top breathing space without trapping content above the fold. */
-      padding-top: clamp(var(--wk-space-lg), 6vh, var(--wk-space-2xl));
-      padding-bottom: var(--wk-space-2xl);
+      padding:
+        calc(var(--wk-space-xl) + env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(var(--wk-space-2xl) + env(safe-area-inset-bottom));
     }
 
     /* The W seal at presentation size, with the dust glow around it */
@@ -239,19 +242,41 @@
       text-decoration: none;
       border-bottom: 1px solid var(--wk-embassy-amber);
     }
+
+    /* ── Post-install hint ─────────────────────────────────────
+       Sits below the install steps. Tells the user the magic-link
+       email must be opened from inside the installed app, not from
+       their default mail client, or iOS will route it to Safari
+       (separate storage from the PWA — they'd stay signed out). */
+    .post-install-hint {
+      margin-top: var(--wk-space-xl);
+      padding: var(--wk-space-md) var(--wk-space-md);
+      background: rgba(243,231,204,0.04);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-md);
+      max-width: 460px;
+      width: 100%;
+    }
+    .post-install-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 8px;
+    }
+    .post-install-body {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-embassy-ink-soft);
+    }
+    .post-install-body strong {
+      color: var(--wk-embassy-ink);
+      font-weight: var(--wk-fw-bold);
+    }
   </style>
-  <script>
-    /* PRIORITY: auth callback — if Supabase landed the user on
-       /install.html with auth tokens in the hash (because /app.html
-       wasn't on the Site URL whitelist), bounce to /app.html with the
-       hash preserved so main.js can resolve the session. Runs before
-       /js/install-gate.js so we never even paint the gate. */
-    (function () {
-      if (location.hash && location.hash.indexOf('access_token=') !== -1) {
-        location.replace('/app.html' + location.hash);
-      }
-    })();
-  </script>
+  <script type="module" src="/js/auth-bypass.js"></script>
 </head>
 
 <body class="embassy">
@@ -303,6 +328,15 @@
         On desktop? Wanderkind is mobile-first; install it on your phone.
       </p>
     </div>
+    <section class="post-install-hint" aria-label="After install">
+      <p class="post-install-eyebrow">— After install · sign in</p>
+      <p class="post-install-body">
+        Open Wanderkind from your home screen. Tap <strong>Open your door</strong>
+        and we'll email you a magic link. <strong>Open the email from inside the app</strong>
+        so the link signs you in here, not in your browser.
+      </p>
+    </section>
+
   </main>
 
   <script type="module" src="/js/install-gate.js"></script>
