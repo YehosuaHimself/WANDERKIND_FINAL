@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.16-install-master';
+const VERSION = '0.1.17-install-master-v2';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

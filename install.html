@@ -490,6 +490,102 @@
       outline: none;
     }
 
+    /* Open-in-Safari button on in-app banner */
+    .inapp-safari-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      margin-top: 4px;
+      background: var(--wk-embassy-amber);
+      color: var(--wk-embassy-bg);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px var(--wk-space-md);
+      border-radius: var(--wk-r-sm);
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .inapp-safari-btn:hover, .inapp-safari-btn:focus-visible {
+      background: var(--wk-embassy-amber-hi);
+      outline: none;
+    }
+    .inapp-safari-btn:focus-visible {
+      box-shadow: 0 0 0 3px rgba(200,118,42,0.4);
+    }
+    .inapp-safari-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Objection-removal chip row */
+    .objection-chips {
+      list-style: none;
+      padding: 0;
+      margin: var(--wk-space-md) 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .objection-chips .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(243,231,204,0.04);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-full);
+      padding: 6px 12px;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink-soft);
+      font-weight: var(--wk-fw-bold);
+    }
+    .objection-chips .chip-x {
+      color: rgba(176,58,58,0.65);
+      font-size: 1.1em;
+      line-height: 1;
+    }
+    .objection-chips .chip-check {
+      color: #6FD08A;
+      font-size: 1em;
+      line-height: 1;
+    }
+
+    /* Springboard outcome reveal in step 03 */
+    .step-outcome {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+      font-weight: var(--wk-fw-bold);
+      margin: var(--wk-space-sm) 0 -4px;
+    }
+    .step-illo--springboard {
+      padding: 0;
+      overflow: hidden;
+    }
+    .step-illo--springboard svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .step-foot {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-embassy-ink-soft);
+      margin: 6px 0 0;
+    }
+    .step-foot strong {
+      color: var(--wk-embassy-amber);
+      font-weight: var(--wk-fw-bold);
+    }
+
     .embassy-stamp {
       display: flex;
       flex-direction: column;
@@ -521,10 +617,17 @@
     <aside id="inapp-banner" class="inapp-banner" role="alert" hidden>
       <span class="inapp-banner-eyebrow">— Open in Safari to continue</span>
       <p class="inapp-banner-body">
-        You're viewing this in an in-app browser (Gmail, Instagram, etc).
-        iOS won't let you install Wanderkind from here. Tap the share
-        icon and choose <strong>Open in Safari</strong>, then come back.
+        You're in an in-app browser. iOS won't install Wanderkind from
+        here — only Safari can. Tap below, or use the share icon and
+        choose <strong>Open in Safari</strong>.
       </p>
+      <a href="x-safari-https://wanderkind.love/install.html" class="inapp-safari-btn">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="10" cy="10" r="8"/>
+          <path d="M10 4l2.5 5.5L18 12l-5.5 2.5L10 20l-2.5-5.5L2 12l5.5-2.5z" opacity="0.85"/>
+        </svg>
+        Open in Safari
+      </a>
     </aside>
 
     <!-- ── Hero ───────────────────────────────────────────────── -->
@@ -591,6 +694,16 @@
           <span class="promise-label">Stamps from<br/>the road</span>
         </div>
       </div>
+
+      <!-- Objection-removal chip row · what you DON'T need -->
+      <ul class="objection-chips" aria-label="What you don't need">
+        <li class="chip"><span class="chip-x">×</span>App store</li>
+        <li class="chip"><span class="chip-x">×</span>Account upfront</li>
+        <li class="chip"><span class="chip-x">×</span>Tracking</li>
+        <li class="chip"><span class="chip-x">×</span>Fees</li>
+        <li class="chip"><span class="chip-x">×</span>Ads</li>
+        <li class="chip"><span class="chip-check">✓</span>Free forever</li>
+      </ul>
     </section>
 
     <!-- ── Install steps ───────────────────────────────────── -->
@@ -672,7 +785,7 @@
             <span class="step-num"><span>03</span></span>
             <h3 class="step-title">Add to Home Screen</h3>
             <div class="step-body">
-              <p class="step-desc">Scroll past the chat options. Choose <strong>Add to Home Screen</strong>. Confirm <strong>Wanderkind</strong>. The seal lands on your home screen — open it from there, not from this browser tab.</p>
+              <p class="step-desc">Scroll past the chat options. Choose <strong>Add to Home Screen</strong>. Confirm <strong>Wanderkind</strong>.</p>
               <figure class="step-illo" aria-hidden="true">
                 <!-- iOS share sheet mockup with Add to Home Screen highlighted -->
                 <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
@@ -725,6 +838,56 @@
                   </g>
                 </svg>
               </figure>
+
+              <!-- Outcome reveal: the seal landed on the home screen -->
+              <p class="step-outcome">— Then on your home screen:</p>
+              <figure class="step-illo step-illo--springboard" aria-hidden="true">
+                <svg viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Background: subtle warm vignette as iOS wallpaper -->
+                  <defs>
+                    <radialGradient id="wallpaper" cx="50%" cy="40%" r="80%">
+                      <stop offset="0%" stop-color="#1F1813"/>
+                      <stop offset="100%" stop-color="#0B0705"/>
+                    </radialGradient>
+                  </defs>
+                  <rect x="0" y="0" width="280" height="140" rx="12" fill="url(#wallpaper)"/>
+
+                  <!-- Generic app icons row 1 (muted) -->
+                  <g opacity="0.45">
+                    <rect x="22"  y="20" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                    <rect x="78"  y="20" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                    <rect x="134" y="20" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                    <rect x="190" y="20" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                  </g>
+
+                  <!-- Row 2 with WANDERKIND highlighted -->
+                  <g opacity="0.45">
+                    <rect x="22"  y="74" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                    <rect x="134" y="74" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                    <rect x="190" y="74" width="44" height="44" rx="10" fill="rgba(243,231,204,0.10)"/>
+                  </g>
+
+                  <!-- The Wanderkind icon · row 2 col 2 -->
+                  <g>
+                    <!-- glow halo -->
+                    <rect x="74" y="70" width="52" height="52" rx="14" fill="rgba(200,118,42,0.20)"/>
+                    <!-- icon background (parchment) -->
+                    <rect x="78" y="74" width="44" height="44" rx="10" fill="#F3E7CC"/>
+                    <!-- W seal inside -->
+                    <g transform="translate(78, 74) scale(0.55) rotate(-2.2 40 40)">
+                      <circle cx="40" cy="40" r="34" fill="none" stroke="#C8762A" stroke-width="3"/>
+                      <circle cx="40" cy="40" r="30" fill="none" stroke="#C8762A" stroke-width="1.4" opacity="0.6"/>
+                      <path d="M 22 30 L 30 53 L 36 39 L 40 50 L 44 39 L 50 53 L 58 30"
+                            fill="none" stroke="#C8762A" stroke-width="4"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                    <!-- Label under icon -->
+                    <text x="100" y="132" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="600" fill="rgba(243,231,204,0.95)" text-anchor="middle">Wanderkind</text>
+                  </g>
+                </svg>
+              </figure>
+
+              <p class="step-foot">Open it from <strong>there</strong>, not from this browser tab. The home-screen icon launches the real app.</p>
             </div>
           </li>
 
