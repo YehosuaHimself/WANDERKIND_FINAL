@@ -3,14 +3,45 @@
 <head>
 <!-- ── Device routing · added when wanderkind.love switched to PPWA repo ─── -->
 <style>
-  /* ─── A11Y overrides · ensure AA contrast on marketing landing ───── */
-  /* The landing uses its own --amber/--ink-muted variables that produce
-     sub-AA contrast on cream backgrounds. These overrides promote text
-     to AA-passing values without touching the inline content. */
-  :root {
-    --amber: #9C5A1E !important;         /* darker amber for text · was #C8762A */
-    --ink-muted: #6B5A3E !important;     /* promoted to ink-soft · was #9A8B73 */
+  /* ─── A11Y overrides · ensure AA contrast on marketing landing ─────
+     The imported landing's --amber (#C8762A) passes ~4.7:1 on the dark
+     hero (good) but only ~3.7:1 on the cream sections (manifesto,
+     pillars, final-CTA). And the .btn-primary's dark-ink text on
+     bright-amber background fails small-text AA in both contexts.
+     We scope amber/ink-muted promotion to cream sections, harden the
+     button globally to cream-on-dark-amber (6.7:1), and kill inline
+     opacity that pushes small body text below threshold. */
+
+  /* Cream sections: promote amber and ink-muted to AA-passing values.
+     Custom-property cascade means every var(--amber) inside these
+     sections resolves to the darker value automatically. */
+  .manifesto, .pillars,
+  section[style*="parchment-2"] {
+    --amber: #9C5A1E;        /* dark amber — 6.7:1 on cream */
+    --ink-muted: #6B5A3E;    /* promote to ink-soft equivalent */
   }
+
+  /* .btn-primary appears in hero (dark) and final-CTA (cream). Use the
+     darker amber + cream text everywhere so 13px small-text passes AA
+     in both contexts. */
+  .btn-primary {
+    background: #9C5A1E !important;
+    color: #FAFAF5 !important;
+  }
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    background: #B26824 !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Inline opacity on small body text multiplies effective contrast
+     below AA. Force full opacity on small text in cream sections. */
+  section[style*="parchment-2"] p[style*="opacity:0.7"],
+  section[style*="parchment-2"] p[style*="opacity:0.6"],
+  section[style*="parchment-2"] p[style*="opacity:0.5"] {
+    opacity: 1 !important;
+  }
+
   /* Links inside text blocks must be visually distinguished beyond color */
   footer a[href^="/"], footer a[href^="mailto:"],
   p > a, .legal a {
