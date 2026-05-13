@@ -131,6 +131,12 @@ form.addEventListener('submit', async (e) => {
         wanderkind_id: passNum,
         trail_name: trail,
         bio: bio || null,
+        // Wanderkind's social contract: only the chosen trail name is
+        // public. The civilian identity (given_name / surname auto-
+        // populated by the auth trigger from email metadata) is wiped
+        // so no surface can leak it.
+        given_name: null,
+        surname: null,
       }),
     });
 
