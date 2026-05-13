@@ -3,14 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Wanderkind — Install</title>
-  <meta name="description" content="Wanderkind installs as a small app on your home screen. No app store. No tracking. Just a door." />
 
-  <!-- Theme — embassy bg on this page even in light system mode -->
+  <title>Wanderkind · Embassy of Walkers</title>
+  <meta name="description" content="Two minutes. One pass. No app store. The Wanderkind embassy installs as a small app on your home screen — yours, and the doors that open for you in return." />
+
+  <!-- Open Graph / social previews -->
+  <meta property="og:title" content="Wanderkind · Embassy of Walkers" />
+  <meta property="og:description" content="A sovereign travel identity. Two minutes to your pass." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://wanderkind.love/install.html" />
+
+  <!-- Embassy register on this page even in light system mode -->
   <meta name="theme-color" content="#0B0705" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Wanderkind" />
 
+  <link rel="manifest" href="/manifest.json" />
   <link rel="icon" type="image/svg+xml" href="/assets/icons/seal-parchment.svg" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
 
@@ -32,237 +42,387 @@
   <link rel="stylesheet" href="/css/components.css" />
 
   <style>
-    /* Page-local: the install gate lives in the embassy register
-       regardless of system theme — it's a brand introduction. */
-    html, body {
-      background: var(--wk-embassy-bg);
-      color: var(--wk-embassy-ink);
-    }
-    /* Defeat base.css's 100dvh floor — on tall install content with
-       iOS Safari's collapsing URL bar, the floor combined with safe-area
-       padding traps content below the fold. */
+    /* ─── Install gate · masterpiece edition ────────────────────────
+       Layered, embassy-register, conversion-tuned. Hero → promise →
+       install steps with illustrated SVG mockups → voice → footer.
+       Strict CSP, AA, fully scrollable. */
+
+    /* OVERRIDE base.css's 100dvh floor + .embassy's overflow:hidden
+       so the document scrolls naturally on mobile. */
     html, body {
       min-height: 0 !important;
       height: auto !important;
     }
-    /* CRITICAL · .embassy from components.css sets overflow:hidden so its
-       dust ::before doesn't bleed. On <section class='embassy'> that's
-       correct; on <body class='embassy'> it clips the document and breaks
-       scroll. Opt out at the body level only. */
     body.embassy {
       overflow: visible !important;
+    }
+    html, body {
+      background: var(--wk-embassy-bg);
+      color: var(--wk-embassy-ink);
     }
     body {
       margin: 0;
       padding: 0;
-      /* Let the document scroll naturally — no flex centering, no
-         viewport-anchored min-height. */
     }
-    main.gate {
-      max-width: 520px;
-      width: 100%;
+
+    .gate {
+      max-width: 560px;
       margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: var(--wk-space-lg);
       padding:
         calc(var(--wk-space-xl) + env(safe-area-inset-top))
         var(--wk-page-x)
         calc(var(--wk-space-2xl) + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-2xl);
     }
 
-    /* The W seal at presentation size, with the dust glow around it */
-    .gate-seal-wrap {
-      position: relative;
-      width: 152px;
-      height: 152px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: var(--wk-space-sm);
+    /* ── In-app browser banner ────────────────────────────────── */
+    .inapp-banner {
+      background: rgba(176,58,58,0.10);
+      border: 1px solid rgba(176,58,58,0.45);
+      border-radius: var(--wk-r-md);
+      padding: 14px var(--wk-space-md);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .gate-seal-wrap::before {
-      content: "";
-      position: absolute;
-      inset: -32px;
-      background: radial-gradient(circle, rgba(200,118,42,0.22) 0, transparent 64%);
-      pointer-events: none;
-      animation: gate-glow 4s ease-in-out infinite;
+    .inapp-banner-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: #F4B5B5;
+      font-weight: var(--wk-fw-bold);
     }
-    @keyframes gate-glow {
-      0%, 100% { opacity: 0.55; }
-      50%      { opacity: 1; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .gate-seal-wrap::before { animation: none; opacity: 0.7; }
-    }
-    .gate-seal-wrap img {
-      width: 100%; height: 100%;
-      position: relative; z-index: 1;
+    .inapp-banner-body {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-embassy-ink);
+      margin: 0;
     }
 
-    /* Eyebrow above the seal */
-    .gate-eyebrow {
+    /* ── Hero block ────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--wk-space-md);
+    }
+    .pass-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       font-family: var(--wk-font-mono);
       font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono-xwide);
       text-transform: uppercase;
       color: var(--wk-embassy-amber);
-      opacity: 0.9;
+      font-weight: var(--wk-fw-bold);
     }
-    .gate-eyebrow::before { content: "— "; }
+    .pass-line::before,
+    .pass-line::after {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--wk-embassy-amber));
+    }
+    .pass-line::after {
+      background: linear-gradient(270deg, transparent, var(--wk-embassy-amber));
+    }
+    .pass-num {
+      letter-spacing: 0.22em;
+      color: var(--wk-embassy-ink);
+      font-variant-numeric: tabular-nums;
+    }
 
-    /* The mantra — Helvetica 900 uppercase, calm size */
-    .gate-mantra {
+    .seal-wrap {
+      position: relative;
+      width: 152px;
+      height: 152px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: var(--wk-space-md) 0;
+    }
+    .seal-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle, rgba(200,118,42,0.28) 0, transparent 62%);
+      pointer-events: none;
+      animation: seal-glow 4.5s ease-in-out infinite;
+    }
+    @keyframes seal-glow {
+      0%, 100% { opacity: 0.55; transform: scale(0.96); }
+      50%      { opacity: 1;    transform: scale(1.04); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .seal-wrap::before { animation: none; opacity: 0.7; transform: scale(1); }
+    }
+    .seal-wrap img {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mantra {
       font-family: var(--wk-font-display);
       font-weight: var(--wk-fw-black);
-      font-size: clamp(1.5rem, 5vw + 0.5rem, 2.25rem);
-      letter-spacing: -0.02em;
-      line-height: 1.05;
+      font-size: clamp(1.875rem, 6.5vw + 0.5rem, 2.625rem);
+      letter-spacing: -0.025em;
+      line-height: 1;
       text-transform: uppercase;
       color: var(--wk-embassy-ink);
       max-width: 14ch;
+      margin: 0;
     }
-    .gate-sub {
+    .mantra em {
+      font-style: normal;
+      color: var(--wk-embassy-amber);
+    }
+    .hero-sub {
       font-family: var(--wk-font-body);
-      font-size: var(--wk-fs-small);
-      line-height: 1.6;
+      font-size: var(--wk-fs-body);
+      line-height: 1.55;
       color: var(--wk-embassy-ink-soft);
-      max-width: 32ch;
-      margin: 0 auto;
+      max-width: 34ch;
+      margin: 0;
     }
 
-    /* Install steps card — parchment-on-dark, the embassy register */
-    .gate-steps {
-      width: 100%;
-      max-width: 420px;
-      margin-top: var(--wk-space-md);
+    /* ── Promise tiles · what you unlock ───────────────────────── */
+    .promise {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+    .section-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-xwide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-amber);
+      font-weight: var(--wk-fw-bold);
+      display: flex;
+      align-items: center;
+      gap: 0.6em;
+    }
+    .section-eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 1.5px;
+      background: var(--wk-embassy-amber);
+    }
+    .promise-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--wk-space-sm);
+    }
+    .promise-tile {
       background: var(--wk-embassy-bg-2);
       border: 1px solid var(--wk-embassy-line);
       border-radius: var(--wk-r-md);
-      padding: var(--wk-space-lg);
-      text-align: left;
+      padding: var(--wk-space-md) var(--wk-space-sm);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-height: 130px;
     }
-    .gate-steps h2 {
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-micro);
-      font-weight: var(--wk-fw-bold);
-      letter-spacing: var(--wk-ls-mono-wide);
-      text-transform: uppercase;
+    .promise-illo {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--wk-embassy-amber);
-      margin-bottom: var(--wk-space-md);
-      display: flex; align-items: center; gap: 0.6em;
     }
-    .gate-steps h2::before {
-      content: "";
-      display: inline-block;
-      width: 1.4em; height: 1.5px;
-      background: var(--wk-embassy-amber);
-    }
-    .gate-steps ol {
-      list-style: none;
-      padding: 0; margin: 0;
-      counter-reset: gate;
-    }
-    .gate-steps li {
-      counter-increment: gate;
-      position: relative;
-      padding-left: var(--wk-space-xl);
-      margin-bottom: var(--wk-space-md);
-      color: var(--wk-embassy-ink);
-      font-size: var(--wk-fs-small);
-      line-height: 1.55;
-    }
-    .gate-steps li::before {
-      content: counter(gate, decimal-leading-zero);
-      position: absolute;
-      left: 0;
-      top: -2px;
+    .promise-illo svg { width: 100%; height: 100%; }
+    .promise-label {
       font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-micro);
-      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono);
-      color: var(--wk-embassy-amber);
-    }
-    .gate-steps li:last-child { margin-bottom: 0; }
-    .gate-steps li strong {
+      text-transform: uppercase;
       color: var(--wk-embassy-ink);
-      font-weight: var(--wk-fw-medium);
+      font-weight: var(--wk-fw-bold);
+      line-height: 1.3;
     }
-    .gate-steps li em {
+
+    /* ── Install steps · the conversion moment ─────────────────── */
+    .install h2 {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.375rem, 4vw + 0.5rem, 1.75rem);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink);
+      margin: var(--wk-space-sm) 0 var(--wk-space-md);
+    }
+    .install h2 em {
       font-style: normal;
       color: var(--wk-embassy-amber);
     }
 
-    /* Platform tabs */
     .gate-tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: var(--wk-space-md);
-      padding: 4px;
-      background: var(--wk-embassy-bg);
-      border: 1px solid var(--wk-embassy-line);
-      border-radius: var(--wk-r-md);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--wk-space-sm);
+      margin-bottom: var(--wk-space-lg);
     }
     .gate-tab {
-      flex: 1;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-embassy-ink-soft);
+      background: transparent;
+      border: 1px solid var(--wk-embassy-line);
+      padding: 12px;
+      cursor: pointer;
+      border-radius: var(--wk-r-sm);
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .gate-tab[aria-selected="true"] {
+      color: var(--wk-embassy-bg);
+      background: var(--wk-embassy-amber);
+      border-color: var(--wk-embassy-amber);
+    }
+    .gate-tab:focus-visible {
+      outline: 2px solid var(--wk-embassy-amber);
+      outline-offset: 2px;
+    }
+    .gate-tabpanel {
+      display: none;
+    }
+    .gate-tabpanel[data-active="true"] {
+      display: block;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: var(--wk-space-md);
+      row-gap: 0;
+      align-items: start;
+      position: relative;
+      transition: opacity 0.2s;
+    }
+    .step[data-done="true"] .step-num::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--wk-embassy-amber);
+      border-radius: 50%;
+      mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 12.5l5 5 11-11' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 70% no-repeat;
+      -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 12.5l5 5 11-11' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 70% no-repeat;
+    }
+    .step[data-done="true"] .step-num span { display: none; }
+    .step[data-done="true"] .step-title { color: var(--wk-embassy-ink-muted); text-decoration: line-through; text-decoration-color: rgba(243,231,204,0.2); }
+    .step[data-current="true"] .step-num {
+      background: var(--wk-embassy-amber);
+      color: var(--wk-embassy-bg);
+      border-color: var(--wk-embassy-amber);
+    }
+
+    .step-num {
+      grid-row: 1 / 3;
+      grid-column: 1;
+      width: 38px;
+      height: 38px;
+      border: 1.5px solid var(--wk-embassy-amber);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: var(--wk-font-mono);
       font-size: var(--wk-fs-micro);
       font-weight: var(--wk-fw-bold);
-      letter-spacing: var(--wk-ls-mono);
-      text-transform: uppercase;
-      padding: 10px 12px;
-      border: 0;
-      background: transparent;
-      color: var(--wk-embassy-ink-soft);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background var(--wk-duration-fast) var(--wk-ease-out),
-                  color var(--wk-duration-fast) var(--wk-ease-out);
-    }
-    .gate-tab[aria-selected="true"] {
-      background: var(--wk-embassy-bg-2);
+      letter-spacing: 0.06em;
       color: var(--wk-embassy-amber);
+      flex-shrink: 0;
+      position: relative;
     }
-    .gate-tabpanel { display: none; }
-    .gate-tabpanel[data-active="true"] { display: block; }
+    .step-title {
+      grid-row: 1;
+      grid-column: 2;
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-body);
+      color: var(--wk-embassy-ink);
+      text-transform: uppercase;
+      letter-spacing: -0.005em;
+      line-height: 1.2;
+      margin: 8px 0 4px;
+    }
+    .step-body {
+      grid-row: 2;
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+    }
+    .step-desc {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-embassy-ink-soft);
+      margin: 0;
+    }
+    .step-illo {
+      display: block;
+      background: var(--wk-embassy-bg-2);
+      border: 1px solid var(--wk-embassy-line);
+      border-radius: var(--wk-r-md);
+      padding: var(--wk-space-md);
+      margin-top: 4px;
+    }
+    .step-illo svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
 
-    /* Footer — the desktop-already-installed note + the "I'm on desktop" alternative */
-    .gate-footer {
-      margin-top: var(--wk-space-xl);
-      padding-top: var(--wk-space-lg);
-      border-top: 1px solid var(--wk-embassy-line);
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
+    /* ── Voice — one quote ─────────────────────────────────────── */
+    .voice {
+      padding: var(--wk-space-lg);
+      background: rgba(243,231,204,0.03);
+      border-left: 2px solid var(--wk-embassy-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
     }
-    .gate-footer p {
-      font-size: var(--wk-fs-nano);
+    .voice-quote {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-regular);
+      font-size: var(--wk-fs-body);
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--wk-embassy-ink);
+      margin: 0 0 var(--wk-space-sm);
+    }
+    .voice-attribution {
       font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono);
       text-transform: uppercase;
       color: var(--wk-embassy-ink-muted);
-      line-height: 1.6;
-    }
-    .gate-footer a {
-      color: var(--wk-embassy-amber);
-      text-decoration: none;
-      border-bottom: 1px solid var(--wk-embassy-amber);
     }
 
-    /* ── Post-install hint ─────────────────────────────────────
-       Sits below the install steps. Tells the user the magic-link
-       email must be opened from inside the installed app, not from
-       their default mail client, or iOS will route it to Safari
-       (separate storage from the PWA — they'd stay signed out). */
-    .post-install-hint {
-      margin-top: var(--wk-space-xl);
-      padding: var(--wk-space-md) var(--wk-space-md);
-      background: rgba(243,231,204,0.04);
+    /* ── Post-install hint ─────────────────────────────────────── */
+    .post-install {
+      background: rgba(200,118,42,0.06);
       border: 1px solid var(--wk-embassy-line);
       border-radius: var(--wk-r-md);
-      max-width: 460px;
-      width: 100%;
+      padding: var(--wk-space-lg);
     }
     .post-install-eyebrow {
       font-family: var(--wk-font-mono);
@@ -271,26 +431,26 @@
       text-transform: uppercase;
       color: var(--wk-embassy-amber);
       font-weight: var(--wk-fw-bold);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .post-install-steps {
+    .post-install ol {
       list-style: none;
       padding: 0;
       margin: 0;
       counter-reset: pi;
       display: flex;
       flex-direction: column;
-      gap: var(--wk-space-sm);
+      gap: 10px;
     }
-    .post-install-steps li {
+    .post-install li {
       counter-increment: pi;
       position: relative;
-      padding-left: 2.4em;
+      padding-left: 2.6em;
       font-size: var(--wk-fs-small);
       line-height: var(--wk-lh-body);
       color: var(--wk-embassy-ink-soft);
     }
-    .post-install-steps li::before {
+    .post-install li::before {
       content: counter(pi, decimal-leading-zero);
       position: absolute;
       left: 0;
@@ -301,88 +461,391 @@
       letter-spacing: 0.05em;
       color: var(--wk-embassy-amber);
     }
-    .post-install-steps strong {
+    .post-install strong {
       color: var(--wk-embassy-ink);
       font-weight: var(--wk-fw-bold);
     }
-    .post-install-foot {
-      margin-top: var(--wk-space-md);
-      padding-top: var(--wk-space-sm);
+
+    /* ── Already installed / desktop ───────────────────────────── */
+    .gate-foot {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+    .gate-foot p {
+      font-size: var(--wk-fs-small);
+      color: var(--wk-embassy-ink-soft);
+      margin: 0;
+    }
+    .gate-foot a {
+      color: var(--wk-embassy-amber);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(200,118,42,0.4);
+      padding-bottom: 1px;
+    }
+    .gate-foot a:hover, .gate-foot a:focus-visible {
+      color: var(--wk-embassy-amber-hi);
+      border-color: var(--wk-embassy-amber-hi);
+      outline: none;
+    }
+
+    .embassy-stamp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.45;
+      padding-top: var(--wk-space-lg);
       border-top: 1px solid var(--wk-embassy-line);
+    }
+    .embassy-stamp svg {
+      width: 32px;
+      height: 32px;
+      color: var(--wk-embassy-amber);
+    }
+    .embassy-stamp p {
+      font-family: var(--wk-font-mono);
       font-size: var(--wk-fs-nano);
-      line-height: var(--wk-lh-body);
+      letter-spacing: var(--wk-ls-mono-xwide);
+      text-transform: uppercase;
       color: var(--wk-embassy-ink-muted);
     }
-    .post-install-foot strong {
-      color: var(--wk-embassy-ink-soft);
-    }
   </style>
-  <script type="module" src="/js/auth-bypass.js"></script>
 </head>
-
 <body class="embassy">
 
   <main class="gate" id="gate">
-    <span class="gate-eyebrow">Wanderkind Embassy</span>
 
-    <div class="gate-seal-wrap">
-      <img src="/assets/icons/seal-parchment.svg" alt="Wanderkind seal" width="152" height="152" />
-    </div>
+    <!-- ── In-app browser warning (hidden by default) ────────── -->
+    <aside id="inapp-banner" class="inapp-banner" role="alert" hidden>
+      <span class="inapp-banner-eyebrow">— Open in Safari to continue</span>
+      <p class="inapp-banner-body">
+        You're viewing this in an in-app browser (Gmail, Instagram, etc).
+        iOS won't let you install Wanderkind from here. Tap the share
+        icon and choose <strong>Open in Safari</strong>, then come back.
+      </p>
+    </aside>
 
-    <h1 class="gate-mantra">Every Way begins at your door.</h1>
+    <!-- ── Hero ───────────────────────────────────────────────── -->
+    <section class="hero" aria-labelledby="hero-h">
 
-    <p class="gate-sub">
-      Wanderkind installs as a small app on your home screen. No app store.
-      No tracking. Just a door — yours, and the doors that open for you in return.
-    </p>
+      <div class="pass-line">
+        <span>Pass No.</span>
+        <span class="pass-num" id="pass-number">0024</span>
+        <span>of First Thousand</span>
+      </div>
 
-    <section class="gate-steps" aria-labelledby="install-title">
-      <h2 id="install-title">Install in two minutes</h2>
+      <div class="seal-wrap" aria-hidden="true">
+        <img src="/assets/icons/seal-parchment.svg" alt="" width="152" height="152" />
+      </div>
+
+      <h1 class="mantra" id="hero-h">
+        Every Way<br/>begins at<br/><em>your door.</em>
+      </h1>
+
+      <p class="hero-sub">
+        Wanderkind installs as a small app on your home screen. No app
+        store. No tracking. Just a door &mdash; yours, and the doors that
+        open for you in return.
+      </p>
+    </section>
+
+    <!-- ── Promise · what you unlock ─────────────────────────── -->
+    <section class="promise" aria-labelledby="promise-h">
+      <span class="section-eyebrow" id="promise-h">— Two minutes. One pass. No store.</span>
+      <div class="promise-grid">
+        <div class="promise-tile">
+          <span class="promise-illo" aria-hidden="true">
+            <!-- A passport-card glyph -->
+            <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="8" y="6" width="40" height="44" rx="4"/>
+              <circle cx="28" cy="22" r="6"/>
+              <path d="M16 38h24M18 44h20"/>
+              <path d="M11 6l4 -2M45 6l-4 -2" opacity="0.5"/>
+            </svg>
+          </span>
+          <span class="promise-label">Your<br/>Pass</span>
+        </div>
+        <div class="promise-tile">
+          <span class="promise-illo" aria-hidden="true">
+            <!-- A pinned map glyph -->
+            <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 14l14 -4 12 4 14 -4v32l-14 4 -12 -4 -14 4z"/>
+              <path d="M22 10v34M34 14v34"/>
+              <circle cx="28" cy="24" r="3" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="promise-label">Map of<br/>Doors</span>
+        </div>
+        <div class="promise-tile">
+          <span class="promise-illo" aria-hidden="true">
+            <!-- A circular stamp glyph -->
+            <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="28" cy="28" r="18"/>
+              <circle cx="28" cy="28" r="14" opacity="0.5"/>
+              <path d="M21 28l5 5 9 -10" stroke-width="2"/>
+              <path d="M28 6v3M28 47v3M6 28h3M47 28h3" opacity="0.6"/>
+            </svg>
+          </span>
+          <span class="promise-label">Stamps from<br/>the road</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Install steps ───────────────────────────────────── -->
+    <section class="install" aria-labelledby="install-h">
+      <span class="section-eyebrow">— Install in two minutes</span>
+      <h2 id="install-h">Two taps and<br/>you're <em>in.</em></h2>
 
       <div class="gate-tabs" role="tablist" aria-label="Choose your device">
-        <button class="gate-tab" role="tab" id="tab-ios"     aria-selected="true"  aria-controls="panel-ios"     data-target="ios">iOS</button>
-        <button class="gate-tab" role="tab" id="tab-android" aria-selected="false" aria-controls="panel-android" data-target="android">Android</button>
+        <button class="gate-tab" role="tab" id="tab-ios"     aria-selected="true"  aria-controls="panel-ios"     data-target="ios" tabindex="0">iOS · Safari</button>
+        <button class="gate-tab" role="tab" id="tab-android" aria-selected="false" aria-controls="panel-android" data-target="android" tabindex="-1">Android · Chrome</button>
       </div>
 
-      <div class="gate-tabpanel" id="panel-ios"     role="tabpanel" aria-labelledby="tab-ios"     data-active="true">
-        <ol>
-          <li>Open this page in <strong>Safari</strong>. <em>Other browsers can't install PWAs on iOS.</em></li>
-          <li>Tap the <strong>Share</strong> icon at the bottom of Safari (the square with the upward arrow).</li>
-          <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
-          <li>Confirm. The Wanderkind seal appears on your home screen. Open it from there — it runs as its own app.</li>
+      <!-- ── iOS panel ─────────────────────────────────────── -->
+      <div class="gate-tabpanel" id="panel-ios" role="tabpanel" aria-labelledby="tab-ios" data-active="true">
+        <ol class="steps" aria-label="iOS install steps">
+
+          <li class="step" data-step="ios-01">
+            <span class="step-num"><span>01</span></span>
+            <h3 class="step-title">Open in Safari</h3>
+            <div class="step-body">
+              <p class="step-desc">Wanderkind installs as a PWA, and only Safari can do that on iOS. If you're already here in Safari, you're set — skip to step 02.</p>
+              <figure class="step-illo" aria-hidden="true">
+                <!-- A stylized iOS address bar with the URL -->
+                <svg viewBox="0 0 280 64" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="0" y="0" width="280" height="64" rx="12" fill="rgba(243,231,204,0.04)" stroke="rgba(243,231,204,0.10)"/>
+                  <!-- "aA" Safari indicator -->
+                  <rect x="14" y="18" width="36" height="28" rx="6" fill="rgba(243,231,204,0.05)" stroke="rgba(243,231,204,0.12)"/>
+                  <text x="32" y="37" font-family="Helvetica,Arial,sans-serif" font-size="13" font-weight="500" fill="rgba(243,231,204,0.7)" text-anchor="middle">aA</text>
+                  <!-- URL -->
+                  <text x="64" y="37" font-family="'Courier New',monospace" font-size="13" fill="rgba(243,231,204,0.85)">wanderkind.love</text>
+                  <!-- Reload icon -->
+                  <path d="M210 32 a 9 9 0 1 0 -3 7" fill="none" stroke="rgba(243,231,204,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M210 24 v 8 h -8" fill="none" stroke="rgba(243,231,204,0.55)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </figure>
+            </div>
+          </li>
+
+          <li class="step" data-step="ios-02">
+            <span class="step-num"><span>02</span></span>
+            <h3 class="step-title">Tap the share icon</h3>
+            <div class="step-body">
+              <p class="step-desc">The square with the arrow pointing up, at the bottom of Safari. (On iPad, the top.)</p>
+              <figure class="step-illo" aria-hidden="true">
+                <!-- iOS share icon at presentation size, highlighted -->
+                <svg viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Background bottom toolbar -->
+                  <rect x="0" y="0" width="280" height="120" rx="12" fill="rgba(243,231,204,0.04)" stroke="rgba(243,231,204,0.10)"/>
+                  <!-- Back / forward / share / bookmark / tabs row -->
+                  <g stroke="rgba(243,231,204,0.32)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- back arrow -->
+                    <path d="M36 60 l -12 0 m 6 -6 l -6 6 l 6 6"/>
+                    <!-- forward arrow -->
+                    <path d="M70 60 l 12 0 m -6 -6 l 6 6 l -6 6"/>
+                    <!-- bookmark -->
+                    <path d="M186 50 v 22 l 6 -4 l 6 4 v -22 z"/>
+                    <!-- tabs -->
+                    <rect x="234" y="50" width="18" height="22" rx="3"/>
+                    <rect x="228" y="46" width="18" height="22" rx="3"/>
+                  </g>
+                  <!-- Share icon (highlighted) -->
+                  <g transform="translate(116, 30)">
+                    <!-- Pulse ring -->
+                    <circle cx="24" cy="30" r="28" fill="rgba(200,118,42,0.10)"/>
+                    <circle cx="24" cy="30" r="24" fill="none" stroke="rgba(200,118,42,0.55)" stroke-width="1.5"/>
+                    <!-- The share glyph -->
+                    <path d="M14 30v10a4 4 0 0 0 4 4h12a4 4 0 0 0 4 -4v-10" fill="none" stroke="#E5A94E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M24 34v-20M18 20l6-6l6 6" fill="none" stroke="#E5A94E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Pointer "tap here" -->
+                    <text x="-24" y="78" font-family="'Courier New',monospace" font-size="11" font-weight="700" letter-spacing="0.15em" fill="#E5A94E">TAP HERE</text>
+                    <path d="M-10 70 q 14 -10 28 -20" fill="none" stroke="rgba(229,169,78,0.6)" stroke-width="1.2" stroke-dasharray="3 3"/>
+                  </g>
+                </svg>
+              </figure>
+            </div>
+          </li>
+
+          <li class="step" data-step="ios-03">
+            <span class="step-num"><span>03</span></span>
+            <h3 class="step-title">Add to Home Screen</h3>
+            <div class="step-body">
+              <p class="step-desc">Scroll past the chat options. Choose <strong>Add to Home Screen</strong>. Confirm <strong>Wanderkind</strong>. The seal lands on your home screen — open it from there, not from this browser tab.</p>
+              <figure class="step-illo" aria-hidden="true">
+                <!-- iOS share sheet mockup with Add to Home Screen highlighted -->
+                <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Sheet background -->
+                  <rect x="0" y="0" width="280" height="280" rx="16" fill="rgba(20,15,8,0.95)" stroke="rgba(243,231,204,0.10)"/>
+                  <!-- Handle -->
+                  <rect x="124" y="10" width="32" height="4" rx="2" fill="rgba(243,231,204,0.25)"/>
+                  <!-- Header: site preview chip -->
+                  <g transform="translate(16, 26)">
+                    <rect width="248" height="44" rx="10" fill="rgba(243,231,204,0.04)"/>
+                    <!-- favicon stand-in -->
+                    <circle cx="28" cy="22" r="13" fill="none" stroke="#C8762A" stroke-width="1.4"/>
+                    <text x="28" y="26" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="900" fill="#C8762A" text-anchor="middle">W</text>
+                    <text x="52" y="20" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="600" fill="rgba(243,231,204,0.85)">Wanderkind</text>
+                    <text x="52" y="32" font-family="'Courier New',monospace" font-size="9" fill="rgba(243,231,204,0.45)">wanderkind.love</text>
+                  </g>
+                  <!-- App-icon scroller (mute) -->
+                  <g transform="translate(16, 86)" opacity="0.35">
+                    <rect width="44" height="44" rx="10" fill="rgba(243,231,204,0.05)"/>
+                    <rect x="56" width="44" height="44" rx="10" fill="rgba(243,231,204,0.05)"/>
+                    <rect x="112" width="44" height="44" rx="10" fill="rgba(243,231,204,0.05)"/>
+                    <rect x="168" width="44" height="44" rx="10" fill="rgba(243,231,204,0.05)"/>
+                    <rect x="224" width="44" height="44" rx="10" fill="rgba(243,231,204,0.05)"/>
+                  </g>
+                  <!-- Action rows -->
+                  <g font-family="Helvetica,Arial,sans-serif" font-size="13" fill="rgba(243,231,204,0.7)">
+                    <g transform="translate(16, 146)" opacity="0.45">
+                      <text x="0" y="14">Copy</text>
+                      <rect x="220" y="-2" width="20" height="18" rx="3" fill="none" stroke="rgba(243,231,204,0.4)" stroke-width="1"/>
+                      <line x1="222" y1="2" x2="234" y2="2" stroke="rgba(243,231,204,0.4)" stroke-width="1"/>
+                    </g>
+                    <g transform="translate(16, 172)" opacity="0.45">
+                      <text x="0" y="14">Add to Reading List</text>
+                      <circle cx="230" y="7" cy="7" r="9" fill="none" stroke="rgba(243,231,204,0.4)" stroke-width="1"/>
+                    </g>
+                    <!-- HIGHLIGHTED: Add to Home Screen -->
+                    <g transform="translate(8, 198)">
+                      <rect width="264" height="32" rx="8" fill="rgba(200,118,42,0.18)" stroke="rgba(200,118,42,0.55)"/>
+                      <text x="14" y="22" font-weight="600" fill="#F3E7CC">Add to Home Screen</text>
+                      <!-- + icon -->
+                      <g transform="translate(234, 6)" stroke="#E5A94E" stroke-width="1.8" stroke-linecap="round" fill="none">
+                        <rect x="0" y="0" width="20" height="20" rx="4"/>
+                        <line x1="10" y1="6" x2="10" y2="14"/>
+                        <line x1="6" y1="10" x2="14" y2="10"/>
+                      </g>
+                    </g>
+                    <g transform="translate(16, 240)" opacity="0.4">
+                      <text x="0" y="14">Find on Page</text>
+                    </g>
+                  </g>
+                </svg>
+              </figure>
+            </div>
+          </li>
+
         </ol>
       </div>
 
+      <!-- ── Android panel ─────────────────────────────────── -->
       <div class="gate-tabpanel" id="panel-android" role="tabpanel" aria-labelledby="tab-android" data-active="false">
-        <ol>
-          <li>Open this page in <strong>Chrome</strong>, Edge, or Samsung Internet.</li>
-          <li>Tap the menu (the three dots <strong>⋮</strong> in the top-right).</li>
-          <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
-          <li>Confirm. The Wanderkind seal lands on your home screen. Open it from there.</li>
+        <ol class="steps" aria-label="Android install steps">
+
+          <li class="step" data-step="and-01">
+            <span class="step-num"><span>01</span></span>
+            <h3 class="step-title">Open in Chrome</h3>
+            <div class="step-body">
+              <p class="step-desc">Or Edge, Samsung Internet — any modern Chromium-based browser supports PWA install.</p>
+            </div>
+          </li>
+
+          <li class="step" data-step="and-02">
+            <span class="step-num"><span>02</span></span>
+            <h3 class="step-title">Open the menu</h3>
+            <div class="step-body">
+              <p class="step-desc">Tap the three dots (<strong>⋮</strong>) in the top-right corner of the address bar.</p>
+              <figure class="step-illo" aria-hidden="true">
+                <!-- Chrome menu mockup -->
+                <svg viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="0" y="0" width="280" height="80" rx="12" fill="rgba(243,231,204,0.04)" stroke="rgba(243,231,204,0.10)"/>
+                  <text x="20" y="46" font-family="'Courier New',monospace" font-size="13" fill="rgba(243,231,204,0.85)">wanderkind.love</text>
+                  <!-- Menu dots highlighted -->
+                  <g transform="translate(238, 22)">
+                    <circle cx="14" cy="14" r="22" fill="rgba(200,118,42,0.12)"/>
+                    <circle cx="14" cy="14" r="18" fill="none" stroke="rgba(200,118,42,0.55)" stroke-width="1.4"/>
+                    <circle cx="14" cy="6" r="2.2" fill="#E5A94E"/>
+                    <circle cx="14" cy="14" r="2.2" fill="#E5A94E"/>
+                    <circle cx="14" cy="22" r="2.2" fill="#E5A94E"/>
+                  </g>
+                </svg>
+              </figure>
+            </div>
+          </li>
+
+          <li class="step" data-step="and-03">
+            <span class="step-num"><span>03</span></span>
+            <h3 class="step-title">Install app</h3>
+            <div class="step-body">
+              <p class="step-desc">Tap <strong>Install app</strong> (or <strong>Add to Home screen</strong> on older versions). Confirm. The Wanderkind seal lands on your home screen — open it from there.</p>
+              <figure class="step-illo" aria-hidden="true">
+                <!-- Chrome dropdown with "Install app" highlighted -->
+                <svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="0" y="0" width="280" height="200" rx="12" fill="rgba(20,15,8,0.95)" stroke="rgba(243,231,204,0.10)"/>
+                  <g font-family="Helvetica,Arial,sans-serif" font-size="13" fill="rgba(243,231,204,0.7)">
+                    <text x="20" y="32" opacity="0.5">New tab</text>
+                    <text x="20" y="58" opacity="0.5">New incognito tab</text>
+                    <text x="20" y="84" opacity="0.5">History</text>
+                    <text x="20" y="110" opacity="0.5">Downloads</text>
+                    <!-- HIGHLIGHTED -->
+                    <g transform="translate(8, 122)">
+                      <rect width="264" height="36" rx="8" fill="rgba(200,118,42,0.18)" stroke="rgba(200,118,42,0.55)"/>
+                      <text x="14" y="24" font-weight="600" fill="#F3E7CC">Install app</text>
+                      <g transform="translate(234, 8)" stroke="#E5A94E" stroke-width="1.8" stroke-linecap="round" fill="none">
+                        <path d="M10 0 v 14 m -5 -5 l 5 5 l 5 -5"/>
+                        <line x1="0" y1="18" x2="20" y2="18"/>
+                      </g>
+                    </g>
+                    <text x="20" y="184" opacity="0.5">Settings</text>
+                  </g>
+                </svg>
+              </figure>
+            </div>
+          </li>
+
         </ol>
       </div>
+
     </section>
 
-    <div class="gate-footer">
-      <p>
-        Already installed? <a href="/">Open Wanderkind</a><br/>
-        On desktop? Wanderkind is mobile-first; install it on your phone.
+    <!-- ── Voice ──────────────────────────────────────────── -->
+    <section class="voice" aria-label="A wanderkind's story">
+      <p class="voice-quote">
+        &ldquo;Munich to Altötting on foot — eight homes opened their
+        doors. The pass was real currency. Not a souvenir.&rdquo;
       </p>
-    </div>
-    <section class="post-install-hint" aria-label="After install">
-      <p class="post-install-eyebrow">— After install · sign in</p>
-      <ol class="post-install-steps">
-        <li>Open Wanderkind from your <strong>home screen icon</strong>. (Not from this Safari tab — that's still the browser.)</li>
-        <li>Tap <strong>Open your door</strong> · we'll email you a magic link.</li>
-        <li>iOS opens email links in Safari, not in apps. <strong>That's fine</strong> — sign in via Safari, then come back to the home-screen icon. iOS shares the session, you'll be signed in.</li>
-      </ol>
-      <p class="post-install-foot">
-        If you ever see <strong>Safari's address bar or share toolbar</strong> while using Wanderkind, you're in Safari — open the home-screen icon instead.
-      </p>
+      <p class="voice-attribution">— Jonas, Zimmermann · 23 · Wanderschaft</p>
     </section>
+
+    <!-- ── Post-install · sign in handoff ────────────────── -->
+    <section class="post-install" aria-labelledby="post-install-h">
+      <p class="post-install-eyebrow" id="post-install-h">— After install · sign in</p>
+      <ol>
+        <li>Open Wanderkind from your <strong>home-screen icon</strong>. (Not from this Safari tab — that's still the browser.)</li>
+        <li>Tap <strong>Open your door</strong>. We send a magic-link to your email.</li>
+        <li>iOS opens email links in Safari, never directly in an app. <strong>That's fine</strong> — sign in via Safari, then come back to the home-screen icon. iOS shares the session, you'll be signed in.</li>
+      </ol>
+    </section>
+
+    <!-- ── Footer ─────────────────────────────────────────── -->
+    <div class="gate-foot">
+      <p>
+        Already installed? <a href="/">Open Wanderkind</a>
+      </p>
+      <p>
+        On desktop? Wanderkind is mobile-first. Install it on your phone.
+      </p>
+
+      <div class="embassy-stamp">
+        <svg viewBox="0 0 80 80" aria-hidden="true">
+          <g transform="rotate(-2.2 40 40)">
+            <circle cx="40" cy="40" r="37" fill="none" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="40" cy="40" r="33" fill="none" stroke="currentColor" stroke-width="1.0" opacity="0.65"/>
+            <path d="M 22 30 L 30 53 L 36 39 L 40 50 L 44 39 L 50 53 L 58 30"
+                  fill="none" stroke="currentColor" stroke-width="3.4"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+        <p>Wanderkind Embassy · MMXXVI · A Sovereign Travel Identity</p>
+      </div>
+    </div>
 
   </main>
 
+  <script type="module" src="/js/auth-bypass.js"></script>
   <script type="module" src="/js/install-gate.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.15-hub-tab';
+const VERSION = '0.1.16-install-master';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

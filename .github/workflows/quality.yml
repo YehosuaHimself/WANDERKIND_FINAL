@@ -95,6 +95,7 @@ jobs:
             --collect.url=http://localhost:8080/system.html \
             --collect.url=http://localhost:8080/map.html \
             --collect.url=http://localhost:8080/auth.html \
+            --collect.url=http://localhost:8080/install.html \
             --collect.url=http://localhost:8080/more.html \
             --collect.settings.preset=desktop \
             --collect.numberOfRuns=1 \
