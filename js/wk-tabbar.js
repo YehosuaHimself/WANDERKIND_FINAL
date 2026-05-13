@@ -27,7 +27,7 @@ class WkTabbar extends HTMLElement {
     const tabs = [
       { label: 'Me',   href: '/me.html',   active: path === '/me.html',
         icon: '<circle cx="12" cy="9" r="3.5"/><path d="M5 19c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/>' },
-      { label: 'More', href: '/more.html', active: path === '/more.html', inert: true,
+      { label: 'More', href: '/more.html', active: path === '/more.html',
         icon: '<circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/>' },
       { label: 'Map',  href: '/map.html',  active: path === '/map.html',
         icon: '<path d="M9 3v15M15 6v15M3 5l6-2 6 3 6-2v15l-6 2-6-3-6 2z"/>' },

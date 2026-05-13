@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — More</title>
+  <meta name="description" content="House, Way, Pass, Vouches — every door, every road, every stamp." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* /more.html — the central hub. Unified amber-monochrome tile grid
+       (V3 WK-P07 discipline · no fruit-salad colors). Six tiles, each a
+       1:1 square, 2-column on mobile, 3-column on wide screens.
+
+       Functional today: System, Sign out.
+       Stubs:            My House, Königsweg, My Pass, Vouches, About. */
+
+    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+
+    #more-root {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(72px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+
+    .more-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--wk-space-sm) 0;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .more-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+    .more-hello {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      color: var(--wk-ink-soft);
+      text-transform: uppercase;
+    }
+
+    .more-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--wk-space-sm);
+    }
+    @media (min-width: 480px) {
+      .more-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: var(--wk-space-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: var(--wk-ink);
+      transition: border-color 0.15s, transform 0.1s, background 0.15s;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .tile:hover, .tile:focus-visible {
+      border-color: var(--wk-amber-text);
+      outline: none;
+    }
+    .tile:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 22%, transparent);
+    }
+    .tile:active { transform: translateY(1px); }
+    .tile[aria-disabled="true"] {
+      opacity: 0.65;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .tile-icon {
+      width: 28px; height: 28px;
+      color: var(--wk-amber-text);
+    }
+    .tile-icon svg { width: 100%; height: 100%; }
+
+    .tile-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .tile-label {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: -0.005em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      line-height: 1.2;
+    }
+    .tile-hint {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+    }
+    .tile[aria-disabled="true"] .tile-hint {
+      color: var(--wk-amber-text);
+    }
+
+    /* Footer block — about / docs / privacy + sign-out */
+    .more-foot {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+      padding-top: var(--wk-space-lg);
+      border-top: 1px solid var(--wk-line-soft);
+      text-align: center;
+    }
+    .more-foot-links {
+      display: flex;
+      justify-content: center;
+      gap: var(--wk-space-md);
+      flex-wrap: wrap;
+    }
+    .more-foot-link {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+    }
+    .more-foot-link:hover, .more-foot-link:focus-visible {
+      color: var(--wk-amber-text);
+    }
+
+    .more-signout {
+      background: transparent;
+      border: 1px solid var(--wk-line);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      cursor: pointer;
+      padding: 0 var(--wk-space-md);
+      height: var(--wk-button-min);
+      border-radius: var(--wk-r-sm);
+      align-self: center;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .more-signout:hover, .more-signout:focus-visible {
+      color: var(--wk-amber-text);
+      border-color: var(--wk-amber-text);
+      outline: none;
+    }
+
+    .more-version {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.04em;
+      color: var(--wk-ink-muted);
+    }
+  </style>
+</head>
+<body>
+  <a href="#more-root" class="skip-to-content">Skip to More</a>
+
+  <main id="more-root" aria-labelledby="more-h">
+    <header class="more-topbar" role="banner">
+      <span class="more-eyebrow">— More</span>
+      <span class="more-hello" id="more-hello"></span>
+    </header>
+
+    <h1 id="more-h" class="sr-only">More — house, way, pass, community</h1>
+
+    <nav class="more-grid" aria-label="Sections">
+      <!-- My House — set up hosting -->
+      <a class="tile" href="#" aria-disabled="true">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11l9-7 9 7"/>
+            <path d="M5 10v10h14V10"/>
+            <path d="M10 20v-6h4v6"/>
+          </svg>
+        </span>
+        <div class="tile-meta">
+          <span class="tile-label">My House</span>
+          <span class="tile-hint">Coming soon</span>
+        </div>
+      </a>
+
+      <!-- Königsweg — the canonical first Way -->
+      <a class="tile" href="#" aria-disabled="true">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20c4-3 4-12 8-12s4 9 8 12"/>
+            <circle cx="12" cy="5" r="2"/>
+          </svg>
+        </span>
+        <div class="tile-meta">
+          <span class="tile-label">Königsweg</span>
+          <span class="tile-hint">Coming soon</span>
+        </div>
+      </a>
+
+      <!-- My Pass — the passport card -->
+      <a class="tile" href="#" aria-disabled="true">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="2"/>
+            <circle cx="12" cy="10" r="2.5"/>
+            <path d="M8 16h8M9 19h6"/>
+          </svg>
+        </span>
+        <div class="tile-meta">
+          <span class="tile-label">My Pass</span>
+          <span class="tile-hint">Coming soon</span>
+        </div>
+      </a>
+
+      <!-- Vouches — guestbook -->
+      <a class="tile" href="#" aria-disabled="true">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 5a2 2 0 012-2h10l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"/>
+            <path d="M8 10h8M8 14h6M8 18h4"/>
+          </svg>
+        </span>
+        <div class="tile-meta">
+          <span class="tile-label">Vouches</span>
+          <span class="tile-hint">Coming soon</span>
+        </div>
+      </a>
+
+      <!-- About — doctrine + identity -->
+      <a class="tile" href="/" >
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 8v.01M11 12h1v4h1"/>
+          </svg>
+        </span>
+        <div class="tile-meta">
+          <span class="tile-label">About</span>
+          <span class="tile-hint">What is Wanderkind?</span>
+        </div>
+      </a>
+
+      <!-- System — the living design system -->
+      <a class="tile" href="/system.html">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+          </svg>
+        </span>
+        <div class="tile-meta">
+          <span class="tile-label">System</span>
+          <span class="tile-hint">Living design system</span>
+        </div>
+      </a>
+    </nav>
+
+    <section class="more-foot">
+      <button type="button" id="more-signout" class="more-signout">Sign out</button>
+      <div class="more-foot-links">
+        <a href="/privacy-policy" class="more-foot-link">Privacy</a>
+        <a href="/terms" class="more-foot-link">Terms</a>
+        <a href="/imprint" class="more-foot-link">Imprint</a>
+      </div>
+      <p class="more-version" id="more-version">Wanderkind PPWA</p>
+    </section>
+  </main>
+
+  <wk-tabbar></wk-tabbar>
+
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/more.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+</body>
+</html>

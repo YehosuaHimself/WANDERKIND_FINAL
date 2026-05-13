@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.6-day5-tabbar';
+const VERSION = '0.1.7-day6-more';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -22,6 +22,7 @@ const PRECACHE = [
   '/map.html',       // map register page
   '/auth.html',      // magic-link sign-in
   '/me.html',        // signed-in profile
+  '/more.html',      // central hub
   '/404.html',
   '/manifest.json',
   '/version.json',
@@ -35,6 +36,7 @@ const PRECACHE = [
   '/js/auth.js',
   '/js/session.js',
   '/js/me.js',
+  '/js/more.js',
   '/js/wk-tabbar.js',
   '/js/supabase-config.js',
 ];
