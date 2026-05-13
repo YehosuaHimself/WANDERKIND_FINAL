@@ -3,21 +3,63 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Wanderkind · privacy-policy</title>
+  <title>Wanderkind — Privacy Policy</title>
+  <meta name="description" content="What Wanderkind collects, what we don't, and what we never sell." />
   <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/typography.css" />
   <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    body { background: var(--wk-bg); color: var(--wk-ink); }
+    main { max-width: 640px; margin: 0 auto; padding: var(--wk-space-2xl) var(--wk-page-x); }
+    h1 { font-family: var(--wk-font-display); font-weight: 900; font-size: clamp(1.75rem, 4vw + 0.5rem, 2.25rem); letter-spacing: -0.02em; text-transform: uppercase; margin: 0 0 var(--wk-space-md); }
+    .eyebrow-doc { font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); letter-spacing: 0.22em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; }
+    h2 { font-family: var(--wk-font-display); font-weight: 700; font-size: 1.125rem; text-transform: uppercase; letter-spacing: -0.01em; margin: var(--wk-space-xl) 0 var(--wk-space-sm); }
+    p { color: var(--wk-ink-soft); font-size: 1rem; line-height: 1.65; margin: 0 0 var(--wk-space-md); }
+    ul { color: var(--wk-ink-soft); padding-left: 22px; margin: 0 0 var(--wk-space-md); line-height: 1.65; }
+    a { color: var(--wk-amber-text); text-decoration: underline; text-underline-offset: 2px; }
+    .back { display: inline-block; margin-top: var(--wk-space-xl); font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); letter-spacing: 0.18em; text-transform: uppercase; color: var(--wk-ink-soft); text-decoration: none; padding-top: var(--wk-space-md); border-top: 1px solid var(--wk-line); width: 100%; }
+    .back:hover { color: var(--wk-amber-text); }
+  </style>
 </head>
 <body>
-  <main style="max-width: 720px; margin: 0 auto; padding: 64px 24px;">
-    <span class="eyebrow">Wanderkind</span>
-    <h1 style="margin-top: 12px;">Privacy Policy</h1>
-    <p class="lead" style="margin-top: 16px;">This page is being restored as part of the Wanderkind PPWA migration. Content coming back shortly.</p>
-    <p style="margin-top: 32px;">
-      <a href="/">Back to wanderkind.love</a>
-    </p>
+  <main>
+    <p class="eyebrow-doc">— Wanderkind Embassy</p>
+    <h1>Privacy Policy</h1>
+
+    <p>Wanderkind is a community PWA for walkers. We collect the minimum information needed to let wanderkinds find each other and host each other. We never sell your data.</p>
+
+    <h2>What we collect</h2>
+    <ul>
+      <li><strong>Account.</strong> Email address (for sign-in via OTP code) and a chosen trail name. Your civilian name is never stored after first sign-in.</li>
+      <li><strong>Pass.</strong> Optional bio, avatar, home country, host details (when you open your door).</li>
+      <li><strong>Location.</strong> Only when you explicitly mark yourself as walking or hosting. Coarse location only — city-level. You can hide your location at any time.</li>
+      <li><strong>Stamps and vouches.</strong> Records of nights you walked or hosted, written by hosts. These appear on your public pass.</li>
+    </ul>
+
+    <h2>What we don't collect</h2>
+    <ul>
+      <li>No tracking pixels, no analytics cookies, no third-party scripts.</li>
+      <li>No precise GPS coordinates without your explicit consent.</li>
+      <li>No payment information — Wanderkind is free forever.</li>
+      <li>No ads. Ever.</li>
+    </ul>
+
+    <h2>Who can see your data</h2>
+    <ul>
+      <li>Your public pass (trail name, bio, stamps, tier) is visible to other wanderkinds via the map and by URL.</li>
+      <li>Your email is never shown publicly.</li>
+      <li>You can mark your profile private at any time — it disappears from the map and search.</li>
+    </ul>
+
+    <h2>How long we keep it</h2>
+    <p>For as long as your account exists. Delete your account in Settings to remove your profile, stamps, and all linked data. Email us at <a href="mailto:hello@wanderkind.love">hello@wanderkind.love</a> if you need help.</p>
+
+    <h2>Updates</h2>
+    <p>If this policy changes, we'll notify you in the app before the change takes effect. Last updated MMXXVI.</p>
+
+    <a href="/" class="back">← Back to wanderkind.love</a>
   </main>
 </body>
 </html>

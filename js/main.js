@@ -55,7 +55,7 @@ async function boot() {
   if (session) {
     // Signed in — land the user on their own profile/pass, not on the
     // bare /app.html boot screen. /me.html is the real signed-in home.
-    location.replace('/me.html');
+    location.replace('/map.html');
     return;
   }
   renderSignedOut();

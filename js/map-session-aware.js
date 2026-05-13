@@ -39,3 +39,19 @@
     /* never block the page on this best-effort enhancement */
   }
 })();
+
+
+/* ── Filter chips · interactive toggle ───────────────────────────
+   Visually toggles aria-pressed on click. Real filtering against
+   live host data happens in Week 2 when the data layer ships. */
+(function wireFilterChips() {
+  const chips = document.querySelectorAll('.filter-chip');
+  if (chips.length === 0) return;
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const pressed = chip.getAttribute('aria-pressed') === 'true';
+      chip.setAttribute('aria-pressed', String(!pressed));
+    });
+  });
+})();

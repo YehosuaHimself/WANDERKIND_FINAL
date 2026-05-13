@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.28-settings-tile';
+const VERSION = '0.1.29-polish';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -24,6 +24,11 @@ const PRECACHE = [
   '/me.html',        // signed-in profile
   '/more.html',      // central hub
   '/me-edit.html',   // profile editor
+  '/settings.html',  // placeholder (Coming soon)
+  '/host.html',      // placeholder (Coming soon)
+  '/way.html',       // placeholder (Coming soon)
+  '/pass.html',      // placeholder (Coming soon)
+  '/vouches.html',   // placeholder (Coming soon)
   '/privacy-policy.html',
   '/terms.html',
   '/imprint.html',

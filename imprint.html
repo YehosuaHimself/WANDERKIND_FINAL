@@ -3,21 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Wanderkind · imprint</title>
+  <title>Wanderkind — Imprint</title>
   <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/typography.css" />
   <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    body { background: var(--wk-bg); color: var(--wk-ink); }
+    main { max-width: 640px; margin: 0 auto; padding: var(--wk-space-2xl) var(--wk-page-x); }
+    h1 { font-family: var(--wk-font-display); font-weight: 900; font-size: clamp(1.75rem, 4vw + 0.5rem, 2.25rem); letter-spacing: -0.02em; text-transform: uppercase; margin: 0 0 var(--wk-space-md); }
+    .eyebrow-doc { font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); letter-spacing: 0.22em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; }
+    h2 { font-family: var(--wk-font-display); font-weight: 700; font-size: 1.125rem; text-transform: uppercase; letter-spacing: -0.01em; margin: var(--wk-space-xl) 0 var(--wk-space-sm); }
+    p { color: var(--wk-ink-soft); font-size: 1rem; line-height: 1.65; margin: 0 0 var(--wk-space-md); }
+    a { color: var(--wk-amber-text); text-decoration: underline; text-underline-offset: 2px; }
+    .mono { font-family: var(--wk-font-mono); }
+    .back { display: inline-block; margin-top: var(--wk-space-xl); font-family: var(--wk-font-mono); font-size: var(--wk-fs-micro); letter-spacing: 0.18em; text-transform: uppercase; color: var(--wk-ink-soft); text-decoration: none; padding-top: var(--wk-space-md); border-top: 1px solid var(--wk-line); width: 100%; }
+    .back:hover { color: var(--wk-amber-text); }
+  </style>
 </head>
 <body>
-  <main style="max-width: 720px; margin: 0 auto; padding: 64px 24px;">
-    <span class="eyebrow">Wanderkind</span>
-    <h1 style="margin-top: 12px;">Imprint</h1>
-    <p class="lead" style="margin-top: 16px;">This page is being restored as part of the Wanderkind PPWA migration. Content coming back shortly.</p>
-    <p style="margin-top: 32px;">
-      <a href="/">Back to wanderkind.love</a>
-    </p>
+  <main>
+    <p class="eyebrow-doc">— Wanderkind Embassy · MMXXVI</p>
+    <h1>Imprint</h1>
+
+    <h2>Contact</h2>
+    <p>Wanderkind<br/>hello@<span class="mono">wanderkind.love</span></p>
+
+    <h2>Owner</h2>
+    <p>Wanderkind is built and operated by Yehosua Christ.<br/>Site address provided on request.</p>
+
+    <h2>Hosting</h2>
+    <p>This site is hosted on GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA).</p>
+
+    <h2>Data processing</h2>
+    <p>Authentication and database services provided by Supabase. See our <a href="/privacy-policy">Privacy Policy</a> for details on what we store and where.</p>
+
+    <h2>Responsible for content</h2>
+    <p>Yehosua Christ, contactable at hello@<span class="mono">wanderkind.love</span>.</p>
+
+    <a href="/" class="back">← Back to wanderkind.love</a>
   </main>
 </body>
 </html>

@@ -22,6 +22,11 @@ const PAGES = [
   'http://localhost:8080/me.html',
   'http://localhost:8080/more.html',
   'http://localhost:8080/me-edit.html',
+  'http://localhost:8080/settings.html',
+  'http://localhost:8080/host.html',
+  'http://localhost:8080/way.html',
+  'http://localhost:8080/pass.html',
+  'http://localhost:8080/vouches.html',
 ];
 
 (async () => {

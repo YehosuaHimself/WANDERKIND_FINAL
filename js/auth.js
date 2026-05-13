@@ -160,7 +160,7 @@ if (codeForm && codeInput && verifyBtn && stateCode && stateSuccess) {
       try { sessionStorage.removeItem('wk-auth-pending'); } catch { /* ignore */ }
       stateCode.hidden = true;
       stateSuccess.hidden = false;
-      setTimeout(() => location.replace('/me.html'), 900);
+      setTimeout(() => location.replace('/map.html'), 900);
     } catch (err) {
       showError(codeError, err instanceof Error ? err.message : 'Network error.');
     } finally {
