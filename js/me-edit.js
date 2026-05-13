@@ -133,6 +133,20 @@ form.addEventListener('submit', async (e) => {
       return;
     }
 
+    // Mirror trail_name into auth.users.user_metadata so the JWT-backed
+    // greeting in main.js / more.js updates without re-fetching the
+    // profile row. Best-effort — profile is the source of truth.
+    fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: { trail_name: trail } }),
+      keepalive: true,
+    }).catch(() => { /* fire-and-forget */ });
+
     // location.replace so back button skips the editor
     location.replace('/me.html');
   } catch (err) {

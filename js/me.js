@@ -107,7 +107,7 @@ function renderProfile(p, email) {
   root.innerHTML = `
     <header class="me-topbar" role="banner">
       <span class="me-eyebrow">— Me</span>
-      <button type="button" class="me-menu" aria-label="Open profile menu">⋯</button>
+      <span aria-hidden="true" style="width: 36px"></span>
     </header>
 
     <section class="me-identity">

@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.12-day7-hotfix4';
+const VERSION = '0.1.13-refine';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -43,6 +43,19 @@ const PRECACHE = [
   '/js/supabase-config.js',
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
+
+  /* Icons — offline first-load needs these or every seal renders as
+     a broken-image. Lightweight (<200KB combined). */
+  '/assets/icons/seal.svg',
+  '/assets/icons/seal-parchment.svg',
+  '/assets/icons/seal-icon.svg',
+  '/assets/icons/apple-touch-icon.png',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/assets/icons/icon-maskable-512.png',
+  '/assets/icons/favicon-16.png',
+  '/assets/icons/favicon-32.png',
+  '/assets/icons/favicon.ico',
 ];
 
 self.addEventListener('install', (event) => {
