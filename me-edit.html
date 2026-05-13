@@ -122,6 +122,15 @@
       color: var(--wk-ink-soft);
       font-weight: var(--wk-fw-bold);
     }
+    .field-hint em {
+      font-style: italic;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+    .field-hint strong {
+      color: var(--wk-ink);
+      font-weight: var(--wk-fw-bold);
+    }
     .field-hint {
       font-family: var(--wk-font-mono);
       font-size: var(--wk-fs-nano);
@@ -238,7 +247,7 @@
 
     <section class="edit-intro">
       <h1 class="edit-title">Set your trail name</h1>
-      <p class="edit-sub">The name other wanderkinds will see. You can change it later. A short bio is optional but helps hosts know who you are.</p>
+      <p class="edit-sub">A name you choose for the road, separate from your civilian identity. Other wanderkinds, hosts, and stamps will see this name — not your real one.</p>
     </section>
 
     <form id="edit-form" class="edit-form" novalidate>
@@ -256,7 +265,7 @@
           placeholder="e.g. Birdfoot"
           aria-describedby="trail-hint"
         />
-        <p class="field-hint" id="trail-hint">2–32 characters. Can be anything you'd answer to on the road.</p>
+        <p class="field-hint" id="trail-hint">2–32 characters. A <strong>pseudonym</strong> — not your real name. Think trail names like <em>Birdfoot</em>, <em>Cricket</em>, <em>Patches</em>. Your civilian identity stays private.</p>
       </div>
 
       <div class="field">

@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.21-polish';
+const VERSION = '0.1.22-trailname';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

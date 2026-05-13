@@ -97,7 +97,12 @@ async function fetchProfile(userId, accessToken) {
  */
 function renderProfile(p, email) {
   if (!root) return;
-  const displayName = (p.trail_name || `${p.given_name || ''} ${p.surname || ''}`.trim() || 'Wanderkind');
+  // Trail name is the chosen pseudonym — distinct from civilian
+  // identity (given_name/surname stay private, never displayed publicly).
+  // Falls back to a placeholder when not yet chosen.
+  const rawTrail = typeof p.trail_name === 'string' ? p.trail_name.trim() : '';
+  const hasTrail = rawTrail.length > 0;
+  const displayName = hasTrail ? rawTrail : 'Wanderkind';
   const passId = p.wanderkind_id || p.pass_number || '';
   const tier = (p.tier || 'novice').toLowerCase();
   const tierColor = TIER_COLORS[/** @type {keyof typeof TIER_COLORS} */ (tier)] || TIER_COLORS.novice;
@@ -119,6 +124,7 @@ function renderProfile(p, email) {
       </div>
 
       <h1 class="me-name">${escapeHTML(displayName)}</h1>
+      ${hasTrail ? '' : '<a href="/me-edit.html" class="me-set-trail">— Set your trail name</a>'}
 
       <div class="me-tier" style="--tier: ${tierColor}">
         <span class="me-tier-dot" aria-hidden="true"></span>
