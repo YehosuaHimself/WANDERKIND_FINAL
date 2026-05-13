@@ -14,9 +14,12 @@ const helloEl = document.getElementById('more-hello');
 const versionEl = document.getElementById('more-version');
 const signoutBtn = document.getElementById('more-signout');
 
-document.addEventListener('DOMContentLoaded', () => {
-  boot().catch(() => {});
-});
+function start() { boot().catch(() => {}); }
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', start);
+} else {
+  start();
+}
 
 async function boot() {
   // Greeting — show trail_name if signed in
@@ -24,7 +27,7 @@ async function boot() {
   if (helloEl) {
     if (session) {
       const meta = session.user.user_metadata || {};
-      const name = String(meta['trail_name'] || meta['name'] || session.user.email.split('@')[0] || '').trim();
+      const name = String(meta['trail_name'] || meta['name'] || (session.user.email || '').split('@')[0] || '').trim();
       helloEl.textContent = name ? `· ${name}` : '';
     } else {
       helloEl.textContent = '';

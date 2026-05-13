@@ -45,12 +45,15 @@ const TIER_COLORS = {
 const root = document.getElementById('me-root');
 if (!root) throw new Error('me: #me-root missing');
 
-document.addEventListener('DOMContentLoaded', () => {
-  boot().catch((e) => {
+function start() { boot().catch((e) => {
     console.error('me boot failed', e);
     renderError('Something went wrong loading your profile.');
-  });
-});
+  }); }
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', start);
+} else {
+  start();
+}
 
 async function boot() {
   const session = await refreshIfNeeded();

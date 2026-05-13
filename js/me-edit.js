@@ -33,12 +33,15 @@ let userId = '';
 /** @type {string} */
 let accessToken = '';
 
-document.addEventListener('DOMContentLoaded', () => {
-  boot().catch((e) => {
+function start() { boot().catch((e) => {
     console.error('me-edit boot failed', e);
     showError('Could not load the editor.');
-  });
-});
+  }); }
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', start);
+} else {
+  start();
+}
 
 async function boot() {
   const session = await refreshIfNeeded();

@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.25-stable';
+const VERSION = '0.1.26-stable';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -24,6 +24,9 @@ const PRECACHE = [
   '/me.html',        // signed-in profile
   '/more.html',      // central hub
   '/me-edit.html',   // profile editor
+  '/privacy-policy.html',
+  '/terms.html',
+  '/imprint.html',
   '/404.html',
   '/manifest.json',
   '/version.json',
@@ -127,8 +130,14 @@ async function networkFirst(req) {
     cache.put(req, fresh.clone()).catch(() => {});
     return fresh;
   } catch {
-    const cached = await cache.match(req);
-    return cached || cache.match('/index.html') || Response.error();
+    const url = new URL(req.url);
+    return (
+      (await cache.match(req)) ||
+      (await cache.match(url.pathname)) ||
+      (await cache.match('/404.html')) ||
+      (await cache.match('/index.html')) ||
+      Response.error()
+    );
   }
 }
 

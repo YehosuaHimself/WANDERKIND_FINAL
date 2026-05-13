@@ -36,7 +36,17 @@ const CODE_LEN = 6;
 /** @type {HTMLButtonElement|null} */ const resendBtn = /** @type {any} */ (document.getElementById('resend-btn'));
 /** @type {HTMLButtonElement|null} */ const changeBtn = /** @type {any} */ (document.getElementById('change-btn'));
 
-/** @type {string} */ let pendingEmail = '';
+/** @type {string} */
+let pendingEmail = (() => {
+  try { return sessionStorage.getItem('wk-auth-pending') || ''; } catch { return ''; }
+})();
+
+// If we have a pending email from a previous step, jump straight to code entry
+if (pendingEmail && stateEmail && stateCode && codeEmailEcho) {
+  codeEmailEcho.textContent = pendingEmail;
+  stateEmail.hidden = true;
+  stateCode.hidden = false;
+}
 
 if (emailForm && emailInput && sendBtn && stateEmail && stateCode) {
   emailForm.addEventListener('submit', async (e) => {
@@ -70,6 +80,7 @@ if (emailForm && emailInput && sendBtn && stateEmail && stateCode) {
         return;
       }
       pendingEmail = email;
+      try { sessionStorage.setItem('wk-auth-pending', email); } catch { /* ignore */ }
       if (codeEmailEcho) codeEmailEcho.textContent = email;
       stateEmail.hidden = true;
       stateCode.hidden = false;
@@ -146,7 +157,7 @@ if (codeForm && codeInput && verifyBtn && stateCode && stateSuccess) {
         },
       });
 
-      // Brief success state then off to /me.html
+      try { sessionStorage.removeItem('wk-auth-pending'); } catch { /* ignore */ }
       stateCode.hidden = true;
       stateSuccess.hidden = false;
       setTimeout(() => location.replace('/me.html'), 900);
@@ -224,6 +235,8 @@ function showInfo(msg) {
 if (changeBtn && stateEmail && stateCode) {
   changeBtn.addEventListener('click', () => {
     pendingEmail = '';
+    try { sessionStorage.removeItem('wk-auth-pending'); } catch { /* ignore */ }
+    lastResendAt = 0;
     if (codeInput) codeInput.value = '';
     hideError(codeError);
     stateCode.hidden = true;

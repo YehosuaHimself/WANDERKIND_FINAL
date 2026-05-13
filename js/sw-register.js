@@ -16,6 +16,7 @@ if ('serviceWorker' in navigator) {
       // from what the SW thinks, force update + reload.
       const localVer = await fetchLocalVersion();
       const liveVer  = await fetchLiveVersion();
+      if (liveVer) { try { localStorage.setItem("wk-sw-version", liveVer); } catch (e) {} }
       if (localVer && liveVer && localVer !== liveVer) {
         await reg.update();
         if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
