@@ -158,23 +158,66 @@ if (codeForm && codeInput && verifyBtn && stateCode && stateSuccess) {
   });
 }
 
-// "Resend code"
+// "Resend code" — sends a fresh OTP, shows visible confirmation,
+// throttles to one click per 30 s to keep within Supabase's OTP
+// rate-limit window.
+let lastResendAt = 0;
 if (resendBtn) {
   resendBtn.addEventListener('click', async () => {
     if (!pendingEmail) return;
-    setBusy(resendBtn, true, 'Resending…');
+    const now = Date.now();
+    const cooldown = 30000;
+    if (now - lastResendAt < cooldown) {
+      const wait = Math.ceil((cooldown - (now - lastResendAt)) / 1000);
+      showError(codeError, `Wait ${wait}s before resending.`);
+      return;
+    }
+    lastResendAt = now;
+    hideError(codeError);
+    setBusy(resendBtn, true, 'Sending…');
     try {
-      await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY },
-        body: JSON.stringify({ email: pendingEmail, create_user: true }),
+        body: JSON.stringify({
+          email: pendingEmail,
+          create_user: true,
+          options: { emailRedirectTo: 'https://wanderkind.love/app.html' },
+        }),
       });
-      hideError(codeError);
-    } catch {/* ignore */ }
-    finally {
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const msg = body?.msg || body?.error_description || `HTTP ${res.status}`;
+        showError(codeError, msg);
+        lastResendAt = 0;   // allow immediate retry on error
+        return;
+      }
+      // Visible confirmation, separate from the error slot
+      showInfo(`New code sent. Check ${pendingEmail}.`);
+    } catch (err) {
+      showError(codeError, err instanceof Error ? err.message : 'Network error.');
+      lastResendAt = 0;
+    } finally {
       setBusy(resendBtn, false, 'Resend code');
     }
   });
+}
+
+// Inline info toast above the form
+/** @param {string} msg */
+function showInfo(msg) {
+  let el = document.getElementById('auth-info');
+  if (!el) {
+    el = document.createElement('p');
+    el.id = 'auth-info';
+    el.className = 'auth-info';
+    el.setAttribute('role', 'status');
+    const form = document.getElementById('code-form');
+    form?.parentElement?.insertBefore(el, form);
+  }
+  el.textContent = msg;
+  el.hidden = false;
+  setTimeout(() => { if (el) el.hidden = true; }, 5000);
 }
 
 // "Use a different email"
