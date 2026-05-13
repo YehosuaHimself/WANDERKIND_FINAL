@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Edit profile</title>
+  <meta name="description" content="Set your trail name and a short bio. The minimum to start collecting stamps." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* /me-edit.html — focused, single-purpose editor. Cream register,
+       large input fields, one big amber Save button. */
+
+    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+
+    main.edit {
+      max-width: 460px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(72px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+
+    .edit-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--wk-space-sm) 0;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .edit-back {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: var(--wk-r-sm);
+    }
+    .edit-back:hover, .edit-back:focus-visible {
+      color: var(--wk-amber-text);
+      outline: none;
+    }
+    .edit-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+
+    .edit-intro {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+      align-items: center;
+      text-align: center;
+      padding-top: var(--wk-space-md);
+    }
+    .edit-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: clamp(1.625rem, 4vw + 1rem, 2rem);
+      letter-spacing: var(--wk-ls-display);
+      line-height: var(--wk-lh-tight);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .edit-sub {
+      color: var(--wk-ink-soft);
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      max-width: 380px;
+    }
+
+    .edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field-label {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      font-weight: var(--wk-fw-bold);
+    }
+    .field-hint {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      color: var(--wk-ink-soft);
+      letter-spacing: 0.02em;
+    }
+    .input, .textarea {
+      width: 100%;
+      padding: 14px var(--wk-space-md);
+      background: var(--wk-bg-elevated);
+      color: var(--wk-ink);
+      font-family: var(--wk-font-body);
+      font-size: 1rem;
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input {
+      height: 52px;
+    }
+    .textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: var(--wk-lh-body);
+    }
+    .input:focus, .textarea:focus {
+      outline: none;
+      border-color: var(--wk-amber-text);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 22%, transparent);
+    }
+    .input::placeholder, .textarea::placeholder {
+      color: var(--wk-ink-muted);
+    }
+
+    .bio-count-wrap {
+      align-self: flex-end;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.04em;
+      color: var(--wk-ink-soft);
+    }
+    .bio-count-wrap.over { color: #B03A3A; }
+
+    .edit-error {
+      color: #7A1F1F;
+      background: rgba(176,58,58,0.10);
+      border: 1px solid rgba(176,58,58,0.35);
+      padding: 10px var(--wk-space-md);
+      border-radius: var(--wk-r-sm);
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+    }
+
+    .edit-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+      margin-top: var(--wk-space-sm);
+    }
+    .btn-amber, .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: var(--wk-button-min);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: var(--wk-fs-small);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--wk-r-sm);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .btn-amber {
+      background: var(--wk-amber-text);
+      color: var(--wk-bg);
+      border: none;
+    }
+    .btn-amber:hover:not(:disabled), .btn-amber:focus-visible:not(:disabled) {
+      background: var(--wk-amber-press);
+    }
+    .btn-amber:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 30%, transparent);
+    }
+    .btn-amber:disabled {
+      opacity: 0.6;
+      cursor: progress;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--wk-ink);
+      border: 1px solid var(--wk-line);
+    }
+    .btn-ghost:hover, .btn-ghost:focus-visible {
+      color: var(--wk-amber-text);
+      border-color: var(--wk-amber-text);
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <a href="#edit-form" class="skip-to-content">Skip to form</a>
+
+  <main class="edit">
+    <header class="edit-topbar">
+      <a href="/me.html" class="edit-back" aria-label="Back to profile">← Cancel</a>
+      <span class="edit-eyebrow">— Edit pass</span>
+      <span style="width: 70px" aria-hidden="true"></span>
+    </header>
+
+    <section class="edit-intro">
+      <h1 class="edit-title">Set your trail name</h1>
+      <p class="edit-sub">The name other wanderkinds will see. You can change it later. A short bio is optional but helps hosts know who you are.</p>
+    </section>
+
+    <form id="edit-form" class="edit-form" novalidate>
+      <div class="field">
+        <label class="field-label" for="trail-name">Trail name</label>
+        <input
+          id="trail-name"
+          name="trail_name"
+          type="text"
+          class="input"
+          required
+          minlength="2"
+          maxlength="32"
+          autocomplete="nickname"
+          placeholder="e.g. Birdfoot"
+          aria-describedby="trail-hint"
+        />
+        <p class="field-hint" id="trail-hint">2–32 characters. Can be anything you'd answer to on the road.</p>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="bio">Bio <span style="text-transform: none; color: var(--wk-ink-muted)">— optional</span></label>
+        <textarea
+          id="bio"
+          name="bio"
+          class="textarea"
+          maxlength="500"
+          placeholder="A line or two about who you are and what you walk for."
+          aria-describedby="bio-hint"
+        ></textarea>
+        <div id="bio-count-wrap" class="bio-count-wrap"><span id="bio-count">0</span>/500</div>
+      </div>
+
+      <p id="edit-error" class="edit-error" role="alert" hidden></p>
+
+      <div class="edit-actions">
+        <button id="submit" type="submit" class="btn-amber">Save pass</button>
+        <a href="/me.html" class="btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </main>
+
+  <wk-tabbar></wk-tabbar>
+
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/me-edit.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+</body>
+</html>

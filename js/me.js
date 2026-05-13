@@ -153,7 +153,7 @@ function renderProfile(p, email) {
     </section>
 
     <div class="me-actions">
-      <button type="button" class="btn-amber" disabled aria-disabled="true">Edit profile</button>
+      <a href="/me-edit.html" class="btn-amber">Edit profile</a>
       <button type="button" class="btn-ghost" disabled aria-disabled="true">Share your pass</button>
     </div>
 
@@ -180,7 +180,7 @@ function renderEmptyPass(email) {
       <h1 class="me-empty-title" id="empty-h">Your pass is waiting.</h1>
       <p class="me-empty-sub">Set up your Wanderkind pass to start collecting stamps and opening doors.</p>
       <div class="me-actions">
-        <button type="button" class="btn-amber" disabled aria-disabled="true">Complete your pass</button>
+        <a href="/me-edit.html" class="btn-amber">Complete your pass</a>
       </div>
       <p class="me-foot">
         <span class="mono">${escapeHTML(email)}</span><br>
