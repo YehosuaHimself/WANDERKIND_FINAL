@@ -39,8 +39,9 @@
   <style>
     /* ─── Map page layout ─────────────────────────────────────────
        Sticky header → sticky filter strip → map canvas → empty state.
-       The map canvas is a stylized parchment placeholder for Day 3;
-       Day 4 swaps in the tile layer + live host markers. */
+       The map canvas hosts a real Leaflet tile layer (CartoDB Positron)
+       with live wanderkind markers fetched from profiles where
+       show_on_map = true. Empty-state sheet reveals when zero markers. */
     html, body {
       background: var(--wk-bg);
       color: var(--wk-ink);
@@ -181,9 +182,9 @@
     }
 
     /* ── Map canvas ──────────────────────────────────────────────
-       A parchment-toned placeholder grid for Day 3. Four ghost
-       host markers and a centered "you are here" dot stand in for
-       the real tile layer that lands in Day 4. */
+       The pre-Leaflet parchment grid is retired. These rules now
+       only style residual fallback elements; the real markers come
+       from /js/map-leaflet.js via divIcon. */
     .map-canvas {
       flex: 1;
       position: relative;
@@ -520,15 +521,6 @@
       <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-water)"></span> Water</div>
       <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-verified)"></span> Verified</div>
     </aside>
-
-    <!-- Self pin · center -->
-    <span class="map-pin" data-self="true" style="left:50%;top:48%" role="img" aria-label="Your location"></span>
-
-    <!-- Ghost host markers · placeholders until live data lands -->
-    <span class="map-pin" data-type="bed"      style="left:28%;top:38%" aria-hidden="true"></span>
-    <span class="map-pin" data-type="food"     style="left:68%;top:32%" aria-hidden="true"></span>
-    <span class="map-pin" data-type="water"    style="left:38%;top:62%" aria-hidden="true"></span>
-    <span class="map-pin" data-type="verified" style="left:72%;top:58%" aria-hidden="true"></span>
 
     <!-- Empty / first-visit sheet (revealed by JS only when zero markers) -->
     <section class="empty-sheet" aria-labelledby="empty-title" hidden>

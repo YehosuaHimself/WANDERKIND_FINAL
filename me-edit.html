@@ -358,6 +358,15 @@
       min-height: 16px;
     }
     .location-progress[hidden] { display: none; }
+
+    .country-row { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .field-label-small {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+    }
   </style>
 </head>
 <body>
@@ -409,6 +418,18 @@
               <span class="hint">Other wanderkinds see a soft amber dot where you are. Off by default.</span>
             </span>
           </label>
+          <div class="country-row">
+            <label class="field-label-small" for="home-country">Home country <span style="text-transform:none; color:var(--wk-ink-muted)">— optional</span></label>
+            <input
+              id="home-country"
+              name="home_country"
+              type="text"
+              class="input"
+              maxlength="64"
+              autocomplete="country-name"
+              placeholder="Austria, AT, or a region"
+            />
+          </div>
         </div>
       </div>
 

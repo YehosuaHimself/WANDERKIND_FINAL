@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.34-day3b-map';
+const VERSION = '0.1.35-review-pass';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -52,7 +52,6 @@ const PRECACHE = [
   '/js/supabase-config.js',
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
-  '/js/map-live.js',
   '/js/map-leaflet.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',

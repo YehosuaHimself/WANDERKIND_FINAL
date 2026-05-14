@@ -34,6 +34,7 @@ const locPickBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector
 const locClearBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#loc-clear'));
 const locProgress = /** @type {HTMLElement|null} */ (document.querySelector('#loc-progress'));
 const locShowEl = /** @type {HTMLInputElement|null} */ (document.querySelector('#loc-show'));
+const countryInput = /** @type {HTMLInputElement|null} */ (document.querySelector('#home-country'));
 
 /** @type {number|null} */
 let currentLat = null;
@@ -76,7 +77,7 @@ async function boot() {
   accessToken = session.accessToken;
 
   // Prefill from existing row (RLS scopes by id)
-  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,lat,lng,show_on_map&limit=1`;
+  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,lat,lng,show_on_map,home_country&limit=1`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -104,6 +105,7 @@ async function boot() {
           currentLng = Number(rows[0].lng);
         }
         currentShowOnMap = Boolean(rows[0].show_on_map);
+        if (rows[0].home_country && countryInput) countryInput.value = String(rows[0].home_country);
         renderLocation();
       }
     }
@@ -171,6 +173,7 @@ form.addEventListener('submit', async (e) => {
         lat: currentLat,
         lng: currentLng,
         show_on_map: currentShowOnMap,
+        home_country: countryInput && countryInput.value.trim() ? countryInput.value.trim().slice(0, 64) : null,
         // Wanderkind's social contract: only the chosen trail name is
         // public. The civilian identity (given_name / surname auto-
         // populated by the auth trigger from email metadata) is wiped
@@ -244,6 +247,18 @@ function hideError() {
 }
 
 
+
+/**
+ * Refresh the session right before a long-lived storage call so the
+ * Authorization header doesn't carry a stale token that's been sitting
+ * in this page for >1h.
+ */
+async function freshToken() {
+  const s = await refreshIfNeeded();
+  if (s && s.accessToken) accessToken = s.accessToken;
+  return accessToken;
+}
+
 // --- Avatar pick / upload ------------------------------------------------
 
 /** Tracks any object URL we've handed to <img>, so we can revoke it. */
@@ -273,6 +288,8 @@ if (avatarPickBtn) {
       renderAvatar(localPreviewUrl);
 
       setAvatarBusy(true, 'Uploading…');
+      // Refresh the JWT first — page may have been open for hours.
+      await freshToken();
       // Stable filename = avatar.jpg (x-upsert overwrites). One object
       // per user per bucket. No orphan accumulation.
       const publicUrl = await uploadToBucket({
@@ -313,6 +330,7 @@ if (avatarRemoveBtn) {
     renderAvatar(null);
     setAvatarBusy(true, 'Removing photo…');
     try {
+      await freshToken();
       await deleteFromBucket({ bucket: 'avatars', userId, accessToken });
     } catch (e) {
       // The storage object may already be gone (404 is treated as
