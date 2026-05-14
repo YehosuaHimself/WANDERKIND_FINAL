@@ -13,6 +13,7 @@
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 import { refreshIfNeeded, signOut } from './session.js';
+import { pickImage, validateImage, resizeToJpeg, uploadToBucket } from './uploads.js';
 
 const form = /** @type {HTMLFormElement|null} */ (document.querySelector('#edit-form'));
 const trailInput = /** @type {HTMLInputElement|null} */ (document.querySelector('#trail-name'));
@@ -21,6 +22,15 @@ const submitBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector(
 const errorEl = /** @type {HTMLElement|null} */ (document.querySelector('#edit-error'));
 const bioCount = /** @type {HTMLElement|null} */ (document.querySelector('#bio-count'));
 const bioCountWrap = /** @type {HTMLElement|null} */ (document.querySelector('#bio-count-wrap'));
+
+const avatarPreview = /** @type {HTMLElement|null} */ (document.querySelector('#avatar-preview'));
+const avatarInitial = /** @type {HTMLElement|null} */ (document.querySelector('#avatar-initial'));
+const avatarPickBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#avatar-pick'));
+const avatarRemoveBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#avatar-remove'));
+const avatarProgress = /** @type {HTMLElement|null} */ (document.querySelector('#avatar-progress'));
+
+/** @type {string|null} */
+let currentAvatarUrl = null;
 
 if (!form || !trailInput || !bioInput || !submitBtn || !errorEl) {
   throw new Error('me-edit: required DOM nodes missing');
@@ -53,7 +63,7 @@ async function boot() {
   accessToken = session.accessToken;
 
   // Prefill from existing row (RLS scopes by id)
-  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio&limit=1`;
+  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url&limit=1`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -72,6 +82,10 @@ async function boot() {
       if (Array.isArray(rows) && rows.length) {
         if (rows[0].trail_name && trailInput) trailInput.value = String(rows[0].trail_name);
         if (rows[0].bio && bioInput) bioInput.value = String(rows[0].bio);
+        if (rows[0].avatar_url) {
+          currentAvatarUrl = String(rows[0].avatar_url);
+          renderAvatar(currentAvatarUrl);
+        }
       }
     }
   } catch { /* prefill is best-effort */ }
@@ -134,6 +148,7 @@ form.addEventListener('submit', async (e) => {
         wanderkind_id: passNum,
         trail_name: trail,
         bio: bio || null,
+        avatar_url: currentAvatarUrl,
         // Wanderkind's social contract: only the chosen trail name is
         // public. The civilian identity (given_name / surname auto-
         // populated by the auth trigger from email metadata) is wiped
@@ -204,4 +219,94 @@ function hideError() {
   if (!errorEl) return;
   errorEl.hidden = true;
   errorEl.textContent = '';
+}
+
+
+// --- Avatar pick / upload ------------------------------------------------
+
+if (avatarPickBtn) {
+  avatarPickBtn.addEventListener('click', async () => {
+    if (!accessToken || !userId) return;
+    try {
+      hideError();
+      const file = await pickImage();
+      if (!file) return;
+      const err = validateImage(file);
+      if (err) { showError(err); return; }
+
+      setAvatarBusy(true, 'Preparing…');
+      const blob = await resizeToJpeg(file, 800, 0.86);
+      const localUrl = URL.createObjectURL(blob);
+      renderAvatar(localUrl);
+
+      setAvatarBusy(true, 'Uploading…');
+      const publicUrl = await uploadToBucket({
+        bucket: 'avatars',
+        userId,
+        blob,
+        accessToken,
+        contentType: 'image/jpeg',
+      });
+      // Bust CDN cache for an existing object replaced via x-upsert
+      const cacheBust = publicUrl + '?v=' + Date.now();
+      currentAvatarUrl = cacheBust;
+      URL.revokeObjectURL(localUrl);
+      renderAvatar(currentAvatarUrl);
+      setAvatarBusy(false, 'Photo ready. Save to keep it.');
+    } catch (e) {
+      console.error('avatar upload failed', e);
+      // Restore previous
+      if (currentAvatarUrl) renderAvatar(currentAvatarUrl);
+      else renderAvatar(null);
+      setAvatarBusy(false);
+      showError(e instanceof Error ? e.message : 'Could not upload that image.');
+    }
+  });
+}
+
+if (avatarRemoveBtn) {
+  avatarRemoveBtn.addEventListener('click', () => {
+    currentAvatarUrl = null;
+    renderAvatar(null);
+    setAvatarBusy(false, 'Photo cleared. Save to confirm.');
+  });
+}
+
+/** @param {string|null} url */
+function renderAvatar(url) {
+  if (!avatarPreview || !avatarInitial) return;
+  if (url) {
+    avatarPreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = url;
+    avatarPreview.appendChild(img);
+    if (avatarRemoveBtn) avatarRemoveBtn.hidden = false;
+  } else {
+    const init = (trailInput && trailInput.value.trim()[0]) || '·';
+    avatarPreview.innerHTML = '';
+    const span = document.createElement('span');
+    span.className = 'avatar-preview-initial';
+    span.id = 'avatar-initial';
+    span.textContent = init.toUpperCase();
+    avatarPreview.appendChild(span);
+    if (avatarRemoveBtn) avatarRemoveBtn.hidden = true;
+  }
+}
+
+/** @param {boolean} busy @param {string} [msg] */
+function setAvatarBusy(busy, msg) {
+  if (avatarPickBtn) {
+    avatarPickBtn.disabled = busy;
+    avatarPickBtn.setAttribute('aria-busy', String(busy));
+  }
+  if (avatarProgress) {
+    if (msg) {
+      avatarProgress.textContent = msg;
+      avatarProgress.hidden = false;
+    } else if (!busy) {
+      avatarProgress.hidden = true;
+      avatarProgress.textContent = '';
+    }
+  }
 }

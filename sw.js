@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.30-week1-day1';
+const VERSION = '0.1.31-week1-day2-avatars';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -47,6 +47,7 @@ const PRECACHE = [
   '/js/me.js',
   '/js/more.js',
   '/js/me-edit.js',
+  '/js/uploads.js',
   '/js/wk-tabbar.js',
   '/js/supabase-config.js',
   '/js/auth-bypass.js',

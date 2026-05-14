@@ -17,7 +17,7 @@
     default-src 'self';
     script-src 'self';
     style-src 'self' 'unsafe-inline';
-    img-src 'self' data: blob:;
+    img-src 'self' data: blob: https://gjzhwpzgvdpkflgjesmb.supabase.co;
     font-src 'self';
     connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
     object-src 'none';
@@ -233,6 +233,58 @@
       border-color: var(--wk-amber-text);
       outline: none;
     }
+
+    /* avatar uploader */
+    .avatar-field { display: flex; align-items: center; gap: 16px; }
+    .avatar-preview {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      background: var(--wk-bg-2, #F3EDE0);
+      display: grid; place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+      position: relative;
+      border: 1px solid var(--wk-line);
+    }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .avatar-preview-initial {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 36px;
+      color: var(--wk-ink-soft);
+      line-height: 1;
+    }
+    .avatar-actions { display: flex; flex-direction: column; gap: 6px; }
+    .avatar-actions .field-hint { margin: 0; }
+    .btn-thin {
+      align-self: flex-start;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      background: transparent;
+      border: 1px solid var(--wk-amber-text);
+      border-radius: var(--wk-r-sm);
+      padding: 8px 14px;
+      cursor: pointer;
+      min-height: 36px;
+    }
+    .btn-thin:hover, .btn-thin:focus-visible { background: var(--wk-amber); color: #fff; outline: none; }
+    .btn-thin[disabled] { opacity: 0.5; cursor: not-allowed; }
+    .btn-thin-danger { color: var(--wk-error, #B03A3A); border-color: var(--wk-error, #B03A3A); }
+    .btn-thin-danger:hover, .btn-thin-danger:focus-visible {
+      background: var(--wk-error, #B03A3A); color: #fff;
+    }
+    .avatar-progress {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+    .avatar-progress[hidden] { display: none; }
+
   </style>
 </head>
 <body>
@@ -251,6 +303,19 @@
     </section>
 
     <form id="edit-form" class="edit-form" novalidate>
+      <div class="field avatar-field">
+        <div class="avatar-preview" id="avatar-preview" aria-hidden="true">
+          <span class="avatar-preview-initial" id="avatar-initial">·</span>
+        </div>
+        <div class="avatar-actions">
+          <span class="field-label" id="avatar-label">Profile photo</span>
+          <p class="field-hint">A clear photo, taken in light. The road sees this first.</p>
+          <button type="button" id="avatar-pick" class="btn-thin" aria-describedby="avatar-progress">Change photo</button>
+          <button type="button" id="avatar-remove" class="btn-thin btn-thin-danger" hidden>Remove</button>
+          <span id="avatar-progress" class="avatar-progress" hidden role="status" aria-live="polite"></span>
+        </div>
+      </div>
+
       <div class="field">
         <label class="field-label" for="trail-name">Trail name</label>
         <input
