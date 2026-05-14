@@ -22,6 +22,7 @@ import { refreshIfNeeded, signOut } from './session.js';
  * @property {string|null} wanderkind_id
  * @property {string|null} tier
  * @property {string|null} avatar_url
+ * @property {string|null} cover_url
  * @property {string|null} bio
  * @property {string|null} home_country
  * @property {number|null} nights_walked
@@ -118,14 +119,21 @@ function renderProfile(p, email) {
       <span aria-hidden="true" style="width: 36px"></span>
     </header>
 
-    <section class="me-identity">
+    <section class="me-hero" aria-hidden="true">
+      <div class="me-cover">
+        ${p.cover_url
+          ? `<img src="${escapeHTML(p.cover_url)}" alt="" loading="lazy" />`
+          : ''}
+      </div>
       <div class="me-avatar" aria-hidden="true">
         ${p.avatar_url
           ? `<img src="${escapeHTML(p.avatar_url)}" alt="" />`
           : `<span class="me-avatar-initial">${escapeHTML(initial)}</span>`}
         ${verified ? '<span class="me-verified" title="Verified" aria-label="Verified"></span>' : ''}
       </div>
+    </section>
 
+    <section class="me-identity">
       <h1 class="me-name">${escapeHTML(displayName)}</h1>
       ${hasTrail ? '' : '<a href="/me-edit.html" class="me-set-trail">— Set your trail name</a>'}
 

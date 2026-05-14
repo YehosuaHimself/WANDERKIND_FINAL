@@ -51,7 +51,7 @@ function getRequestedId() {
 
 /** @param {string} id */
 async function fetchProfile(id) {
-  const fields = 'wanderkind_id,pass_number,handle,trail_name,bio,avatar_url,home_country,is_walking,is_hosting,is_verified,show_profile_public';
+  const fields = 'wanderkind_id,pass_number,handle,trail_name,bio,avatar_url,cover_url,home_country,is_walking,is_hosting,is_verified,show_profile_public';
   const wkIdShape = /^WK-[A-Z0-9]{8}$/i.test(id);
 
   /** @type {Array<any>} */
@@ -85,6 +85,26 @@ function esc(s) {
 /** @param {any} p */
 function render(p) {
   if (!content) return;
+
+  // Cover
+  const coverEl = document.getElementById('pass-cover-band');
+  const heroEl = document.getElementById('pass-hero');
+  if (coverEl) {
+    if (p.cover_url) {
+      const img = document.createElement('img');
+      img.alt = '';
+      img.src = p.cover_url;
+      img.decoding = 'async';
+      img.loading = 'eager';
+      coverEl.appendChild(img);
+    } else {
+      // Keep the gradient placeholder for visual rhythm; hero stays in
+      // its overlapping position even without a real cover photo.
+    }
+  }
+  // (If we wanted to collapse to no-overlap when cover is missing, we'd
+  //  add the no-cover class here. The gradient placeholder is on-brand
+  //  enough that the overlap reads correctly either way.)
 
   // Avatar
   const avEl = document.getElementById('pass-avatar');

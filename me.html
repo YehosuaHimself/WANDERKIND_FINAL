@@ -122,21 +122,54 @@
       gap: var(--wk-space-sm);
       padding: var(--wk-space-md) 0;
     }
+
+    /* Hero with cover band */
+    .me-hero {
+      position: relative;
+      margin: 0 calc(-1 * var(--wk-page-x));
+      margin-top: -16px;
+      padding-bottom: 48px;  /* room for avatar half-overlap */
+    }
+    .me-cover {
+      width: 100%;
+      aspect-ratio: 3/1;
+      min-height: 130px;
+      max-height: 200px;
+      background: linear-gradient(135deg, var(--wk-bg-2, #F3EDE0) 0%, var(--wk-parchment, #F3E7CC) 100%);
+      overflow: hidden;
+      position: relative;
+    }
+    .me-cover img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .me-cover::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(250, 250, 245, 0.45) 100%);
+      pointer-events: none;
+    }
+
     .me-avatar {
       position: relative;
-      width: 80px; height: 80px;
+      width: 96px; height: 96px;
       border-radius: 50%;
       background: var(--wk-bg-2);
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
+      margin: -48px auto 0;  /* overlap cover by 50% of avatar height */
+      border: 3px solid var(--wk-bg, #FAFAF5);
+      box-shadow: 0 2px 8px rgba(26, 18, 10, 0.08);
+      z-index: 2;
     }
+    .me-avatar.no-hero { margin-top: 0; }
     .me-avatar img {
       width: 100%; height: 100%;
       object-fit: cover;
     }
     .me-avatar-initial {
       font-family: var(--wk-font-display);
-      font-size: 32px;
+      font-size: 42px;
       font-weight: var(--wk-fw-black);
       color: var(--wk-amber-text);
       letter-spacing: -0.02em;

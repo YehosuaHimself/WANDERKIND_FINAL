@@ -35,6 +35,16 @@ const locClearBtn = /** @type {HTMLButtonElement|null} */ (document.querySelecto
 const locProgress = /** @type {HTMLElement|null} */ (document.querySelector('#loc-progress'));
 const locShowEl = /** @type {HTMLInputElement|null} */ (document.querySelector('#loc-show'));
 const countryInput = /** @type {HTMLInputElement|null} */ (document.querySelector('#home-country'));
+const coverPreview = /** @type {HTMLElement|null} */ (document.querySelector('#cover-preview'));
+const coverEmpty = /** @type {HTMLElement|null} */ (document.querySelector('#cover-empty'));
+const coverPickBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#cover-pick'));
+const coverRemoveBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#cover-remove'));
+const coverProgress = /** @type {HTMLElement|null} */ (document.querySelector('#cover-progress'));
+
+/** @type {string|null} */
+let currentCoverUrl = null;
+/** @type {string|null} */
+let coverLocalPreviewUrl = null;
 
 /** @type {number|null} */
 let currentLat = null;
@@ -77,7 +87,7 @@ async function boot() {
   accessToken = session.accessToken;
 
   // Prefill from existing row (RLS scopes by id)
-  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,lat,lng,show_on_map,home_country&limit=1`;
+  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,cover_url,lat,lng,show_on_map,home_country&limit=1`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -99,6 +109,10 @@ async function boot() {
         if (rows[0].avatar_url) {
           currentAvatarUrl = String(rows[0].avatar_url);
           renderAvatar(currentAvatarUrl);
+        }
+        if (rows[0].cover_url) {
+          currentCoverUrl = String(rows[0].cover_url);
+          renderCover(currentCoverUrl);
         }
         if (typeof rows[0].lat === 'number' && typeof rows[0].lng === 'number') {
           currentLat = Number(rows[0].lat);
@@ -170,6 +184,7 @@ form.addEventListener('submit', async (e) => {
         trail_name: trail,
         bio: bio || null,
         avatar_url: currentAvatarUrl,
+        cover_url: currentCoverUrl,
         lat: currentLat,
         lng: currentLng,
         show_on_map: currentShowOnMap,
@@ -382,8 +397,119 @@ function setAvatarBusy(busy, msg) {
   }
 }
 
-// Release any in-flight object URL on unload.
-window.addEventListener('pagehide', revokeLocalPreview);
+
+
+// --- Cover photo pick / upload ------------------------------------------
+
+function revokeCoverLocalPreview() {
+  if (coverLocalPreviewUrl) {
+    try { URL.revokeObjectURL(coverLocalPreviewUrl); } catch { /* ignore */ }
+    coverLocalPreviewUrl = null;
+  }
+}
+
+if (coverPickBtn) {
+  coverPickBtn.addEventListener('click', async () => {
+    if (!accessToken || !userId) return;
+    try {
+      hideError();
+      const file = await pickImage();
+      if (!file) return;
+      const err = validateImage(file);
+      if (err) { showError(err); return; }
+
+      setCoverBusy(true, 'Preparing…');
+      // Wider crop: 1600 max dim, slightly lower quality (covers are
+      // viewed at small sizes; bigger payload doesn't pay back).
+      const blob = await resizeToJpeg(file, 1600, 0.82);
+      revokeCoverLocalPreview();
+      coverLocalPreviewUrl = URL.createObjectURL(blob);
+      renderCover(coverLocalPreviewUrl);
+
+      setCoverBusy(true, 'Uploading…');
+      await freshToken();
+      const publicUrl = await uploadToBucket({
+        bucket: 'covers',
+        userId,
+        blob,
+        accessToken,
+        contentType: 'image/jpeg',
+        filename: 'cover.jpg',
+      });
+      currentCoverUrl = publicUrl + '?v=' + Date.now();
+      const warm = new Image();
+      warm.decoding = 'async';
+      warm.src = currentCoverUrl;
+      try { await warm.decode(); } catch { /* fallthrough */ }
+      renderCover(currentCoverUrl);
+      revokeCoverLocalPreview();
+      setCoverBusy(false, 'Cover ready. Save to keep it.');
+    } catch (e) {
+      console.error('cover upload failed', e);
+      revokeCoverLocalPreview();
+      if (currentCoverUrl) renderCover(currentCoverUrl);
+      else renderCover(null);
+      setCoverBusy(false);
+      showError(e instanceof Error ? e.message : 'Could not upload that cover.');
+    }
+  });
+}
+
+if (coverRemoveBtn) {
+  coverRemoveBtn.addEventListener('click', async () => {
+    revokeCoverLocalPreview();
+    currentCoverUrl = null;
+    renderCover(null);
+    setCoverBusy(true, 'Removing cover…');
+    try {
+      await freshToken();
+      await deleteFromBucket({ bucket: 'covers', userId, accessToken, filename: 'cover.jpg' });
+    } catch (e) {
+      console.warn('cover delete from storage failed', e);
+    }
+    setCoverBusy(false, 'Cover cleared. Save to confirm.');
+  });
+}
+
+/** @param {string|null} url */
+function renderCover(url) {
+  if (!coverPreview || !coverEmpty) return;
+  // Remove any existing <img>
+  const existing = coverPreview.querySelector('img');
+  if (existing) existing.remove();
+  if (url) {
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = url;
+    img.decoding = 'async';
+    coverPreview.appendChild(img);
+    coverEmpty.hidden = true;
+    if (coverRemoveBtn) coverRemoveBtn.hidden = false;
+  } else {
+    coverEmpty.hidden = false;
+    if (coverRemoveBtn) coverRemoveBtn.hidden = true;
+  }
+}
+
+/** @param {boolean} busy @param {string} [msg] */
+function setCoverBusy(busy, msg) {
+  if (coverPickBtn) {
+    coverPickBtn.disabled = busy;
+    coverPickBtn.setAttribute('aria-busy', String(busy));
+  }
+  if (coverProgress) {
+    if (msg) {
+      coverProgress.textContent = msg;
+      coverProgress.hidden = false;
+    } else if (!busy) {
+      coverProgress.hidden = true;
+      coverProgress.textContent = '';
+    }
+  }
+}
+
+// Release any in-flight object URLs on unload.
+window.addEventListener('pagehide', () => { revokeLocalPreview(); revokeCoverLocalPreview(); });
 
 
 // --- Location pin -------------------------------------------------------
