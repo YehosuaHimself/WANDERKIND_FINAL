@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.33-day3a-location';
+const VERSION = '0.1.34-day3b-map';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -53,6 +53,14 @@ const PRECACHE = [
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
   '/js/map-live.js',
+  '/js/map-leaflet.js',
+  '/js/vendor/leaflet.js',
+  '/css/vendor/leaflet.css',
+  '/css/vendor/images/marker-icon.png',
+  '/css/vendor/images/marker-icon-2x.png',
+  '/css/vendor/images/marker-shadow.png',
+  '/css/vendor/images/layers.png',
+  '/css/vendor/images/layers-2x.png',
   '/js/pwa-mode.js',
 
   /* Icons — offline first-load needs these or every seal renders as

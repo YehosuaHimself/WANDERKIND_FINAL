@@ -22,15 +22,16 @@
     default-src 'self';
     script-src 'self';
     style-src 'self' 'unsafe-inline';
-    img-src 'self' data: blob:;
+    img-src 'self' data: blob: https://*.basemaps.cartocdn.com https://gjzhwpzgvdpkflgjesmb.supabase.co;
     font-src 'self';
-    connect-src 'self' https://*.supabase.co;
+    connect-src 'self' https://*.supabase.co https://*.basemaps.cartocdn.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
   " />
 
   <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/vendor/leaflet.css" />
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/typography.css" />
   <link rel="stylesheet" href="/css/components.css" />
@@ -353,6 +354,110 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
+
+    /* Leaflet container fills the canvas */
+    #map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--wk-bg-2, #F3EDE0);
+      /* Allow normal touch panning */
+      touch-action: none;
+    }
+
+    /* Hide the parchment-grid + ghost markers when the real map exists */
+    .map-canvas .map-grid,
+    .map-canvas .map-pin[aria-hidden="true"] {
+      display: none !important;
+    }
+    .map-canvas .map-pin[data-self="true"] { display: none !important; }
+    .map-canvas::before, .map-canvas::after { display: none !important; }
+    .map-canvas { background: var(--wk-bg-2, #F3EDE0); }
+
+    /* Custom amber-dot divIcon */
+    .wk-marker { pointer-events: auto; }
+    .wk-marker .wk-marker-inner {
+      display: block;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--wk-amber, #C8762A);
+      box-shadow: 0 0 0 3px rgba(200, 118, 42, 0.18), 0 1px 2px rgba(26, 18, 10, 0.25);
+      transition: transform 120ms ease-out;
+    }
+    .wk-marker:hover .wk-marker-inner { transform: scale(1.18); }
+    .wk-marker--self .wk-marker-inner {
+      background: var(--wk-amber-text, #B05F1F);
+      box-shadow: 0 0 0 4px rgba(176, 95, 31, 0.22), 0 0 0 6px rgba(176, 95, 31, 0.10), 0 1px 2px rgba(26, 18, 10, 0.3);
+    }
+    .wk-marker--walking .wk-marker-inner {
+      animation: wk-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes wk-pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(200, 118, 42, 0.18), 0 1px 2px rgba(26, 18, 10, 0.25); }
+      50%      { box-shadow: 0 0 0 8px rgba(200, 118, 42, 0.10), 0 1px 2px rgba(26, 18, 10, 0.25); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wk-marker--walking .wk-marker-inner { animation: none; }
+    }
+
+    /* Popup styling — embassy register, cream card */
+    .leaflet-popup-content-wrapper {
+      background: var(--wk-bg, #FAFAF5);
+      color: var(--wk-ink, #1A120A);
+      border: 1px solid var(--wk-line, #E5DCC8);
+      border-radius: var(--wk-r-md, 10px);
+      box-shadow: 0 6px 18px rgba(26, 18, 10, 0.12);
+    }
+    .leaflet-popup-tip { background: var(--wk-bg, #FAFAF5); border: 1px solid var(--wk-line, #E5DCC8); }
+    .leaflet-popup-content { margin: 12px 14px; min-width: 160px; }
+    .wk-popup-name {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--wk-ink);
+      margin-bottom: 2px;
+    }
+    .wk-popup-wkid {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-bottom: 10px;
+    }
+    .wk-popup-link {
+      font-family: var(--wk-font-mono);
+      font-size: 12px;
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--wk-amber-text);
+      padding-bottom: 1px;
+    }
+    .wk-popup-link:hover, .wk-popup-link:focus-visible { color: var(--wk-ink); border-color: var(--wk-ink); outline: none; }
+
+    /* Attribution + zoom in our register */
+    .leaflet-control-attribution {
+      background: rgba(250, 250, 245, 0.92) !important;
+      font-family: var(--wk-font-mono) !important;
+      font-size: 10px !important;
+      color: var(--wk-ink-muted) !important;
+    }
+    .leaflet-control-attribution a { color: var(--wk-amber-text) !important; }
+    .leaflet-control-zoom a {
+      background: var(--wk-bg, #FAFAF5) !important;
+      color: var(--wk-ink, #1A120A) !important;
+      border-color: var(--wk-line, #E5DCC8) !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background: var(--wk-bg-2, #F3EDE0) !important;
+    }
+
+    /* Empty sheet floats above the map when shown */
+    .empty-sheet { z-index: 500; }
+    .map-legend { z-index: 500; }
   </style>
 </head>
 <body>
@@ -406,6 +511,7 @@
   </nav>
 
   <main class="map-canvas" id="map-canvas" role="main" aria-label="Map of nearby wanderkinds">
+    <div id="map" aria-hidden="false"></div>
 
     <!-- Legend (host-type encoding) -->
     <aside class="map-legend" aria-label="Host-type legend">
@@ -424,8 +530,8 @@
     <span class="map-pin" data-type="water"    style="left:38%;top:62%" aria-hidden="true"></span>
     <span class="map-pin" data-type="verified" style="left:72%;top:58%" aria-hidden="true"></span>
 
-    <!-- Empty / first-visit sheet -->
-    <section class="empty-sheet" aria-labelledby="empty-title">
+    <!-- Empty / first-visit sheet (revealed by JS only when zero markers) -->
+    <section class="empty-sheet" aria-labelledby="empty-title" hidden>
       <span class="eyebrow">— Day Zero</span>
       <p class="empty-title" id="empty-title">No wanderkinds here yet.</p>
       <p class="empty-sub">Be the first to host your block. Open your door — even just for a glass of water — and you put a pin on this map.</p>
@@ -438,10 +544,10 @@
 
   <wk-tabbar></wk-tabbar>
 
+  <script src="/js/vendor/leaflet.js" defer></script>
   <script type="module" src="/js/map-session-aware.js"></script>
 
   <script type="module" src="/js/auth-bypass.js"></script>
-  <script type="module" src="/js/map-live.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
 </body>
