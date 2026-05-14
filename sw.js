@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.37-day5-cover-band';
+const VERSION = '0.1.38-day5-refine';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

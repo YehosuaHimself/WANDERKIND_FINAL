@@ -86,25 +86,17 @@ function esc(s) {
 function render(p) {
   if (!content) return;
 
-  // Cover
+  // Cover — render only when present; the gradient placeholder
+  // is on-brand and the avatar overlap reads correctly either way.
   const coverEl = document.getElementById('pass-cover-band');
-  const heroEl = document.getElementById('pass-hero');
-  if (coverEl) {
-    if (p.cover_url) {
-      const img = document.createElement('img');
-      img.alt = '';
-      img.src = p.cover_url;
-      img.decoding = 'async';
-      img.loading = 'eager';
-      coverEl.appendChild(img);
-    } else {
-      // Keep the gradient placeholder for visual rhythm; hero stays in
-      // its overlapping position even without a real cover photo.
-    }
+  if (coverEl && p.cover_url) {
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = p.cover_url;
+    img.decoding = 'async';
+    img.loading = 'eager';
+    coverEl.appendChild(img);
   }
-  // (If we wanted to collapse to no-overlap when cover is missing, we'd
-  //  add the no-cover class here. The gradient placeholder is on-brand
-  //  enough that the overlap reads correctly either way.)
 
   // Avatar
   const avEl = document.getElementById('pass-avatar');

@@ -122,10 +122,10 @@ function renderProfile(p, email) {
     <section class="me-hero" aria-hidden="true">
       <div class="me-cover">
         ${p.cover_url
-          ? `<img src="${escapeHTML(p.cover_url)}" alt="" loading="lazy" />`
+          ? `<img src="${escapeHTML(p.cover_url)}" alt="" />`
           : ''}
       </div>
-      <div class="me-avatar" aria-hidden="true">
+      <div class="me-avatar">
         ${p.avatar_url
           ? `<img src="${escapeHTML(p.avatar_url)}" alt="" />`
           : `<span class="me-avatar-initial">${escapeHTML(initial)}</span>`}
