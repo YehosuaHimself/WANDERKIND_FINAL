@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Pass</title>
+  <meta name="description" content="A wanderkind's pass — sovereign travel identity for the road." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+
+    main.pass {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(env(safe-area-inset-bottom) + 80px);
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+
+    .pass-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--wk-space-sm) 0;
+    }
+    .pass-back {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: var(--wk-r-sm);
+    }
+    .pass-back:hover, .pass-back:focus-visible {
+      color: var(--wk-amber-text);
+      outline: none;
+    }
+    .pass-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+
+    /* Hero */
+    .pass-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--wk-space-sm);
+      padding: var(--wk-space-md) 0;
+    }
+    .pass-avatar {
+      width: 128px; height: 128px;
+      border-radius: 50%;
+      background: var(--wk-bg-2, #F3EDE0);
+      display: grid; place-items: center;
+      overflow: hidden;
+      border: 2px solid var(--wk-line);
+      position: relative;
+    }
+    .pass-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pass-avatar-initial {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 56px;
+      color: var(--wk-amber-text);
+      line-height: 1;
+    }
+    .pass-verified {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--wk-success, #5A7A2B);
+      display: grid; place-items: center;
+      color: #fff;
+      border: 2px solid var(--wk-bg);
+      box-shadow: 0 1px 3px rgba(26, 18, 10, 0.2);
+    }
+    .pass-verified svg { width: 16px; height: 16px; }
+
+    .pass-trail {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 32px;
+      letter-spacing: -0.01em;
+      color: var(--wk-ink);
+      text-align: center;
+      margin: 0;
+    }
+    .pass-meta {
+      font-family: var(--wk-font-mono);
+      font-size: 12px;
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      text-align: center;
+      margin: 0;
+    }
+    .pass-handle {
+      color: var(--wk-amber-text);
+    }
+
+    /* Bio */
+    .pass-bio {
+      font-family: var(--wk-font-display);
+      font-size: 17px;
+      line-height: 1.5;
+      color: var(--wk-ink);
+      text-align: center;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 0 var(--wk-space-sm);
+    }
+    .pass-bio:empty { display: none; }
+
+    /* Pills row */
+    .pass-pills {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: var(--wk-space-sm) 0;
+    }
+    .pass-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--wk-bg-2, #F3EDE0);
+      border: 1px solid var(--wk-line);
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+    }
+    .pass-pill[data-active="true"] {
+      background: rgba(200, 118, 42, 0.10);
+      border-color: var(--wk-amber-text);
+      color: var(--wk-amber-text);
+    }
+    .pass-pill .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--wk-line);
+    }
+    .pass-pill[data-active="true"] .dot {
+      background: var(--wk-amber-text);
+      animation: pp-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pp-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(200, 118, 42, 0.5); }
+      50%      { box-shadow: 0 0 0 6px rgba(200, 118, 42, 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pass-pill[data-active="true"] .dot { animation: none; }
+    }
+
+    /* Home line */
+    .pass-home {
+      text-align: center;
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      color: var(--wk-ink-soft);
+    }
+    .pass-home:empty { display: none; }
+
+    /* Stats placeholder */
+    .pass-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--wk-line);
+      border-bottom: 1px solid var(--wk-line);
+      padding: 16px 0;
+      margin: var(--wk-space-sm) 0;
+    }
+    .pass-stat {
+      text-align: center;
+      border-right: 1px solid var(--wk-line);
+      padding: 4px 0;
+    }
+    .pass-stat:last-child { border-right: none; }
+    .pass-stat-n {
+      display: block;
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--wk-ink);
+      line-height: 1.1;
+    }
+    .pass-stat-l {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-top: 4px;
+    }
+
+    /* CTA */
+    .pass-cta-row {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-sm);
+      align-items: center;
+    }
+    .btn-amber {
+      display: inline-block;
+      min-width: 200px;
+      padding: 14px 22px;
+      background: var(--wk-amber);
+      color: #fff;
+      font-family: var(--wk-font-display);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      border: none;
+      border-radius: var(--wk-r-md);
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .btn-amber:hover, .btn-amber:focus-visible {
+      background: var(--wk-amber-hi, #E09A52);
+      outline: none;
+    }
+    .btn-ghost {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+    }
+    .btn-ghost:hover, .btn-ghost:focus-visible { color: var(--wk-amber-text); outline: none; }
+
+    /* Loading + empty */
+    .pass-loading, .pass-empty {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--wk-ink-muted);
+    }
+    .pass-empty-title {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--wk-ink);
+      margin: 16px 0 8px;
+    }
+    .pass-empty-sub {
+      font-family: var(--wk-font-display);
+      font-size: 15px;
+      color: var(--wk-ink-soft);
+      max-width: 320px;
+      margin: 0 auto 24px;
+      line-height: 1.5;
+    }
+
+    .pass-seal {
+      width: 64px; height: 64px;
+      margin: 0 auto;
+      opacity: 0.6;
+    }
+
+    /* Footer */
+    .pass-footer {
+      text-align: center;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      padding: var(--wk-space-md) 0;
+      border-top: 1px solid var(--wk-line);
+      margin-top: var(--wk-space-md);
+    }
+  </style>
+</head>
+<body>
+  <a href="#pass" class="skip-to-content">Skip to pass</a>
+
+  <main class="pass" id="pass">
+    <header class="pass-topbar">
+      <a href="/map.html" class="pass-back" aria-label="Back to map">← Map</a>
+      <span class="pass-eyebrow">— Pass</span>
+      <span style="width: 60px" aria-hidden="true"></span>
+    </header>
+
+    <!-- Loading state (default) -->
+    <div id="pass-loading" class="pass-loading" aria-live="polite">
+      <img src="/assets/icons/seal.svg" alt="" class="pass-seal" aria-hidden="true" />
+      <p style="margin-top: 16px;">Loading pass…</p>
+    </div>
+
+    <!-- Content state (hidden until data loads) -->
+    <article id="pass-content" hidden>
+      <div class="pass-hero">
+        <div class="pass-avatar" id="pass-avatar">
+          <span class="pass-avatar-initial" id="pass-initial">·</span>
+        </div>
+        <h1 class="pass-trail" id="pass-trail">Wanderkind</h1>
+        <p class="pass-meta">
+          <span id="pass-wkid">WK-XXXXXXXX</span>
+          <span id="pass-handle-sep" hidden> · </span>
+          <span class="pass-handle" id="pass-handle"></span>
+        </p>
+      </div>
+
+      <p class="pass-bio" id="pass-bio"></p>
+
+      <div class="pass-pills">
+        <span class="pass-pill" id="pill-walking" data-active="false">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="pill-walking-text">At home</span>
+        </span>
+        <span class="pass-pill" id="pill-hosting" data-active="false">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="pill-hosting-text">Not hosting</span>
+        </span>
+      </div>
+
+      <p class="pass-home" id="pass-home"></p>
+
+      <div class="pass-stats" aria-label="Lifetime stamps">
+        <div class="pass-stat"><span class="pass-stat-n">0</span><span class="pass-stat-l">Nights walked</span></div>
+        <div class="pass-stat"><span class="pass-stat-n">0</span><span class="pass-stat-l">Stamps</span></div>
+        <div class="pass-stat"><span class="pass-stat-n">0</span><span class="pass-stat-l">Nights hosted</span></div>
+      </div>
+
+      <div class="pass-cta-row">
+        <a href="/install.html" id="pass-cta" class="btn-amber">Open in Wanderkind</a>
+        <a href="/" class="btn-ghost">What is Wanderkind?</a>
+      </div>
+
+      <footer class="pass-footer">
+        <a href="/" style="color: inherit; text-decoration: none;">wanderkind.love</a>
+        &nbsp;·&nbsp;
+        Sovereign travel identity
+      </footer>
+    </article>
+
+    <!-- Not-found state -->
+    <div id="pass-empty" class="pass-empty" hidden>
+      <img src="/assets/icons/seal.svg" alt="" class="pass-seal" aria-hidden="true" />
+      <h1 class="pass-empty-title" id="pass-empty-title">Not a pass we recognise</h1>
+      <p class="pass-empty-sub" id="pass-empty-sub">This wanderkind may be private, or the link is misspelled.</p>
+      <a href="/map.html" class="btn-amber">Back to map</a>
+    </div>
+  </main>
+
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/pass-public.js"></script>
+</body>
+</html>

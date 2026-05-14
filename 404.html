@@ -3,12 +3,34 @@
 <head>
   <meta charset="utf-8" />
   <title>Wanderkind</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="refresh" content="0; url=/" />
   <script>
-    // GitHub Pages SPA fallback: any unknown path bounces to / with the
-    // original path encoded so the client-side router can resolve it.
+    // GitHub Pages routes unknown paths to this file. Three behaviors:
+    //
+    //   /u/<X>        → forward to /u/?id=<X> (the public-pass page)
+    //   /verify/<X>   → forward to /verify/?id=<X>  (future)
+    //   anything else → bounce to / and store the path so the SPA can
+    //                   resolve it client-side
     (function () {
-      var path = location.pathname + location.search + location.hash;
-      sessionStorage.setItem('wk-redirect', path);
+      var path = location.pathname;
+      var qs = location.search;
+      var hash = location.hash;
+      var m;
+      // /u/<wkid|handle>
+      m = path.match(/^\/u\/([^\/]+)\/?$/);
+      if (m) {
+        location.replace('/u/?id=' + encodeURIComponent(m[1]) + qs + hash);
+        return;
+      }
+      // /verify/<token>
+      m = path.match(/^\/verify\/([^\/]+)\/?$/);
+      if (m) {
+        location.replace('/verify/?id=' + encodeURIComponent(m[1]) + qs + hash);
+        return;
+      }
+      // Anything else — store and bounce home
+      sessionStorage.setItem('wk-redirect', path + qs + hash);
       location.replace('/');
     })();
   </script>

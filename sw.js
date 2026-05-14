@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.35-review-pass';
+const VERSION = '0.1.36-day4-pass-public';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -20,6 +20,8 @@ const PRECACHE = [
   '/install.html',   // mobile gate
   '/app.html',       // the actual PWA shell
   '/map.html',       // map register page
+  '/u/index.html',   // public-pass page (404 routes /u/<X> to ?id=X)
+  '/js/pass-public.js',
   '/auth.html',      // magic-link sign-in
   '/me.html',        // signed-in profile
   '/more.html',      // central hub
