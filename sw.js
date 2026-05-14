@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.32-day2-refine';
+const VERSION = '0.1.33-day3a-location';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',

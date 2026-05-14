@@ -285,6 +285,79 @@
     }
     .avatar-progress[hidden] { display: none; }
 
+
+    /* location pin */
+    .location-card {
+      display: flex; flex-direction: column;
+      gap: var(--wk-space-sm);
+    }
+    .location-status {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--wk-r-sm);
+      background: var(--wk-bg-2, #F3EDE0);
+      border: 1px solid var(--wk-line);
+      min-height: 50px;
+    }
+    .location-status .pin-dot {
+      flex: 0 0 auto;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--wk-amber-text);
+      box-shadow: 0 0 0 3px rgba(200, 118, 42, 0.12);
+    }
+    .location-status[data-state="empty"] .pin-dot {
+      background: var(--wk-line);
+      box-shadow: none;
+    }
+    .location-status-text {
+      font-family: var(--wk-font-mono);
+      font-size: 12px;
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink);
+    }
+    .location-status[data-state="empty"] .location-status-text {
+      color: var(--wk-ink-muted);
+    }
+    .location-row {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .location-show {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+    .location-show input[type=checkbox] {
+      flex: 0 0 auto;
+      width: 20px; height: 20px;
+      margin-top: 2px;
+      accent-color: var(--wk-amber);
+      cursor: pointer;
+    }
+    .location-show .label {
+      font-family: var(--wk-font-display);
+      font-size: var(--wk-fs-body);
+      color: var(--wk-ink);
+      line-height: 1.4;
+    }
+    .location-show .label .hint {
+      display: block;
+      font-family: var(--wk-font-display);
+      font-size: 13px;
+      color: var(--wk-ink-muted);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+    .location-progress {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-micro);
+      letter-spacing: var(--wk-ls-mono);
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      min-height: 16px;
+    }
+    .location-progress[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -313,6 +386,29 @@
           <button type="button" id="avatar-pick" class="btn-thin" aria-label="Change your profile photo" aria-describedby="avatar-progress">Change photo</button>
           <button type="button" id="avatar-remove" class="btn-thin btn-thin-danger" aria-label="Remove your profile photo" hidden>Remove</button>
           <span id="avatar-progress" class="avatar-progress" hidden role="status" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field-label" id="home-label">Home location</span>
+        <p class="field-hint">Your starting point. Only shown to others when you opt in below — and coordinates are rounded to ~100&nbsp;m for privacy.</p>
+        <div class="location-card" aria-labelledby="home-label">
+          <div class="location-status" id="loc-status" data-state="empty">
+            <span class="pin-dot" aria-hidden="true"></span>
+            <span class="location-status-text" id="loc-status-text">No pin yet</span>
+          </div>
+          <div class="location-row">
+            <button type="button" id="loc-pick" class="btn-thin" aria-describedby="loc-progress">Use my current location</button>
+            <button type="button" id="loc-clear" class="btn-thin btn-thin-danger" hidden>Clear pin</button>
+          </div>
+          <span id="loc-progress" class="location-progress" hidden role="status" aria-live="polite"></span>
+          <label class="location-show">
+            <input type="checkbox" id="loc-show" />
+            <span class="label">
+              Show me on the Map
+              <span class="hint">Other wanderkinds see a soft amber dot where you are. Off by default.</span>
+            </span>
+          </label>
         </div>
       </div>
 

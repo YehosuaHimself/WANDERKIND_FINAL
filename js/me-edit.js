@@ -28,6 +28,19 @@ const avatarInitial = /** @type {HTMLElement|null} */ (document.querySelector('#
 const avatarPickBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#avatar-pick'));
 const avatarRemoveBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#avatar-remove'));
 const avatarProgress = /** @type {HTMLElement|null} */ (document.querySelector('#avatar-progress'));
+const locStatus = /** @type {HTMLElement|null} */ (document.querySelector('#loc-status'));
+const locStatusText = /** @type {HTMLElement|null} */ (document.querySelector('#loc-status-text'));
+const locPickBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#loc-pick'));
+const locClearBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#loc-clear'));
+const locProgress = /** @type {HTMLElement|null} */ (document.querySelector('#loc-progress'));
+const locShowEl = /** @type {HTMLInputElement|null} */ (document.querySelector('#loc-show'));
+
+/** @type {number|null} */
+let currentLat = null;
+/** @type {number|null} */
+let currentLng = null;
+/** @type {boolean} */
+let currentShowOnMap = false;
 
 /** @type {string|null} */
 let currentAvatarUrl = null;
@@ -63,7 +76,7 @@ async function boot() {
   accessToken = session.accessToken;
 
   // Prefill from existing row (RLS scopes by id)
-  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url&limit=1`;
+  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,lat,lng,show_on_map&limit=1`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -86,6 +99,12 @@ async function boot() {
           currentAvatarUrl = String(rows[0].avatar_url);
           renderAvatar(currentAvatarUrl);
         }
+        if (typeof rows[0].lat === 'number' && typeof rows[0].lng === 'number') {
+          currentLat = Number(rows[0].lat);
+          currentLng = Number(rows[0].lng);
+        }
+        currentShowOnMap = Boolean(rows[0].show_on_map);
+        renderLocation();
       }
     }
   } catch { /* prefill is best-effort */ }
@@ -149,6 +168,9 @@ form.addEventListener('submit', async (e) => {
         trail_name: trail,
         bio: bio || null,
         avatar_url: currentAvatarUrl,
+        lat: currentLat,
+        lng: currentLng,
+        show_on_map: currentShowOnMap,
         // Wanderkind's social contract: only the chosen trail name is
         // public. The civilian identity (given_name / surname auto-
         // populated by the auth trigger from email metadata) is wiped
@@ -344,3 +366,94 @@ function setAvatarBusy(busy, msg) {
 
 // Release any in-flight object URL on unload.
 window.addEventListener('pagehide', revokeLocalPreview);
+
+
+// --- Location pin -------------------------------------------------------
+
+if (locPickBtn) {
+  locPickBtn.addEventListener('click', () => {
+    if (!('geolocation' in navigator)) {
+      setLocBusy(false, 'Your browser does not support geolocation.');
+      return;
+    }
+    setLocBusy(true, 'Looking up your location…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        // Round to 3 decimal places (~110 m precision) for privacy.
+        currentLat = Math.round(pos.coords.latitude * 1000) / 1000;
+        currentLng = Math.round(pos.coords.longitude * 1000) / 1000;
+        renderLocation();
+        setLocBusy(false, 'Pin set. Save to confirm.');
+      },
+      (err) => {
+        const msg = err.code === 1
+          ? 'Permission denied — enable location in settings, then try again.'
+          : err.code === 2
+            ? 'Could not determine your location. Try again from a different spot.'
+            : err.code === 3
+              ? 'Location request timed out.'
+              : 'Could not get your location.';
+        setLocBusy(false, msg);
+      },
+      { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }
+    );
+  });
+}
+
+if (locClearBtn) {
+  locClearBtn.addEventListener('click', () => {
+    currentLat = null;
+    currentLng = null;
+    renderLocation();
+    setLocBusy(false, 'Pin cleared. Save to confirm.');
+  });
+}
+
+if (locShowEl) {
+  locShowEl.addEventListener('change', () => {
+    currentShowOnMap = locShowEl.checked;
+    renderLocation();
+  });
+}
+
+function renderLocation() {
+  if (!locStatus || !locStatusText) return;
+  if (typeof currentLat === 'number' && typeof currentLng === 'number') {
+    locStatus.dataset.state = 'set';
+    locStatusText.textContent = formatCoords(currentLat, currentLng);
+    if (locClearBtn) locClearBtn.hidden = false;
+  } else {
+    locStatus.dataset.state = 'empty';
+    locStatusText.textContent = 'No pin yet';
+    if (locClearBtn) locClearBtn.hidden = true;
+  }
+  if (locShowEl) {
+    locShowEl.checked = currentShowOnMap;
+    // Can't show on map without a pin
+    locShowEl.disabled = (currentLat === null || currentLng === null);
+  }
+}
+
+/** @param {number} lat @param {number} lng */
+function formatCoords(lat, lng) {
+  const ns = lat >= 0 ? 'N' : 'S';
+  const ew = lng >= 0 ? 'E' : 'W';
+  return `${Math.abs(lat).toFixed(3)}° ${ns}  ·  ${Math.abs(lng).toFixed(3)}° ${ew}`;
+}
+
+/** @param {boolean} busy @param {string} [msg] */
+function setLocBusy(busy, msg) {
+  if (locPickBtn) {
+    locPickBtn.disabled = busy;
+    locPickBtn.setAttribute('aria-busy', String(busy));
+  }
+  if (locProgress) {
+    if (msg) {
+      locProgress.textContent = msg;
+      locProgress.hidden = false;
+    } else if (!busy) {
+      locProgress.hidden = true;
+      locProgress.textContent = '';
+    }
+  }
+}
