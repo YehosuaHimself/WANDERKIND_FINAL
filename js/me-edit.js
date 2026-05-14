@@ -13,7 +13,7 @@
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 import { refreshIfNeeded, signOut } from './session.js';
-import { pickImage, validateImage, resizeToJpeg, uploadToBucket } from './uploads.js';
+import { pickImage, validateImage, resizeToJpeg, uploadToBucket, deleteFromBucket } from './uploads.js';
 
 const form = /** @type {HTMLFormElement|null} */ (document.querySelector('#edit-form'));
 const trailInput = /** @type {HTMLInputElement|null} */ (document.querySelector('#trail-name'));
@@ -224,6 +224,16 @@ function hideError() {
 
 // --- Avatar pick / upload ------------------------------------------------
 
+/** Tracks any object URL we've handed to <img>, so we can revoke it. */
+let localPreviewUrl = /** @type {string|null} */ (null);
+
+function revokeLocalPreview() {
+  if (localPreviewUrl) {
+    try { URL.revokeObjectURL(localPreviewUrl); } catch { /* ignore */ }
+    localPreviewUrl = null;
+  }
+}
+
 if (avatarPickBtn) {
   avatarPickBtn.addEventListener('click', async () => {
     if (!accessToken || !userId) return;
@@ -236,10 +246,13 @@ if (avatarPickBtn) {
 
       setAvatarBusy(true, 'Preparing…');
       const blob = await resizeToJpeg(file, 800, 0.86);
-      const localUrl = URL.createObjectURL(blob);
-      renderAvatar(localUrl);
+      revokeLocalPreview();
+      localPreviewUrl = URL.createObjectURL(blob);
+      renderAvatar(localPreviewUrl);
 
       setAvatarBusy(true, 'Uploading…');
+      // Stable filename = avatar.jpg (x-upsert overwrites). One object
+      // per user per bucket. No orphan accumulation.
       const publicUrl = await uploadToBucket({
         bucket: 'avatars',
         userId,
@@ -247,14 +260,21 @@ if (avatarPickBtn) {
         accessToken,
         contentType: 'image/jpeg',
       });
-      // Bust CDN cache for an existing object replaced via x-upsert
-      const cacheBust = publicUrl + '?v=' + Date.now();
-      currentAvatarUrl = cacheBust;
-      URL.revokeObjectURL(localUrl);
+      // Cache-bust the public URL so the browser fetches the new bytes
+      // even though the bucket key didn't change.
+      currentAvatarUrl = publicUrl + '?v=' + Date.now();
+      // Pre-warm the image so the swap from blob:→https:// is instant
+      // before we revoke the local URL.
+      const warm = new Image();
+      warm.decoding = 'async';
+      warm.src = currentAvatarUrl;
+      try { await warm.decode(); } catch { /* fallthrough */ }
       renderAvatar(currentAvatarUrl);
+      revokeLocalPreview();
       setAvatarBusy(false, 'Photo ready. Save to keep it.');
     } catch (e) {
       console.error('avatar upload failed', e);
+      revokeLocalPreview();
       // Restore previous
       if (currentAvatarUrl) renderAvatar(currentAvatarUrl);
       else renderAvatar(null);
@@ -265,9 +285,20 @@ if (avatarPickBtn) {
 }
 
 if (avatarRemoveBtn) {
-  avatarRemoveBtn.addEventListener('click', () => {
+  avatarRemoveBtn.addEventListener('click', async () => {
+    revokeLocalPreview();
     currentAvatarUrl = null;
     renderAvatar(null);
+    setAvatarBusy(true, 'Removing photo…');
+    try {
+      await deleteFromBucket({ bucket: 'avatars', userId, accessToken });
+    } catch (e) {
+      // The storage object may already be gone (404 is treated as
+      // success by deleteFromBucket). For any real error, the DB row
+      // will still be nulled on Save so the avatar stops surfacing
+      // even if the bucket object lingers.
+      console.warn('avatar delete from storage failed', e);
+    }
     setAvatarBusy(false, 'Photo cleared. Save to confirm.');
   });
 }
@@ -310,3 +341,6 @@ function setAvatarBusy(busy, msg) {
     }
   }
 }
+
+// Release any in-flight object URL on unload.
+window.addEventListener('pagehide', revokeLocalPreview);

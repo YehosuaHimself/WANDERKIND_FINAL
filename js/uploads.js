@@ -1,5 +1,5 @@
 /**
- * /js/uploads.js — image picker → client-side resize → Supabase Storage.
+ * /js/uploads.js -- image picker → client-side resize → Supabase Storage.
  *
  *   No "Choose Files" wildcard. Tight `accept` per CANON.
  *   Client-side downscale + JPEG re-encode keeps payloads small and
@@ -15,7 +15,7 @@
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
-/** Tight MIME whitelist — no wildcards, no Files.app trapdoor. */
+/** Tight MIME whitelist -- no wildcards, no Files.app trapdoor. */
 const ACCEPT_MIME = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif';
 
 /** Max payload before client-side resize is forced. */
@@ -32,7 +32,7 @@ export function pickImage() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = ACCEPT_MIME;
-    // No `multiple`, no `capture` — give the user the calmest sheet iOS allows.
+    // No `multiple`, no `capture` -- give the user the calmest sheet iOS allows.
     input.style.position = 'fixed';
     input.style.top = '-1000px';
     input.style.opacity = '0';
@@ -52,7 +52,7 @@ export function pickImage() {
       settle(f || null);
     });
 
-    // iOS Safari sometimes never fires `change` on cancel — focus return = cancel.
+    // iOS Safari sometimes never fires `change` on cancel -- focus return = cancel.
     const focusFallback = () => {
       setTimeout(() => {
         if (!settled && (!input.files || !input.files.length)) settle(null);
@@ -89,8 +89,8 @@ export function validateImage(file) {
  * Resize an image File to a max dimension, re-encode as JPEG, strip EXIF.
  *
  * @param {File} file
- * @param {number} maxDim   — max width or height in CSS pixels
- * @param {number} quality  — JPEG quality 0.0–1.0
+ * @param {number} maxDim   -- max width or height in CSS pixels
+ * @param {number} quality  -- JPEG quality 0.0–1.0
  * @returns {Promise<Blob>}
  */
 export async function resizeToJpeg(file, maxDim = 800, quality = 0.86) {
@@ -171,13 +171,15 @@ function loadImg(file) {
  * @param {Blob}   args.blob
  * @param {string} args.accessToken
  * @param {string} [args.contentType]
- * @param {string} [args.filename]
+ * @param {string} [args.filename]  -- stable name; defaults to 'avatar.jpg'
  * @returns {Promise<string>} The public URL of the uploaded object.
+ *
+ * Uses a stable filename + x-upsert so each user owns a single object
+ * per bucket. Older revisions are overwritten, not orphaned. Cache-
+ * busting is the caller's job (append ?v=<ts> to the returned URL).
  */
-export async function uploadToBucket({ bucket, userId, blob, accessToken, contentType = 'image/jpeg', filename }) {
-  const name = filename || `${Date.now()}.jpg`;
-  const path = `${userId}/${name}`;
-  const url = `${SUPABASE_URL}/storage/v1/object/${bucket}/${encodeURIComponent(userId)}/${encodeURIComponent(name)}`;
+export async function uploadToBucket({ bucket, userId, blob, accessToken, contentType = 'image/jpeg', filename = 'avatar.jpg' }) {
+  const url = `${SUPABASE_URL}/storage/v1/object/${bucket}/${encodeURIComponent(userId)}/${encodeURIComponent(filename)}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -194,5 +196,33 @@ export async function uploadToBucket({ bucket, userId, blob, accessToken, conten
     try { detail = (await res.json()).message || ''; } catch { /* not JSON */ }
     throw new Error(detail || `Upload failed (${res.status}).`);
   }
-  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${encodeURIComponent(userId)}/${encodeURIComponent(name)}`;
+  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${encodeURIComponent(userId)}/${encodeURIComponent(filename)}`;
+}
+
+
+/**
+ * Delete an object from a bucket. RLS scopes by first path segment.
+ * Silently 404 is treated as success (object already gone is fine).
+ *
+ * @param {object} args
+ * @param {string} args.bucket
+ * @param {string} args.userId
+ * @param {string} args.accessToken
+ * @param {string} [args.filename]
+ * @returns {Promise<void>}
+ */
+export async function deleteFromBucket({ bucket, userId, accessToken, filename = 'avatar.jpg' }) {
+  const url = `${SUPABASE_URL}/storage/v1/object/${bucket}/${encodeURIComponent(userId)}/${encodeURIComponent(filename)}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  if (!res.ok && res.status !== 404) {
+    let detail = '';
+    try { detail = (await res.json()).message || ''; } catch { /* not JSON */ }
+    throw new Error(detail || `Delete failed (${res.status}).`);
+  }
 }

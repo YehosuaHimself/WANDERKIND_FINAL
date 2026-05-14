@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.31-week1-day2-avatars';
+const VERSION = '0.1.32-day2-refine';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
