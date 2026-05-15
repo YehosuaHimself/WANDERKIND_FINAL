@@ -491,6 +491,69 @@
     </div>
   </main>
 
+  
+  <!-- Vouches summary — moved here from /more.html. Lives in the profile. -->
+  <section class="me-vouches" aria-labelledby="me-vouches-title" style="
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 0 var(--wk-page-x) calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px);
+  ">
+    <div style="
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    ">
+      <div style="display:flex; align-items:baseline; gap:10px;">
+        <span style="
+          font-family: var(--wk-font-mono);
+          font-size: var(--wk-fs-nano);
+          letter-spacing: 0.30em;
+          text-transform: uppercase;
+          color: var(--wk-amber-text);
+          font-weight: var(--wk-fw-bold);
+        ">— Vouches</span>
+        <span id="me-vouches-count" style="
+          margin-left: auto;
+          font-family: var(--wk-font-mono);
+          font-size: var(--wk-fs-nano);
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--wk-ink-muted);
+        ">· 0</span>
+      </div>
+      <h2 id="me-vouches-title" style="
+        font-family: var(--wk-font-display);
+        font-weight: var(--wk-fw-bold);
+        font-size: 15px;
+        color: var(--wk-ink);
+        margin: 0;
+      ">What hosts and walkers wrote about you</h2>
+      <p style="
+        font-family: var(--wk-font-display);
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--wk-ink-soft);
+        margin: 0;
+      ">Each line in this Gästebuch is one stay you carried well — written and locked simultaneously, in their own hand.</p>
+      <a href="/vouches.html" style="
+        align-self: flex-start;
+        margin-top: 4px;
+        font-family: var(--wk-font-mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--wk-amber-text);
+        font-weight: var(--wk-fw-bold);
+        text-decoration: none;
+        padding: 8px 0;
+      ">— Open the Gästebuch →</a>
+    </div>
+  </section>
+
   <wk-tabbar></wk-tabbar>
 
   <script type="module" src="/js/pwa-mode.js"></script>
