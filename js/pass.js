@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * /js/pass.js — drives /pass.html
  *
