@@ -29,6 +29,9 @@ const DEMO_PIN  = '1234';
 const PIN_DB    = 'wk-pin-v1';
 const PIN_STORE = 'pin';
 
+/* Auto-lock the ID after this much idle. Resets on any input. */
+const IDLE_LOCK_MS = 5 * 60 * 1000;
+
 /* ─── state ─── */
 const state = {
   pin: '',
@@ -315,6 +318,7 @@ function failPin() {
 
 function unlockId() {
   state.unlocked = true;
+  bumpIdle();
   refs.gate.style.display = 'none';
   refs.stack.classList.add('unlocked');
   refs.stack.setAttribute('aria-hidden', 'false');
@@ -435,6 +439,21 @@ function refreshPinHint() {
 }
 
 /* ─── helpers ─── */
+
+
+/* ─── Idle lock — keeps the bearer in control of their document ─── */
+let idleTimer = null;
+function bumpIdle() {
+  if (idleTimer) clearTimeout(idleTimer);
+  if (!state.unlocked) return;
+  idleTimer = setTimeout(() => {
+    if (state.unlocked) lockId();
+  }, IDLE_LOCK_MS);
+}
+['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'].forEach(evt => {
+  document.addEventListener(evt, bumpIdle, { passive: true, capture: true });
+});
+
 function ymd(d) {
   if (!d) return '000000';
   const dt = new Date(d);
