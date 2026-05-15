@@ -1,5 +1,5 @@
 -- ════════════════════════════════════════════════════════════
--- WANDERKIND · 00_apply_all.sql
+-- WANDERKIND · 00_apply_all.sql · v2
 --
 -- Bundle of every migration the live app needs.
 -- Paste the entire file into the Supabase SQL editor and run once.
@@ -8,9 +8,12 @@
 -- Order (matters):
 --   1. host_offers.sql       — adds profiles.host_offers (map glyph driver)
 --   2. pin_hash.sql          — adds profiles.pin_hash + pin_updated_at
---   3. messages.sql          — E2E messaging schema + RLS
---   4. magic_open.sql        — host_locks + stays + RLS
---   5. seed_doors.sql        — 30 demo Wanderkind doors across launch corridor
+--   3. youth.sql             — adds profiles.dob + supervisor_id + is_minor()
+--   4. messages.sql          — E2E messaging schema + RLS
+--   5. magic_open.sql        — host_locks + stays + RLS
+--   6. knocks.sql            — knocks table + RLS (walker → host)
+--   7. stamps.sql            — stamps table + RLS (the Wanderbuch)
+--   8. seed_doors.sql        — 30 demo Wanderkind doors across launch corridor
 -- ════════════════════════════════════════════════════════════
 
 
@@ -57,6 +60,40 @@ alter table profiles add column if not exists pin_updated_at timestamptz;
 
 -- No public SELECT on pin_hash — only the owner can read or write.
 -- Assumes the existing profile RLS policy already scopes to auth.uid().
+
+
+
+-- ─────────────────────────────────────────────────────────────
+-- ─── youth.sql
+-- ─────────────────────────────────────────────────────────────
+
+-- ════════════════════════════════════════════════════════════
+-- Wanderkind · youth · EPIC 06
+--
+-- Under-18 bearers get a supervisor relationship. The supervisor is an
+-- adult Wanderkind who accompanies them. The ID shows the supervisor's
+-- name. Magic Open codes are not generated for unsupervised minors.
+--
+-- The "Troop" credential (scout leader → many minors) is slice 2; this
+-- ships the 1-to-1 supervisor relationship first.
+-- ════════════════════════════════════════════════════════════
+
+alter table profiles add column if not exists dob date;
+alter table profiles add column if not exists supervisor_id uuid references profiles(id) on delete set null;
+
+create index if not exists profiles_supervisor_idx on profiles(supervisor_id);
+
+-- Convenience view: returns true when the bearer is under 18 today
+create or replace function is_minor(p_id uuid)
+returns boolean
+language sql
+stable
+as $$
+  select coalesce(
+    (select (current_date - dob) < 18 * 365 from profiles where id = p_id),
+    false
+  )
+$$;
 
 
 
@@ -215,6 +252,110 @@ drop policy if exists "guest reads own stays" on stays;
 create policy "guest reads own stays"
   on stays for select
   using (guest_id = auth.uid());
+
+
+
+-- ─────────────────────────────────────────────────────────────
+-- ─── knocks.sql
+-- ─────────────────────────────────────────────────────────────
+
+-- ════════════════════════════════════════════════════════════
+-- Wanderkind · knocks · EPIC 04 slice 1
+--
+-- A walker knocks at a host's door. The host accepts or declines.
+-- Once accepted, a stay row gets minted (slice 2 will wire that).
+-- ════════════════════════════════════════════════════════════
+
+create table if not exists knocks (
+  id uuid primary key default gen_random_uuid(),
+  host_id   uuid references profiles(id) on delete cascade not null,
+  walker_id uuid references profiles(id) on delete cascade not null,
+  message   text,
+  status    text default 'pending' check (status in ('pending', 'accepted', 'declined', 'expired')),
+  created_at  timestamptz default now(),
+  resolved_at timestamptz,
+  constraint knocks_no_self check (host_id <> walker_id)
+);
+
+create index if not exists knocks_host_pending_idx on knocks(host_id, created_at) where status = 'pending';
+create index if not exists knocks_walker_idx on knocks(walker_id, created_at);
+
+alter table knocks enable row level security;
+
+drop policy if exists "host reads own incoming knocks" on knocks;
+create policy "host reads own incoming knocks"
+  on knocks for select
+  using (host_id = auth.uid());
+
+drop policy if exists "walker reads own outgoing knocks" on knocks;
+create policy "walker reads own outgoing knocks"
+  on knocks for select
+  using (walker_id = auth.uid());
+
+drop policy if exists "walker writes own knocks" on knocks;
+create policy "walker writes own knocks"
+  on knocks for insert
+  with check (walker_id = auth.uid());
+
+drop policy if exists "host updates own knocks" on knocks;
+create policy "host updates own knocks"
+  on knocks for update
+  using (host_id = auth.uid())
+  with check (host_id = auth.uid());
+
+
+
+-- ─────────────────────────────────────────────────────────────
+-- ─── stamps.sql
+-- ─────────────────────────────────────────────────────────────
+
+-- ════════════════════════════════════════════════════════════
+-- Wanderkind · stamps · EPIC 05
+--
+-- One stamp per accepted stay. Mutual + simultaneous vouching (covered by
+-- EPIC 04 slice 2) writes both vouch_text (by walker, about host) and
+-- host_reply (by host, replying). Both are optional — a stamp can exist
+-- with just the date + host name, like a passport entry.
+-- ════════════════════════════════════════════════════════════
+
+create table if not exists stamps (
+  id uuid primary key default gen_random_uuid(),
+  walker_id    uuid references profiles(id) on delete cascade not null,
+  host_id      uuid references profiles(id) on delete cascade not null,
+  stay_id      uuid references stays(id)    on delete set null,
+  stayed_on    date  not null,
+  region_label text,
+  vouch_text   text,
+  host_reply   text,
+  created_at   timestamptz default now(),
+  constraint stamps_no_self check (walker_id <> host_id)
+);
+
+create index if not exists stamps_walker_idx on stamps(walker_id, stayed_on desc);
+create index if not exists stamps_host_idx   on stamps(host_id, stayed_on desc);
+
+alter table stamps enable row level security;
+
+drop policy if exists "walker reads own stamps" on stamps;
+create policy "walker reads own stamps"
+  on stamps for select
+  using (walker_id = auth.uid());
+
+drop policy if exists "host reads own gastebuch" on stamps;
+create policy "host reads own gastebuch"
+  on stamps for select
+  using (host_id = auth.uid());
+
+drop policy if exists "walker writes own vouch" on stamps;
+create policy "walker writes own vouch"
+  on stamps for insert
+  with check (walker_id = auth.uid());
+
+drop policy if exists "host updates own reply" on stamps;
+create policy "host updates own reply"
+  on stamps for update
+  using (host_id = auth.uid())
+  with check (host_id = auth.uid());
 
 
 
