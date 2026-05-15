@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.38-day5-refine';
+const VERSION = '0.1.40-v12-cream';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -29,7 +29,12 @@ const PRECACHE = [
   '/settings.html',  // placeholder (Coming soon)
   '/host.html',      // placeholder (Coming soon)
   '/way.html',       // placeholder (Coming soon)
-  '/pass.html',      // placeholder (Coming soon)
+  '/pass.html',
+  '/messages.html',
+  '/hosts.html',
+  '/js/pass.js',
+  '/js/messages.js',
+  '/js/hosts.js',      // placeholder (Coming soon)
   '/vouches.html',   // placeholder (Coming soon)
   '/privacy-policy.html',
   '/terms.html',
