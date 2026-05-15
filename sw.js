@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.40-v12-cream';
+const VERSION = '0.1.41-v12-split';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -30,6 +30,9 @@ const PRECACHE = [
   '/host.html',      // placeholder (Coming soon)
   '/way.html',       // placeholder (Coming soon)
   '/pass.html',
+  '/stamps.html',
+  '/passes.html',
+  '/id.html',
   '/messages.html',
   '/hosts.html',
   '/js/pass.js',
