@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — The Passes</title>
+  <meta name="description" content="The Food, Water and Adventure passes — no PIN, walk straight in." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+     * /pass.html — bearer credentials
+     *
+     * Two sections, one page, cream throughout:
+     *
+     *   §1 · THE WANDERKIND ID         (PIN-gated · two pages)
+     *        ↳ Page 1 · Contact         (bio fields, MRZ, wax seal)
+     *        ↳ Page 2 · Crypto Matrix   (SHA-256, issuer seal, etc.)
+     *
+     *   §2 · THE WANDERKIND PASSES     (no gate · always visible)
+     *        ↳ Food Pass                (deep sealing-wax red)
+     *        ↳ Water Pass               (deep marine)
+     *        ↳ Adventure Pass           (deep forest · coming soon)
+     *
+     * The 3-tab tabbar (Map · W-seal hub · Me) is preserved.
+     * Aesthetic CANON: cream paper, Helvetica Neue + Courier New only.
+     * ───────────────────────────────────────────────────────────── */
+
+    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+
+    main#pass-root {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px);
+      display: flex;
+      flex-direction: column;
+      gap: var(--wk-space-xl);
+    }
+
+    /* ── Page head ─────────────────────────────────────────────── */
+    .pass-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .pass-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+    .pass-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .pass-kicker {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+
+    /* ── Section header — used by both ID and PASSES ──────────── */
+    .sect {
+      display: flex; flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+    .sect-head {
+      display: flex; align-items: baseline; gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--wk-amber-line);
+    }
+    .sect-fol {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      border-right: 1px solid var(--wk-amber-line);
+      padding-right: 10px;
+    }
+    .sect-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 22px;
+      letter-spacing: -0.015em;
+      line-height: 1;
+      margin: 0;
+      color: var(--wk-ink);
+    }
+    .sect-kicker {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       §1 · THE WANDERKIND ID — PIN-gated
+       ════════════════════════════════════════════════════════════ */
+
+    /* ── PIN gate ──────────────────────────────────────────────── */
+    .pin-gate {
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      gap: 18px;
+      padding: 24px 18px 22px;
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      position: relative;
+    }
+    .pin-seal {
+      width: 56px; height: 56px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1.5px var(--wk-amber-text), 0 0 14px var(--wk-amber-soft);
+    }
+    .pin-seal svg { width: 100%; height: 100%; display: block; }
+    .pin-org {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 12px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-ink-deep, var(--wk-ink));
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--wk-amber);
+      min-width: 180px;
+    }
+    .pin-label {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      margin: 0;
+    }
+    .pin-label::before, .pin-label::after { content: " ·· "; color: var(--wk-amber); }
+    .pin-dots {
+      display: flex; gap: 20px; justify-content: center;
+    }
+    .pin-dot {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 1.5px solid var(--wk-amber);
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .pin-dot.on {
+      background: var(--wk-amber);
+      box-shadow: 0 0 8px var(--wk-amber-soft);
+    }
+    .pin-dot.err {
+      background: var(--wk-error);
+      border-color: var(--wk-error);
+    }
+    .pin-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px 22px;
+      width: 100%;
+      max-width: 260px;
+    }
+    .pin-key {
+      font-family: var(--wk-font-mono);
+      font-weight: var(--wk-fw-bold);
+      font-size: 28px;
+      letter-spacing: 0.04em;
+      color: var(--wk-ink);
+      width: 60px; height: 60px;
+      margin: 0 auto;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      border: 1px solid var(--wk-line);
+      background: var(--wk-bg);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s ease, transform 0.08s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pin-key:active {
+      background: var(--wk-amber-soft);
+      transform: scale(0.96);
+    }
+    .pin-key.del {
+      background: transparent;
+      border: 0;
+      color: var(--wk-amber-text);
+      font-family: var(--wk-font-mono);
+      font-size: 13px;
+      letter-spacing: 0.20em;
+    }
+    @keyframes pin-shake {
+      0%, 100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+    .pin-gate.shake { animation: pin-shake 0.45s ease; }
+    @media (prefers-reduced-motion: reduce) {
+      .pin-gate.shake { animation: none; }
+    }
+    .pin-hint {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin: 0;
+      opacity: 0.8;
+    }
+
+    
+    /* ── PIN · set / change link + panel ─────────────────────── */
+    .pin-set-link {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 8px 14px;
+      font-weight: var(--wk-fw-bold);
+    }
+    .pin-set-link::before { content: "— "; color: var(--wk-amber); }
+    .pin-set-panel {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      padding: 8px 0 0;
+    }
+    .pin-set-msg {
+      font-family: var(--wk-font-display);
+      font-size: 12.5px;
+      color: var(--wk-ink-soft);
+      margin: 0;
+      min-height: 1.4em;
+      text-align: center;
+    }
+    .pin-set-cancel {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      background: transparent;
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+    .pin-set-cancel:hover { color: var(--wk-ink); border-color: var(--wk-amber-line); }
+
+    /* ── ID document pager (revealed on PIN) ───────────────────── */
+    .id-stack { display: none; flex-direction: column; gap: 14px; }
+    .id-stack.unlocked { display: flex; animation: idFadeIn 0.5s ease; }
+    @keyframes idFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .id-stack.unlocked { animation: none; } }
+
+    /* Page-dot indicator */
+    .id-dots {
+      display: flex; justify-content: center;
+      gap: 10px;
+      padding: 4px 0 2px;
+    }
+    .id-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--wk-line);
+      transition: background 0.18s ease;
+    }
+    .id-dot.on { background: var(--wk-amber); }
+
+    /* The two pages — sit in a horizontal slider */
+    .id-slider {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--wk-r-md);
+      box-shadow: 0 0 0 1px var(--wk-line), 0 8px 24px -12px rgba(11, 7, 5, 0.14);
+    }
+    .id-track {
+      display: flex;
+      transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    @media (prefers-reduced-motion: reduce) { .id-track { transition: none; } }
+    .id-page {
+      flex: 0 0 100%;
+      background: var(--wk-bg);
+    }
+
+    /* ── ID card (used by both pages) — cream paper ─────────────── */
+    .id-card {
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(200, 118, 42, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 100%, rgba(200, 118, 42, 0.06) 0%, transparent 55%),
+        var(--wk-bg);
+      color: var(--wk-ink);
+      position: relative;
+      overflow: hidden;
+    }
+    .id-card::before {
+      /* Faint amber guilloché — concentric circles */
+      content: ""; position: absolute; inset: 0;
+      background:
+        repeating-radial-gradient(circle at 50% 50%,
+          transparent 0,
+          transparent 11px,
+          rgba(200, 118, 42, 0.05) 11px,
+          rgba(200, 118, 42, 0.05) 12px);
+      pointer-events: none;
+    }
+    .id-strip {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 14px;
+      background: linear-gradient(90deg, var(--wk-bg-2), var(--wk-bg-elevated) 50%, var(--wk-bg-2));
+      border-bottom: 1px solid var(--wk-amber);
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      position: relative;
+      z-index: 1;
+    }
+    .id-strip .left { font-weight: var(--wk-fw-bold); }
+    .id-strip .center {
+      color: var(--wk-ink);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: 0.16em;
+      font-size: 10px;
+    }
+    .id-strip .right { color: var(--wk-ink-muted); }
+    .id-card-inner { position: relative; z-index: 1; padding: 16px 18px 14px; }
+
+    /* ── PAGE 1 · Contact — bio fields + portrait + MRZ ────────── */
+    .id-body {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 14px;
+      padding: 4px 0 8px;
+    }
+    .id-portrait {
+      width: 82px; height: 104px;
+      border-radius: 4px;
+      background:
+        linear-gradient(135deg, #EDE0BE 0%, #D8C28A 50%, #C9A871 100%);
+      box-shadow: inset 0 0 0 1px var(--wk-amber), 0 0 0 1px var(--wk-line);
+      position: relative;
+      overflow: hidden;
+    }
+    .id-portrait::after {
+      /* Subtle silhouette placeholder */
+      content: "";
+      position: absolute; inset: 14px 20px 8px;
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(90, 70, 50, 0.55) 0 22%, transparent 23%),
+        radial-gradient(ellipse at 50% 82%, rgba(90, 70, 50, 0.55) 0 38%, transparent 39%);
+    }
+    .id-portrait img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 2;
+    }
+    .id-fields { display: flex; flex-direction: column; gap: 6px; }
+    .id-row { display: flex; flex-direction: column; gap: 1px; }
+    .id-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .id-label {
+      font-family: var(--wk-font-mono);
+      font-size: 7.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+    .id-label .n { color: var(--wk-amber); font-weight: var(--wk-fw-bold); margin-right: 4px; }
+    .id-val {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 12.5px;
+      letter-spacing: 0.02em;
+      color: var(--wk-ink);
+      line-height: 1.15;
+    }
+    .id-val.lg { font-size: 15px; font-weight: var(--wk-fw-black); }
+    .id-val.mono {
+      font-family: var(--wk-font-mono);
+      font-weight: var(--wk-fw-bold);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--wk-amber-text);
+    }
+
+    .id-mrz {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--wk-amber-soft);
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--wk-ink);
+      line-height: 1.5;
+      word-break: break-all;
+    }
+    .id-mrz-h {
+      font-family: var(--wk-font-mono);
+      font-size: 7px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-bottom: 6px;
+      font-weight: var(--wk-fw-bold);
+      display: flex; justify-content: space-between;
+    }
+    .id-mrz-h .ok { color: var(--wk-success); font-weight: var(--wk-fw-bold); }
+    .id-mrz-h .ok::before { content: "● "; }
+
+    .id-seal-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0 4px;
+      border-top: 1px solid var(--wk-line);
+      margin-top: 10px;
+    }
+    .id-wax {
+      width: 38px; height: 38px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px var(--wk-amber-text), 0 0 12px var(--wk-amber-soft);
+      flex-shrink: 0;
+    }
+    .id-wax svg { width: 100%; height: 100%; display: block; }
+    .id-issuer {
+      flex: 1;
+      font-family: var(--wk-font-display);
+      font-size: 10px;
+      line-height: 1.45;
+      color: var(--wk-ink-soft);
+    }
+    .id-issuer strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); font-size: 10.5px; letter-spacing: 0.04em; }
+    .id-valid {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 9.5px;
+      letter-spacing: 0.18em;
+      padding: 4px 9px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── PAGE 2 · Crypto Matrix ─────────────────────────────────── */
+    .id-matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 4px 0 8px;
+    }
+    .id-cell {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-amber-soft);
+      border-radius: 7px;
+      padding: 9px 10px;
+    }
+    .id-cell-h {
+      font-family: var(--wk-font-mono);
+      font-size: 7.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      margin-bottom: 5px;
+      font-weight: var(--wk-fw-bold);
+    }
+    .id-cell-v {
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      color: var(--wk-ink);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+    .id-cell-v.lg {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 14px;
+      letter-spacing: 0.01em;
+    }
+    .id-cell-v.ok { color: var(--wk-success); font-weight: var(--wk-fw-bold); }
+
+    .id-covenant {
+      border-top: 1px solid var(--wk-line);
+      margin-top: 8px;
+      padding: 12px 0 4px;
+    }
+    .id-covenant-h {
+      font-family: var(--wk-font-mono);
+      font-size: 8px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .id-covenant-h .wk-mark-mini {
+      width: 14px; height: 14px;
+      border-radius: 2px; overflow: hidden;
+      box-shadow: 0 0 0 0.5px var(--wk-amber);
+    }
+    .id-covenant-h .wk-mark-mini svg { width: 100%; height: 100%; display: block; }
+    .id-covenant-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+    }
+    .cv-k {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      color: var(--wk-amber-text);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .cv-v {
+      font-family: var(--wk-font-display);
+      font-size: 9.5px;
+      color: var(--wk-ink-soft);
+      line-height: 1.5;
+    }
+
+    /* ── Page-nav arrows ───────────────────────────────────────── */
+    .id-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px;
+    }
+    .id-nav button {
+      flex: 1;
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      font-weight: var(--wk-fw-bold);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      background: transparent;
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-sm);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .id-nav button:hover { background: var(--wk-amber-soft); }
+    .id-nav button:disabled { opacity: 0.3; cursor: default; }
+    .id-nav button:disabled:hover { background: transparent; }
+
+    .id-lock-btn {
+      margin: 4px auto 0;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 8px 14px;
+    }
+    .id-lock-btn::before { content: "🔒 "; opacity: 0.6; }
+
+    /* ════════════════════════════════════════════════════════════
+       §2 · THE WANDERKIND PASSES — no PIN, always visible
+       ════════════════════════════════════════════════════════════ */
+    .wallet-stack {
+      display: flex; flex-direction: column;
+      gap: 14px;
+    }
+    .wallet {
+      aspect-ratio: 1.586 / 1;
+      border-radius: var(--wk-r-md);
+      color: var(--wk-parchment);
+      overflow: hidden;
+      position: relative;
+      padding: 16px 18px 14px;
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 24px -12px rgba(11, 7, 5, 0.25);
+    }
+    .wallet--food {
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(232, 151, 69, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 100%, rgba(0,0,0,0.40) 0%, transparent 55%),
+        linear-gradient(135deg, #6D1E2E 0%, #3A0C14 100%);
+      box-shadow: 0 0 0 1px rgba(232, 151, 69, 0.18), 0 8px 24px -12px rgba(0,0,0,0.4);
+    }
+    .wallet--water {
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(133, 178, 220, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 100%, rgba(0,0,0,0.40) 0%, transparent 55%),
+        linear-gradient(135deg, #112442 0%, #050E1C 100%);
+      box-shadow: 0 0 0 1px rgba(133, 178, 220, 0.20), 0 8px 24px -12px rgba(0,0,0,0.4);
+    }
+    .wallet--adv {
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(165, 197, 116, 0.16) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 100%, rgba(0,0,0,0.40) 0%, transparent 55%),
+        linear-gradient(135deg, #1A2F1E 0%, #08160B 100%);
+      box-shadow: 0 0 0 1px rgba(165, 197, 116, 0.18), 0 8px 24px -12px rgba(0,0,0,0.4);
+      opacity: 0.55;
+      filter: saturate(0.7);
+    }
+    .wallet--adv::after {
+      content: "Coming soon";
+      position: absolute; inset: auto auto 18px 18px;
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: rgba(243, 231, 204, 0.65);
+      font-weight: var(--wk-fw-bold);
+      z-index: 2;
+    }
+    .wallet::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        repeating-radial-gradient(circle at 110% 110%,
+          transparent 0,
+          transparent 16px,
+          rgba(255, 255, 255, 0.025) 16px,
+          rgba(255, 255, 255, 0.025) 17px);
+      pointer-events: none;
+    }
+    .wallet-band {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 22px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.32);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .wallet-band-track {
+      white-space: nowrap;
+      font-family: var(--wk-font-mono);
+      font-size: 7.5px;
+      letter-spacing: 0.32em;
+      line-height: 22px;
+      animation: kine 60s linear infinite;
+      text-transform: uppercase;
+    }
+    .wallet--food .wallet-band-track { color: rgba(232, 151, 69, 0.55); }
+    .wallet--water .wallet-band-track { color: rgba(133, 178, 220, 0.55); }
+    .wallet--adv .wallet-band-track { color: rgba(165, 197, 116, 0.55); }
+    @keyframes kine {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { .wallet-band-track { animation: none; } }
+
+    .wallet-head {
+      margin-top: 22px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      position: relative; z-index: 1;
+    }
+    .wallet-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: 8.5px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      font-weight: var(--wk-fw-bold);
+    }
+    .wallet--food .wallet-eyebrow  { color: #E89745; }
+    .wallet--water .wallet-eyebrow { color: #85B2DC; }
+    .wallet--adv .wallet-eyebrow   { color: #A5C574; }
+    .wallet-class {
+      font-family: var(--wk-font-mono);
+      font-size: 7.5px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(243, 231, 204, 0.55);
+      margin-top: 2px;
+    }
+    .wallet-name {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 24px;
+      letter-spacing: -0.015em;
+      line-height: 1;
+      margin: 8px 0 12px;
+      color: var(--wk-parchment);
+      position: relative; z-index: 1;
+    }
+    .wallet-name em { font-style: normal; }
+    .wallet--food .wallet-name em  { color: #E89745; }
+    .wallet--water .wallet-name em { color: #85B2DC; }
+    .wallet--adv .wallet-name em   { color: #A5C574; }
+
+    .wallet-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      position: relative; z-index: 1;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.10);
+    }
+    .wallet-meta .k {
+      font-family: var(--wk-font-mono);
+      font-size: 7.5px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: rgba(243, 231, 204, 0.50);
+      margin-bottom: 2px;
+    }
+    .wallet-meta .v {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 11px;
+      color: var(--wk-parchment);
+      letter-spacing: 0.02em;
+    }
+    .wallet-foot {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 10px;
+      font-family: var(--wk-font-mono);
+      font-size: 8px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(243, 231, 204, 0.50);
+      position: relative; z-index: 1;
+    }
+    .wallet-seal {
+      width: 26px; height: 26px;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(232, 151, 69, 0.40);
+    }
+    .wallet-seal svg { width: 100%; height: 100%; display: block; }
+
+    /* ── Locked state — passes look the same, but tap leads to PIN ── */
+    /* No PIN gate on passes — per spec, they are always visible. */
+
+    /* ── Reduced motion baseline ───────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .id-stack.unlocked { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ Canonical Wanderkind logo · single source ══════════ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="wk-mark" viewBox="0 0 680 680">
+      <rect x="0" y="0" width="680" height="680" fill="#FAFAF5"/>
+      <circle cx="340" cy="340" r="280" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.55"/>
+      <circle cx="340" cy="340" r="220" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
+      <circle cx="340" cy="340" r="160" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.30"/>
+      <line x1="340" y1="60"  x2="340" y2="140" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
+      <line x1="340" y1="540" x2="340" y2="620" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
+      <line x1="60"  y1="340" x2="140" y2="340" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
+      <line x1="540" y1="340" x2="620" y2="340" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
+      <g opacity="0.22">
+        <circle cx="340" cy="90"  r="3.5" fill="#C8762A"/>
+        <circle cx="340" cy="590" r="3.5" fill="#C8762A"/>
+        <circle cx="90"  cy="340" r="3.5" fill="#C8762A"/>
+        <circle cx="590" cy="340" r="3.5" fill="#C8762A"/>
+      </g>
+      <circle cx="340" cy="340" r="135" fill="none" stroke="#C8762A" stroke-width="1.5" opacity="0.14"/>
+      <text x="340" y="395" text-anchor="middle"
+            font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+            font-size="260" font-weight="900" fill="#C8762A" letter-spacing="-10">W</text>
+    </symbol>
+  </svg>
+
+  <a href="#pass-root" class="skip-to-content">Skip to my Pass</a>
+
+  <main id="pass-root">
+
+    <header class="pass-head">
+      <span class="pass-eyebrow">— The Passes</span>
+      <span class="pass-kicker" id="pass-trail">· loading</span>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         §2 · The Wanderkind Passes
+         ════════════════════════════════════════════════════════════ -->
+    
+    <a href="/id.html" class="cross-link" style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      text-decoration: none;
+      color: var(--wk-ink);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 14px;
+    ">
+      <span style="color: var(--wk-amber-text); font-family: var(--wk-font-mono); font-size: 11px; letter-spacing: 0.22em;">← THE ID</span>
+      <span>PIN-gated bearer document</span>
+    </a>
+
+    <section class="sect" aria-labelledby="sect-passes-title">
+      <div class="sect-head">
+        <span class="sect-fol">Folio II</span>
+        <h2 class="sect-title" id="sect-passes-title">The Passes</h2>
+        <span class="sect-kicker">Food · Water · Adventure</span>
+      </div>
+
+      <div class="wallet-stack">
+
+        <!-- FOOD PASS -->
+        <article class="wallet wallet--food" aria-label="Food Pass">
+          <div class="wallet-band" aria-hidden="true">
+            <div class="wallet-band-track">BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED ·</div>
+          </div>
+          <div class="wallet-head">
+            <div>
+              <div class="wallet-eyebrow">Wanderkind · Food</div>
+              <div class="wallet-class">Class A · A request</div>
+            </div>
+            <div class="wallet-seal" aria-hidden="true">
+              <svg viewBox="0 0 680 680"><use href="#wk-mark"/></svg>
+            </div>
+          </div>
+          <div class="wallet-name" data-name>YEHOSUA <em>·</em> CHRIST</div>
+          <div class="wallet-meta">
+            <div>
+              <div class="k">Holder</div>
+              <div class="v" data-pass-no>C4X8R2M7</div>
+            </div>
+            <div>
+              <div class="k">Issued</div>
+              <div class="v" data-issued>01.01.2026</div>
+            </div>
+            <div>
+              <div class="k">Expires</div>
+              <div class="v" data-expires>01.01.2031</div>
+            </div>
+          </div>
+          <div class="wallet-foot">
+            <span>WND · Inc.</span>
+            <span>Covenant Art. II</span>
+          </div>
+        </article>
+
+        <!-- WATER PASS -->
+        <article class="wallet wallet--water" aria-label="Water Pass">
+          <div class="wallet-band" aria-hidden="true">
+            <div class="wallet-band-track">WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN ·</div>
+          </div>
+          <div class="wallet-head">
+            <div>
+              <div class="wallet-eyebrow">Wanderkind · Water</div>
+              <div class="wallet-class">Class A · A request</div>
+            </div>
+            <div class="wallet-seal" aria-hidden="true">
+              <svg viewBox="0 0 680 680"><use href="#wk-mark"/></svg>
+            </div>
+          </div>
+          <div class="wallet-name" data-name>YEHOSUA <em>·</em> CHRIST</div>
+          <div class="wallet-meta">
+            <div>
+              <div class="k">Holder</div>
+              <div class="v" data-pass-no>C4X8R2M7</div>
+            </div>
+            <div>
+              <div class="k">Issued</div>
+              <div class="v" data-issued>01.01.2026</div>
+            </div>
+            <div>
+              <div class="k">Expires</div>
+              <div class="v" data-expires>01.01.2031</div>
+            </div>
+          </div>
+          <div class="wallet-foot">
+            <span>WND · Inc.</span>
+            <span>Covenant Art. II</span>
+          </div>
+        </article>
+
+        <!-- ADVENTURE PASS — coming soon -->
+        <article class="wallet wallet--adv" aria-label="Adventure Pass · Coming soon">
+          <div class="wallet-band" aria-hidden="true">
+            <div class="wallet-band-track">TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE ·</div>
+          </div>
+          <div class="wallet-head">
+            <div>
+              <div class="wallet-eyebrow">Wanderkind · Adventure</div>
+              <div class="wallet-class">Class A · A request</div>
+            </div>
+            <div class="wallet-seal" aria-hidden="true">
+              <svg viewBox="0 0 680 680"><use href="#wk-mark"/></svg>
+            </div>
+          </div>
+          <div class="wallet-name">YEHOSUA <em>·</em> CHRIST</div>
+          <div class="wallet-meta">
+            <div>
+              <div class="k">Holder</div>
+              <div class="v">C4X8R2M7</div>
+            </div>
+            <div>
+              <div class="k">Issued</div>
+              <div class="v">—</div>
+            </div>
+            <div>
+              <div class="k">Expires</div>
+              <div class="v">—</div>
+            </div>
+          </div>
+          <div class="wallet-foot">
+            <span>WND · Inc.</span>
+            <span>Covenant Art. II</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <wk-tabbar></wk-tabbar>
+
+  <script type="module" src="/js/pwa-mode.js"></script>
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/pass.js"></script>
+</body>
+</html>
