@@ -245,6 +245,48 @@
       opacity: 0.8;
     }
 
+    
+    /* ── PIN · set / change link + panel ─────────────────────── */
+    .pin-set-link {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 8px 14px;
+      font-weight: var(--wk-fw-bold);
+    }
+    .pin-set-link::before { content: "— "; color: var(--wk-amber); }
+    .pin-set-panel {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      padding: 8px 0 0;
+    }
+    .pin-set-msg {
+      font-family: var(--wk-font-display);
+      font-size: 12.5px;
+      color: var(--wk-ink-soft);
+      margin: 0;
+      min-height: 1.4em;
+      text-align: center;
+    }
+    .pin-set-cancel {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      background: transparent;
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+    .pin-set-cancel:hover { color: var(--wk-ink); border-color: var(--wk-amber-line); }
+
     /* ── ID document pager (revealed on PIN) ───────────────────── */
     .id-stack { display: none; flex-direction: column; gap: 14px; }
     .id-stack.unlocked { display: flex; animation: idFadeIn 0.5s ease; }
@@ -785,7 +827,7 @@
           <svg viewBox="0 0 680 680" aria-hidden="true"><use href="#wk-mark"/></svg>
         </div>
         <div class="pin-org">Wanderkind Inc.</div>
-        <p class="pin-label">Enter your four digits</p>
+        <p class="pin-label"><span id="pin-label-text">Enter your four digits</span></p>
         <div class="pin-dots" id="pin-dots" role="status" aria-label="PIN progress">
           <span class="pin-dot" data-i="0"></span>
           <span class="pin-dot" data-i="1"></span>
@@ -806,7 +848,12 @@
           <button class="pin-key" type="button" data-d="0">0</button>
           <button class="pin-key del" type="button" data-d="del" aria-label="Delete">Del</button>
         </div>
-        <p class="pin-hint">Demo PIN · 1234</p>
+        <p class="pin-hint" id="pin-hint">Demo PIN · 1234 · then set your own</p>
+        <button type="button" class="pin-set-link" id="pin-set-link">Set / change your PIN</button>
+        <div class="pin-set-panel" id="pin-set-panel" hidden>
+          <p class="pin-set-msg" id="pin-set-msg"></p>
+          <button type="button" class="pin-set-cancel" id="pin-set-cancel">Cancel</button>
+        </div>
       </div>
 
       <!-- ID stack · revealed on PIN -->
