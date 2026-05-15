@@ -335,6 +335,16 @@ function unlockId() {
   refs.stack.classList.add('unlocked');
   refs.stack.setAttribute('aria-hidden', 'false');
   goPage(0);
+  /* EPIC 01 · forced first-PIN ceremony.
+     If the bearer just unlocked with the demo PIN and has no stored hash,
+     immediately step them through setting their own PIN. The cancel button
+     is hidden until they finish. */
+  if (!state.pinHash) {
+    setTimeout(() => {
+      lockId();                                    // back to the gate
+      startSetPin(true);                            // forced=true mode
+    }, 200);
+  }
 }
 
 function lockId() {
@@ -357,17 +367,20 @@ function goPage(p) {
 }
 
 /* ─── Set / change PIN ─────────────────────────────────────── */
-function startSetPin() {
+function startSetPin(forced = false) {
   state.setPinStep = state.pinHash ? 'current' : 'new';
+  state.setPinForced = !!forced;
   state.setPinBuffer = '';
   state.setPinNew = '';
   refs.setPanel.hidden = false;
   refs.setLink.hidden = true;
+  if (refs.setCancel) refs.setCancel.hidden = !!forced;
   setPin('');
   updateSetPinUI();
 }
 
 function cancelSetPin() {
+  if (state.setPinForced) return;            // EPIC 01 · can't bail in forced mode
   state.setPinStep = null;
   state.setPinBuffer = '';
   state.setPinNew = '';
@@ -412,6 +425,9 @@ async function advanceSetPin() {
   } else if (state.setPinStep === 'new') {
     state.setPinNew = entry;
     state.setPinStep = 'confirm';
+    if (isWeakPin(entry)) {
+      refs.setMsg.textContent = '⚠ That PIN is easy to guess. Confirm to use it anyway, or back-out.';
+    }
   } else if (state.setPinStep === 'confirm') {
     if (entry !== state.setPinNew) {
       refs.setMsg.textContent = 'Did not match — start again.';
@@ -424,6 +440,7 @@ async function advanceSetPin() {
     const hash = await hashPin(entry, state.session.user.id);
     await savePinHash(state.session, hash);
     refs.setMsg.textContent = '✓ PIN saved.';
+    state.setPinForced = false;
     setTimeout(() => cancelSetPin(), 1200);
     return;
   }
@@ -448,6 +465,21 @@ function refreshPinHint() {
   if (refs.hint) {
     refs.hint.textContent = state.pinHash ? 'Your PIN · 4 digits' : 'Demo PIN · 1234 · then set your own';
   }
+}
+
+
+/* Weak PIN detector — soft signal, never blocks. */
+function isWeakPin(s) {
+  if (!/^\d{4}$/.test(s)) return false;
+  if (/^(\d)\1{3}$/.test(s)) return true;                          // 0000 1111 ...
+  if (s === '1234' || s === '4321') return true;
+  if (s === '0123' || s === '9876') return true;
+  if (s === '1212' || s === '2121') return true;
+  /* sequential ascending or descending */
+  const d = s.split('').map(Number);
+  if (d[1] - d[0] === 1 && d[2] - d[1] === 1 && d[3] - d[2] === 1) return true;
+  if (d[0] - d[1] === 1 && d[1] - d[2] === 1 && d[2] - d[3] === 1) return true;
+  return false;
 }
 
 /* ─── helpers ─── */
