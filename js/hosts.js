@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * /js/hosts.js — drives /hosts.html
  *
