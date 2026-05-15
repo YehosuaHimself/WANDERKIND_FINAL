@@ -241,28 +241,25 @@ wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-square {
 
 /* ───────── god-mode polish ───────── */
 
-/* (R4) Keyboard focus rings on the FAB hub and side tabs */
+/* Keyboard focus rings on the FAB hub and side tabs (accessibility) */
 wk-tabbar .wk-tab:focus-visible {
   outline: 2px solid var(--wk-amber-text);
-  outline-offset: -4px;
-  border-radius: var(--wk-r-sm);
+  outline-offset: -3px;
 }
 wk-tabbar .wk-tab-hub:focus-visible {
   outline: none;
 }
 wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-square {
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 30%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 28%, transparent),
     0 -4px 14px -8px rgba(11, 7, 5, 0.20);
 }
 
-/* (R5) When a pass detail is unfolded, lock the underlying html scroll too */
-html:has(body.passes-unfolded),
+/* Body scroll lock when a pass is unfolded full-page */
 body.passes-unfolded {
   overflow: hidden;
   overscroll-behavior: contain;
 }
 
-/* (R6) Browser-mode hint sits below the skip-link in tab order;
-   add small bottom margin so it doesn't kiss the first heading. */
-.browser-mode-hint { margin-bottom: 12px !important; }
+/* Browser-mode hint baseline spacing */
+.browser-mode-hint { margin-bottom: 12px; }
