@@ -568,6 +568,65 @@
     .filter-strip .filter-chip[data-host="festivals"] { color: #9C2E5C; }
     .filter-strip .filter-chip[data-host="walkers"]   { color: var(--wk-amber-text); }
 
+  
+
+    /* Empty-state · compact bottom banner, not a hero takeover */
+    .empty-sheet {
+      position: absolute !important;
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%);
+      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 14px) !important;
+      width: min(90vw, 360px) !important;
+      padding: 12px 16px !important;
+      background: var(--wk-bg-elevated) !important;
+      border: 1px solid var(--wk-amber-line) !important;
+      border-radius: var(--wk-r-md) !important;
+      box-shadow: 0 8px 20px -10px rgba(11, 7, 5, 0.25);
+      text-align: center;
+      pointer-events: auto !important;
+      z-index: 401;
+    }
+    .empty-sheet .eyebrow {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .empty-sheet .empty-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 14px;
+      color: var(--wk-ink);
+      margin: 0 0 10px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .empty-sheet .empty-sub { display: none; }
+    .empty-sheet .cta-row { display: none; }
+    .empty-sheet .btn-amber {
+      display: inline-block;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+
+    /* Floating legend · hide on phones · the chip strip is enough */
+    @media (max-width: 720px) {
+      .map-legend { display: none !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -604,8 +663,6 @@
 
   <nav class="filter-strip" id="filter-strip" aria-label="Map filters">
     <div class="filter-row" role="group">
-      <button class="filter-chip" type="button" aria-pressed="true">Tonight</button>
-      <button class="filter-chip" type="button" aria-pressed="false">Walking Now</button>
       <button class="filter-chip" type="button" aria-pressed="true" data-host="beds">
         <span class="dot" aria-hidden="true"></span>Beds
       </button>
@@ -650,11 +707,7 @@
     <section class="empty-sheet" aria-labelledby="empty-title" hidden>
       <span class="eyebrow">— Day Zero</span>
       <p class="empty-title" id="empty-title">No doors here yet.</p>
-      <p class="empty-sub">Be the first to host your block. Open your door — even just for a glass of water — and you put a pin on this map.</p>
-      <div class="cta-row">
-        <a href="/install.html" class="btn-amber">Open your door</a>
-        <a href="/" class="btn-ghost">What is Wanderkind?</a>
-      </div>
+      <a href="/install.html" class="btn-amber">Open your door</a>
     </section>
   </main>
 
