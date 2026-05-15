@@ -459,10 +459,44 @@
     /* Empty sheet floats above the map when shown */
     .empty-sheet { z-index: 500; }
     .map-legend { z-index: 500; }
+  
+    /* Browser-mode hint · "open from home screen" banner */
+    .browser-mode-hint {
+      max-width: 480px;
+      margin: 12px auto;
+      background: rgba(200,118,42,0.08);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-md);
+      padding: 12px var(--wk-space-md);
+    }
+    .bmh-eyebrow {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
+    }
+    .bmh-body {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-ink-soft);
+      margin: 0;
+    }
+    [data-pwa="true"] [data-only="browser"] { display: none; }
+
   </style>
 </head>
 <body>
   <a href="#map-canvas" class="skip-to-content">Skip to map</a>
+  <!-- Shows ONLY when the page is in a regular browser, not the installed PWA. -->
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+
 
   <header class="map-topbar" role="banner">
     <a href="/" aria-label="Back to wanderkind.love">
@@ -537,8 +571,10 @@
   <wk-tabbar></wk-tabbar>
 
   <script src="/js/vendor/leaflet.js" defer></script>
+  <script type="module" src="/js/map-leaflet.js"></script>
   <script type="module" src="/js/map-session-aware.js"></script>
 
+  <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/auth-bypass.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
