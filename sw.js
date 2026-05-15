@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.42-map-boot';
+const VERSION = '0.1.43-map-v2';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -64,6 +64,7 @@ const PRECACHE = [
   '/js/map-session-aware.js',
   '/js/map-leaflet.js',
   '/js/map-boot.js',
+  '/js/region-labels.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',
   '/css/vendor/images/marker-icon.png',
