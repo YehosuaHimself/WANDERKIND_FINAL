@@ -50,7 +50,15 @@
      * Aesthetic CANON: cream paper, Helvetica Neue + Courier New only.
      * ───────────────────────────────────────────────────────────── */
 
-    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    html, body {
+      background: var(--wk-bg); color: var(--wk-ink);
+      /* Stabilize fixed tabbar — pin to small viewport height across all pages */
+      height: 100svh;
+      height: 100dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    body { overscroll-behavior-y: contain; }
     body { min-height: 100vh; min-height: 100dvh; padding: 0; }
 
     main#pass-root {
