@@ -307,6 +307,17 @@
     }
     .id-dot.on { background: var(--wk-amber); }
 
+    
+    .id-dots {
+      gap: 14px;
+      padding: 8px 0;
+    }
+    .id-dot {
+      border-radius: 50% !important;
+      transition: background 0.2s ease;
+    }
+    .id-dot.on { background: var(--wk-amber) !important; }
+
     /* The two pages — sit in a horizontal slider */
     .id-slider {
       position: relative;
@@ -562,32 +573,7 @@
       color: var(--wk-ink-soft);
       line-height: 1.5;
     }
-
-    /* ── Page-nav arrows ───────────────────────────────────────── */
-    .id-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 12px;
-    }
-    .id-nav button {
-      flex: 1;
-      font-family: var(--wk-font-mono);
-      font-size: 11px;
-      font-weight: var(--wk-fw-bold);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      background: transparent;
-      border: 1px solid var(--wk-amber-line);
-      border-radius: var(--wk-r-sm);
-      padding: 12px 14px;
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    .id-nav button:hover { background: var(--wk-amber-soft); }
-    .id-nav button:disabled { opacity: 0.3; cursor: default; }
-    .id-nav button:disabled:hover { background: transparent; }
-
-    .id-lock-btn {
+.id-lock-btn {
       margin: 4px auto 0;
       font-family: var(--wk-font-mono);
       font-size: 10px;
@@ -896,9 +882,9 @@
 
       <!-- ID stack · revealed on PIN -->
       <div class="id-stack" id="id-stack" aria-hidden="true">
-        <div class="id-dots" role="tablist">
-          <span class="id-dot on" data-p="0" role="tab" aria-selected="true"></span>
-          <span class="id-dot" data-p="1" role="tab" aria-selected="false"></span>
+        <div class="id-dots" role="tablist" id="id-dots">
+          <button class="id-dot on" type="button" data-p="0" role="tab" aria-selected="true" aria-label="Page 1 · Contact" style="cursor: pointer; padding: 0; border: 0; background: var(--wk-amber); width: 9px; height: 9px;"></button>
+          <button class="id-dot" type="button" data-p="1" role="tab" aria-selected="false" aria-label="Page 2 · Crypto Matrix" style="cursor: pointer; padding: 0; border: 0; background: var(--wk-line); width: 9px; height: 9px;"></button>
         </div>
 
         <div class="id-slider">
@@ -1060,12 +1046,6 @@
 
           </div>
         </div>
-
-        <nav class="id-nav" aria-label="ID page nav">
-          <button type="button" id="id-prev" disabled>← Contact</button>
-          <button type="button" id="id-next">Crypto Matrix →</button>
-        </nav>
-
         <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; padding-top: 4px;">
           <button class="id-lock-btn" type="button" id="id-lock">Lock the ID</button>
           <button class="id-lock-btn" type="button" id="id-change-pin" style="opacity: 0.7;">⋯ Change PIN</button>
