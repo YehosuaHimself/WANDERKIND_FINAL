@@ -512,6 +512,62 @@
     }
     .leaflet-popup-tip { background: var(--wk-bg-elevated); }
 
+  
+    /* ──────────── v2 · aged-paper aesthetic ──────────── */
+    /* The Leaflet tile pane gets the warm, slightly faded look — only here. */
+    .map-canvas {
+      background:
+        radial-gradient(ellipse at 50% 40%, #F2E3C0 0%, #E5D2A0 60%, #D4BA82 100%);
+    }
+    .wk-tiles {
+      filter: sepia(0.42) saturate(0.55) brightness(1.08) contrast(0.92) hue-rotate(-6deg);
+      mix-blend-mode: multiply;
+    }
+    /* Subtle paper grain over the tiles */
+    #map::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        radial-gradient(0.6px 0.6px at 13% 27%, rgba(90,70,50,0.18), transparent 60%),
+        radial-gradient(0.6px 0.6px at 87% 41%, rgba(90,70,50,0.14), transparent 60%),
+        radial-gradient(0.6px 0.6px at 31% 73%, rgba(90,70,50,0.18), transparent 60%),
+        radial-gradient(0.6px 0.6px at 67% 91%, rgba(90,70,50,0.14), transparent 60%);
+      background-size: 4px 4px, 6px 6px, 5px 5px, 7px 7px;
+      opacity: 0.5;
+      z-index: 400;
+    }
+
+    /* Region label · ink Courier · no country names */
+    .wk-region-label { background: transparent !important; border: 0 !important; }
+
+    /* Pin · cream disc with amber/coloured glyph */
+    .wk-pin { background: transparent !important; border: 0 !important; }
+    .wk-pin-bg { transition: transform 0.15s ease; }
+    .wk-pin:hover .wk-pin-bg { transform: scale(1.08); }
+
+    /* Walker · pulsing amber dot, footprints trailing */
+    .wk-walker { background: transparent !important; border: 0 !important; }
+    .wk-walker-dot { transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1); }
+    .wk-walker--walking .wk-walker-dot {
+      animation: walker-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes walker-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+    .wk-walker--self .wk-walker-dot {
+      animation-duration: 1.8s;
+    }
+    .wk-footprint { background: transparent !important; border: 0 !important; }
+    @media (prefers-reduced-motion: reduce) {
+      .wk-walker-dot { animation: none !important; transition: none !important; }
+    }
+
+    /* Filter chip + ledger panel */
+    .filter-strip .filter-chip[data-host="churches"] { color: #5A4632; }
+    .filter-strip .filter-chip[data-host="mountains"] { color: #5C6B40; }
+    .filter-strip .filter-chip[data-host="festivals"] { color: #9C2E5C; }
+    .filter-strip .filter-chip[data-host="walkers"]   { color: var(--wk-amber-text); }
+
   </style>
 </head>
 <body>
@@ -550,18 +606,28 @@
     <div class="filter-row" role="group">
       <button class="filter-chip" type="button" aria-pressed="true">Tonight</button>
       <button class="filter-chip" type="button" aria-pressed="false">Walking Now</button>
-      <button class="filter-chip" type="button" aria-pressed="false" data-host="verified">
-        <span class="dot" aria-hidden="true"></span>Verified
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="beds">
+        <span class="dot" aria-hidden="true"></span>Beds
       </button>
-      <span class="filter-sep" aria-hidden="true"></span>
-      <button class="filter-chip" type="button" aria-pressed="false" data-host="bed">
-        <span class="dot" aria-hidden="true"></span>Bed
-      </button>
-      <button class="filter-chip" type="button" aria-pressed="false" data-host="food">
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="food">
         <span class="dot" aria-hidden="true"></span>Food
       </button>
-      <button class="filter-chip" type="button" aria-pressed="false" data-host="water">
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="water">
         <span class="dot" aria-hidden="true"></span>Water
+      </button>
+      <span class="filter-sep" aria-hidden="true"></span>
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="churches">
+        <span class="dot" aria-hidden="true"></span>Churches
+      </button>
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="mountains">
+        <span class="dot" aria-hidden="true"></span>Mountains
+      </button>
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="festivals">
+        <span class="dot" aria-hidden="true"></span>Festivals
+      </button>
+      <span class="filter-sep" aria-hidden="true"></span>
+      <button class="filter-chip" type="button" aria-pressed="true" data-host="walkers">
+        <span class="dot" aria-hidden="true"></span>Walkers
       </button>
     </div>
   </nav>
@@ -570,11 +636,14 @@
     <div id="map"></div>
 
     <!-- Legend (host-type encoding) -->
-    <aside class="map-legend" aria-label="Host-type legend">
-      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-bed)"></span> Bed</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-food)"></span> Food</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-water)"></span> Water</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-host-verified)"></span> Verified</div>
+    <aside class="map-legend" aria-label="Map legend">
+      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-amber)"></span> Bed</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#A0522D"></span> Food</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#4CA8C9"></span> Water</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#5A4632"></span> Church</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#5C6B40"></span> Mountain</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#9C2E5C"></span> Festival</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-amber-text);box-shadow:0 0 0 2px rgba(200,118,42,0.4)"></span> Walker</div>
     </aside>
 
     <!-- Empty / first-visit sheet (revealed by JS only when zero markers) -->
