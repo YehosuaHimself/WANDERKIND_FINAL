@@ -152,7 +152,8 @@ wk-tabbar {
   z-index: 50;
 
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  /* Middle column locked at 60px so the FAB hub never affects side-tab geometry */
+  grid-template-columns: 1fr 60px 1fr;
   height: var(--wk-tabbar-h);
   /* flush to bottom of viewport per design lock */
   padding-bottom: 0;
