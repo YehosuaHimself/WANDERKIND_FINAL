@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.45-map-v3-readable';
+const VERSION = '0.1.46-epic01-04-02';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -59,6 +59,7 @@ const PRECACHE = [
   '/js/me-edit.js',
   '/js/uploads.js',
   '/js/wk-tabbar.js',
+  '/js/simple-mode.js',
   '/js/supabase-config.js',
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
