@@ -126,6 +126,15 @@ async function renderMagicOpen(session) {
   };
   if (!refs.digits) return;
 
+  if (await isMinorFromSession(session)) {
+    /* EPIC 06 · minors don't generate Magic Open codes alone. */
+    const card = document.getElementById('code-card');
+    if (card) {
+      card.innerHTML = '<div style="text-align:center; padding:20px 8px;"><div style="font-family:var(--wk-font-mono); font-size:10px; letter-spacing:0.28em; text-transform:uppercase; color:var(--wk-amber-text); font-weight:700; margin-bottom:6px;">— Supervised minor</div><div style="font-family:var(--wk-font-display); font-size:14px; color:var(--wk-ink); line-height:1.5;">Magic Open codes are not issued for minors walking alone. Your supervisor can host on your behalf.</div></div>';
+    }
+    return;
+  }
+
   let state = { code: '4827', stay: null, lock: null };
   try { state = await loadLiveState(session); }
   catch (err) { console.warn('[hosts] demo state', err); }
