@@ -263,3 +263,22 @@ body.passes-unfolded {
 
 /* Browser-mode hint baseline spacing */
 .browser-mode-hint { margin-bottom: 12px; }
+
+
+/* ───────── FAB hub · slow W rotation around the vertical axis ───────── */
+@keyframes wk-w-spin {
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+wk-tabbar .wk-tab-hub-square {
+  perspective: 360px;
+}
+wk-tabbar .wk-tab-hub-square > svg {
+  animation: wk-w-spin 8s linear infinite;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  transform-origin: 50% 50%;
+}
+@media (prefers-reduced-motion: reduce) {
+  wk-tabbar .wk-tab-hub-square > svg { animation: none; }
+}
