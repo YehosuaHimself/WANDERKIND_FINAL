@@ -13,7 +13,6 @@
  * card shows a demo code (4827) so personas can test the surface end-to-end.
  */
 
-// @ts-check
 
 import { getSession } from './session.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
