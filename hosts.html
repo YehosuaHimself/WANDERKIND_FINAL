@@ -290,6 +290,107 @@
     .bmh-body strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); }
 
 
+  
+    /* §A · Incoming knocks · cream cards stacked above Magic Open */
+    .knocks-wrap {
+      display: flex; flex-direction: column;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--wk-line);
+      margin-bottom: var(--wk-space-md);
+    }
+    .knocks-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .knocks-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .knock-card {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-amber);
+      border-radius: var(--wk-r-md);
+      padding: 14px 16px;
+      box-shadow: 0 8px 20px -12px rgba(11, 7, 5, 0.20);
+      animation: knockIn 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    @keyframes knockIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .knock-card { animation: none; } }
+    .knock-head { display: flex; align-items: center; gap: 12px; }
+    .knock-av {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--wk-amber-hi), var(--wk-amber) 60%, var(--wk-amber-press));
+      box-shadow: 0 0 0 1.5px var(--wk-bg);
+      display: grid; place-items: center;
+      color: var(--wk-bg);
+      font-family: var(--wk-font-display);
+      font-weight: 900; font-size: 14px;
+    }
+    .knock-meta { flex: 1; min-width: 0; }
+    .knock-name {
+      font-family: var(--wk-font-display);
+      font-weight: 700; font-size: 14.5px;
+      color: var(--wk-ink);
+    }
+    .knock-wkid {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-muted);
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+    .knock-time {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+    .knock-msg {
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--wk-ink-soft);
+      margin: 8px 0 0;
+      padding: 8px 12px;
+      background: var(--wk-bg-2);
+      border-left: 2px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0;
+    }
+    .knock-actions {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .knock-accept, .knock-decline {
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 12px 0;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 0;
+    }
+    .knock-accept {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+    }
+    .knock-accept:hover:not([disabled]) { background: var(--wk-amber-press); }
+    .knock-decline {
+      background: transparent;
+      color: var(--wk-ink-soft);
+      border: 1px solid var(--wk-line);
+    }
+    .knock-decline:hover:not([disabled]) { border-color: var(--wk-amber); color: var(--wk-amber-text); }
+
   </style>
 </head>
 <body>
@@ -318,6 +419,10 @@
       <span class="h-eyebrow">— Hosting</span>
       <span class="h-kicker">Magic Open</span>
     </header>
+    <section class="knocks-wrap" id="knocks-wrap" hidden aria-labelledby="knocks-eyebrow">
+      <h2 class="knocks-eyebrow" id="knocks-eyebrow">Incoming knocks</h2>
+      <div id="knocks-list" role="list"></div>
+    </section>
 
     <div>
       <h1 class="h-title">Walk <em>straight</em> in.</h1>
