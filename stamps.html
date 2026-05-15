@@ -64,9 +64,47 @@
       text-decoration: none; padding: 12px 18px;
       border: 1px solid var(--wk-line); border-radius: var(--wk-r-sm);
     }
+  
+
+    /* ── Browser-mode hint (data-only=browser) ──────────────────── */
+    .browser-mode-hint {
+      max-width: 460px;
+      margin: 0 auto;
+      background: rgba(200,118,42,0.08);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-md);
+      padding: 12px var(--wk-space-md);
+      margin-top: var(--wk-space-sm);
+    }
+    .bmh-eyebrow {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
+    }
+    .bmh-body {
+      font-size: var(--wk-fs-small);
+      line-height: var(--wk-lh-body);
+      color: var(--wk-ink-soft);
+      margin: 0;
+    }
+    .bmh-body strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); }
+
+
   </style>
 </head>
 <body>
+  <!-- Shows ONLY when the page is in a regular browser, not the installed PWA. -->
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+
+
   <main class="placeholder" id="stamps-root">
     <svg class="ph-seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
       <circle cx="12" cy="12" r="9"/>
