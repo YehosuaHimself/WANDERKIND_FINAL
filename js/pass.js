@@ -5,36 +5,41 @@
  * Two responsibilities, one file:
  *
  *   §1 · PIN gate for the ID
- *        - 4-digit demo PIN (1234) — wired to a per-session demo to allow
- *          persona testing without back-end pin storage. Replace with the
- *          real PIN check when /sql/pins.sql is applied.
+ *        - User-settable 4-digit PIN, hashed client-side via PBKDF2-SHA256
+ *          (100k iterations, 32-byte output). Salt = user.id.
+ *        - Hash cached locally in IndexedDB (wk-pin-v1) for fast offline
+ *          unlock and mirrored to profiles.pin_hash for cross-device.
+ *        - If no PIN set yet, demo PIN 1234 still works AND the user is
+ *          prompted to set one immediately after first unlock.
+ *        - "Set / change your PIN" flow: enter current → enter new → confirm.
  *        - On correct PIN: hides .pin-gate, reveals #id-stack with the
  *          two-page slider (Contact ↔ Crypto Matrix).
- *        - On wrong PIN: shakes the gate, flashes error dots, resets.
  *
  *   §2 · Hydrates the ID + the three wallet passes with the bearer's data
  *        - Fetches /rest/v1/profiles?id=eq.<userId> via the session token.
  *        - If no session, redirects to /auth.html.
- *        - Fields filled: surname, given_name, dob, sex, nationality,
- *          issued_at, expires_at, wkid, mrz, sha256 (computed in-browser),
- *          validity remaining, avatar.
  *
- * No third-party JS. Helvetica Neue + Courier New only (typography is in
- * the HTML/CSS). Reduced-motion respected by CSS.
+ * No third-party JS. Helvetica Neue + Courier New only.
  */
 
-
-import { getSession, signOut } from './session.js';
+import { getSession } from './session.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
-const DEMO_PIN = '1234';
+const DEMO_PIN  = '1234';
+const PIN_DB    = 'wk-pin-v1';
+const PIN_STORE = 'pin';
 
 /* ─── state ─── */
 const state = {
   pin: '',
-  page: 0,            // 0 = Contact, 1 = Crypto Matrix
+  page: 0,
   unlocked: false,
   profile: null,
+  session: null,
+  pinHash: null,            // current stored hash or null if unset
+  setPinStep: null,         // null | 'current' | 'new' | 'confirm'
+  setPinBuffer: '',         // typed digits in the set-PIN flow
+  setPinNew: '',            // confirmed new PIN once entered
 };
 
 /* ─── DOM refs ─── */
@@ -45,6 +50,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   refs.gate     = $('pin-gate');
   refs.dots     = $('pin-dots');
   refs.pad      = $('pin-pad');
+  refs.hint     = $('pin-hint');
+  refs.label    = $('pin-label-text');
+  refs.setLink  = $('pin-set-link');
+  refs.setPanel = $('pin-set-panel');
+  refs.setMsg   = $('pin-set-msg');
+  refs.setCancel = $('pin-set-cancel');
   refs.stack    = $('id-stack');
   refs.track    = $('id-track');
   refs.prev     = $('id-prev');
@@ -52,49 +63,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   refs.lock     = $('id-lock');
   refs.trail    = $('pass-trail');
 
-  /* require session */
   const session = getSession();
-  if (!session) {
-    location.replace('/auth.html?next=/pass.html');
-    return;
-  }
+  if (!session) { location.replace('/auth.html?next=/pass.html'); return; }
+  state.session = session;
 
-  /* hydrate from profile (or fall back to demo data) */
-  try {
-    await loadProfile(session);
-  } catch (err) {
-    console.warn('[pass] profile load failed, using demo data:', err);
+  /* hydrate profile (or demo fallback) */
+  try { await loadProfile(session); }
+  catch (err) {
+    console.warn('[pass] profile load failed, using demo:', err);
     applyProfile({
-      given_name: 'YEHOSUA',
-      surname: 'CHRIST',
-      trail_name: 'Yehosua',
-      wkid: 'C4X8R2M7',
-      dob: '1992-01-01',
-      sex: 'M',
-      nationality: 'AT',
-      issued_at: '2026-01-01',
-      expires_at: '2031-01-01',
+      given_name: 'YEHOSUA', surname: 'CHRIST', trail_name: 'Yehosua',
+      wkid: 'C4X8R2M7', dob: '1992-01-01', sex: 'M', nationality: 'AT',
+      issued_at: '2026-01-01', expires_at: '2031-01-01',
     });
   }
 
-  /* PIN keypad */
+  /* load the PIN hash (local first, then profile) */
+  await loadPinHash(session);
+  refreshPinHint();
+
   refs.pad.addEventListener('click', onPadTap);
   document.addEventListener('keydown', onKeyDown);
 
-  /* slider nav */
   refs.prev.addEventListener('click', () => goPage(0));
   refs.next.addEventListener('click', () => goPage(1));
-
-  /* lock button */
   refs.lock.addEventListener('click', lockId);
 
-  /* swipe support */
+  refs.setLink?.addEventListener('click', () => startSetPin());
+  refs.setCancel?.addEventListener('click', () => cancelSetPin());
+
+  /* swipe */
   let startX = 0, startY = 0, swiping = false;
   refs.track.addEventListener('touchstart', (e) => {
     if (!state.unlocked) return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    swiping = true;
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY; swiping = true;
   }, { passive: true });
   refs.track.addEventListener('touchend', (e) => {
     if (!swiping) return;
@@ -114,12 +116,7 @@ async function loadProfile(session) {
   if (!userId) throw new Error('no user id in session');
   const resp = await fetch(
     `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=*`,
-    {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    }
+    { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${session.accessToken}` } }
   );
   if (!resp.ok) throw new Error(`profile fetch ${resp.status}`);
   const rows = await resp.json();
@@ -139,31 +136,23 @@ function applyProfile(p) {
   set('id-issued',   fmtDate(p.issued_at || p.created_at) || '—');
   set('id-expires',  fmtDate(p.expires_at) || addYears(p.issued_at || p.created_at, 5) || '—');
 
-  /* MRZ — ICAO 9303-ish, two lines */
   const wkid = (p.wkid || 'C4X8R2M7').toUpperCase();
   const sur  = (p.surname || 'CHRIST').toUpperCase().replace(/\W+/g, '');
   const giv  = (p.given_name || 'YEHOSUA').toUpperCase().replace(/\W+/g, '');
   const filler = '<'.repeat(Math.max(0, 30 - sur.length - giv.length - 2));
-  $('id-mrz-line-1').textContent =
-    `PWWND${sur}<<${giv}${filler}`.slice(0, 44);
+  $('id-mrz-line-1').textContent = `PWWND${sur}<<${giv}${filler}`.slice(0, 44);
   const dob  = ymd(p.dob);
   const exp  = ymd(p.expires_at) || ymd(addYears(p.issued_at || p.created_at, 5));
   $('id-mrz-line-2').textContent =
     `${wkid}<9${(p.nationality || 'AUT').toUpperCase().padEnd(3, 'A')}${dob}${(p.sex || 'M').toUpperCase()}${exp}<<<<<<<<<<<3`;
 
-  /* trail name in head */
   if (refs.trail) refs.trail.textContent = '· ' + (p.trail_name || p.given_name || '');
 
-  /* avatar in portrait if present */
   if (p.avatar_url) {
     const img = $('id-portrait-img');
-    if (img) {
-      img.src = p.avatar_url;
-      img.hidden = false;
-    }
+    if (img) { img.src = p.avatar_url; img.hidden = false; }
   }
 
-  /* wallet name + dates */
   document.querySelectorAll('[data-name]').forEach((el) => {
     el.innerHTML = `${(p.given_name || 'YEHOSUA').toUpperCase()} <em>·</em> ${(p.surname || 'CHRIST').toUpperCase()}`;
   });
@@ -175,12 +164,10 @@ function applyProfile(p) {
     el.textContent = fmtShortDate(p.expires_at) || fmtShortDate(addYears(p.issued_at || p.created_at, 5)) || '—';
   });
 
-  /* §2 · Crypto Matrix — computed in-browser */
   hydrateMatrix(p, wkid);
 }
 
 async function hydrateMatrix(p, wkid) {
-  /* SHA-256 over the bearer record (deterministic prefix) */
   try {
     const enc = new TextEncoder().encode(
       `WND|${wkid}|${(p.surname||'').toUpperCase()}|${(p.given_name||'').toUpperCase()}|${ymd(p.dob)}|${ymd(p.issued_at||p.created_at)}`
@@ -189,14 +176,12 @@ async function hydrateMatrix(p, wkid) {
     const hex = [...new Uint8Array(hashBuf)].map(b => b.toString(16).padStart(2, '0')).join('');
     const cell = $('id-sha');
     if (cell) cell.innerHTML = hex.match(/.{1,16}/g).slice(0, 3).join('<br/>');
-  } catch (_) { /* crypto unavailable */ }
+  } catch (_) {}
 
-  /* Now (local) + location placeholder */
   const now = new Date();
   $('id-now-time').textContent = now.toTimeString().slice(0, 5) + ' ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
   $('id-now-loc').textContent  = p.last_location_label || '—';
 
-  /* Validity */
   const issued = new Date(p.issued_at || p.created_at || Date.now());
   const expires = new Date(p.expires_at || addYears(p.issued_at || p.created_at, 5));
   const totalMs = expires - issued;
@@ -208,15 +193,72 @@ async function hydrateMatrix(p, wkid) {
   const remDays = days - years * 365 - months * 30;
   $('id-validity').textContent = `${years}Y ${months}M ${remDays}D`;
   $('id-validity-pct').textContent = `${(ratio * 100).toFixed(1)}% remaining`;
-
   $('id-doc-meta').textContent = `PW · ${wkid}`;
 }
 
-/* ─── PIN ─── */
+/* ─── PIN hashing ──────────────────────────────────────────── */
+async function hashPin(pin, salt) {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(pin), { name: 'PBKDF2' }, false, ['deriveBits']
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
+    key, 256
+  );
+  // base64
+  let s = ''; for (const b of new Uint8Array(bits)) s += String.fromCharCode(b);
+  return btoa(s);
+}
+
+async function loadPinHash(session) {
+  // Local IndexedDB first
+  try {
+    const db = await openPinDB();
+    const cached = await idbGet(db, session.user.id);
+    if (cached) { state.pinHash = cached; return; }
+  } catch (_) {}
+
+  // Then profile.pin_hash
+  try {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=pin_hash`,
+      { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${session.accessToken}` } }
+    );
+    if (resp.ok) {
+      const rows = await resp.json();
+      const h = rows?.[0]?.pin_hash;
+      if (h) {
+        state.pinHash = h;
+        try { const db = await openPinDB(); await idbPut(db, session.user.id, h); } catch (_) {}
+      }
+    }
+  } catch (_) {}
+}
+
+async function savePinHash(session, hash) {
+  state.pinHash = hash;
+  try { const db = await openPinDB(); await idbPut(db, session.user.id, hash); } catch (_) {}
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}`, {
+      method: 'PATCH',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({ pin_hash: hash, pin_updated_at: new Date().toISOString() }),
+    });
+  } catch (_) {}
+}
+
+/* ─── PIN entry / verification ─────────────────────────────── */
 function onPadTap(e) {
-  const k = e.target.closest('.pin-key');
-  if (!k) return;
+  const k = e.target.closest('.pin-key'); if (!k) return;
   const d = k.dataset.d;
+  if (state.setPinStep) return handleSetPinDigit(d);
+
   if (d === 'del') { setPin(state.pin.slice(0, -1)); return; }
   if (!/^\d$/.test(d)) return;
   if (state.pin.length >= 4) return;
@@ -227,42 +269,46 @@ function onPadTap(e) {
 function onKeyDown(e) {
   if (state.unlocked) return;
   if (e.key >= '0' && e.key <= '9') {
+    if (state.setPinStep) return handleSetPinDigit(e.key);
     if (state.pin.length < 4) {
       setPin(state.pin + e.key);
       if (state.pin.length === 4) verifyPin();
     }
   } else if (e.key === 'Backspace') {
-    setPin(state.pin.slice(0, -1));
+    if (state.setPinStep) {
+      state.setPinBuffer = state.setPinBuffer.slice(0, -1);
+      renderSetPinDots();
+    } else {
+      setPin(state.pin.slice(0, -1));
+    }
   }
 }
 
 function setPin(v) {
   state.pin = v;
-  const dots = refs.dots.querySelectorAll('.pin-dot');
-  dots.forEach((d, i) => {
+  refs.dots.querySelectorAll('.pin-dot').forEach((d, i) => {
     d.classList.toggle('on', i < v.length);
     d.classList.remove('err');
   });
 }
 
-function verifyPin() {
-  /* For persona testing: accept the demo PIN. Replace with a real
-     server-side check (or a hashed local check) once /sql/pins.sql lands. */
-  if (state.pin === DEMO_PIN) {
-    unlockId();
+async function verifyPin() {
+  let ok = false;
+  if (state.pinHash) {
+    const h = await hashPin(state.pin, state.session.user.id);
+    ok = (h === state.pinHash);
   } else {
-    failPin();
+    /* No PIN set — accept demo PIN 1234 */
+    ok = (state.pin === DEMO_PIN);
   }
+  if (ok) unlockId();
+  else failPin();
 }
 
 function failPin() {
-  const dots = refs.dots.querySelectorAll('.pin-dot');
-  dots.forEach(d => d.classList.add('err'));
+  refs.dots.querySelectorAll('.pin-dot').forEach(d => d.classList.add('err'));
   refs.gate.classList.add('shake');
-  setTimeout(() => {
-    refs.gate.classList.remove('shake');
-    setPin('');
-  }, 480);
+  setTimeout(() => { refs.gate.classList.remove('shake'); setPin(''); }, 480);
 }
 
 function unlockId() {
@@ -274,8 +320,7 @@ function unlockId() {
 }
 
 function lockId() {
-  state.unlocked = false;
-  state.pin = '';
+  state.unlocked = false; state.pin = '';
   refs.stack.classList.remove('unlocked');
   refs.stack.setAttribute('aria-hidden', 'true');
   refs.gate.style.display = '';
@@ -291,6 +336,100 @@ function goPage(p) {
     d.classList.toggle('on', i === p);
     d.setAttribute('aria-selected', i === p ? 'true' : 'false');
   });
+}
+
+/* ─── Set / change PIN ─────────────────────────────────────── */
+function startSetPin() {
+  state.setPinStep = state.pinHash ? 'current' : 'new';
+  state.setPinBuffer = '';
+  state.setPinNew = '';
+  refs.setPanel.hidden = false;
+  refs.setLink.hidden = true;
+  setPin('');
+  updateSetPinUI();
+}
+
+function cancelSetPin() {
+  state.setPinStep = null;
+  state.setPinBuffer = '';
+  state.setPinNew = '';
+  refs.setPanel.hidden = true;
+  refs.setLink.hidden = false;
+  refs.label.textContent = 'Enter your four digits';
+  refs.setMsg.textContent = '';
+  setPin('');
+}
+
+async function handleSetPinDigit(d) {
+  if (d === 'del') { state.setPinBuffer = state.setPinBuffer.slice(0, -1); renderSetPinDots(); return; }
+  if (!/^\d$/.test(d)) return;
+  if (state.setPinBuffer.length >= 4) return;
+  state.setPinBuffer += d;
+  renderSetPinDots();
+  if (state.setPinBuffer.length === 4) await advanceSetPin();
+}
+
+function renderSetPinDots() {
+  refs.dots.querySelectorAll('.pin-dot').forEach((d, i) => {
+    d.classList.toggle('on', i < state.setPinBuffer.length);
+    d.classList.remove('err');
+  });
+}
+
+async function advanceSetPin() {
+  const entry = state.setPinBuffer;
+  state.setPinBuffer = '';
+  if (state.setPinStep === 'current') {
+    const ok = state.pinHash
+      ? (await hashPin(entry, state.session.user.id)) === state.pinHash
+      : entry === DEMO_PIN;
+    if (!ok) {
+      refs.dots.querySelectorAll('.pin-dot').forEach(d => d.classList.add('err'));
+      refs.gate.classList.add('shake');
+      setTimeout(() => { refs.gate.classList.remove('shake'); renderSetPinDots(); }, 480);
+      refs.setMsg.textContent = 'Wrong current PIN — try again.';
+      return;
+    }
+    state.setPinStep = 'new';
+  } else if (state.setPinStep === 'new') {
+    state.setPinNew = entry;
+    state.setPinStep = 'confirm';
+  } else if (state.setPinStep === 'confirm') {
+    if (entry !== state.setPinNew) {
+      refs.setMsg.textContent = 'Did not match — start again.';
+      state.setPinStep = 'new';
+      state.setPinNew = '';
+      renderSetPinDots();
+      updateSetPinUI();
+      return;
+    }
+    const hash = await hashPin(entry, state.session.user.id);
+    await savePinHash(state.session, hash);
+    refs.setMsg.textContent = '✓ PIN saved.';
+    setTimeout(() => cancelSetPin(), 1200);
+    return;
+  }
+  renderSetPinDots();
+  updateSetPinUI();
+}
+
+function updateSetPinUI() {
+  if (state.setPinStep === 'current') {
+    refs.label.textContent = 'Enter your current PIN';
+    refs.setMsg.textContent = '';
+  } else if (state.setPinStep === 'new') {
+    refs.label.textContent = 'Enter a new PIN';
+    refs.setMsg.textContent = '4 digits — anything memorable.';
+  } else if (state.setPinStep === 'confirm') {
+    refs.label.textContent = 'Confirm the new PIN';
+    refs.setMsg.textContent = 'One more time.';
+  }
+}
+
+function refreshPinHint() {
+  if (refs.hint) {
+    refs.hint.textContent = state.pinHash ? 'Your PIN · 4 digits' : 'Demo PIN · 1234 · then set your own';
+  }
 }
 
 /* ─── helpers ─── */
@@ -317,4 +456,30 @@ function addYears(d, n) {
   const dt = new Date(d);
   dt.setFullYear(dt.getFullYear() + n);
   return dt.toISOString();
+}
+
+/* IndexedDB for PIN hash */
+function openPinDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(PIN_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(PIN_STORE);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+function idbGet(db, key) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(PIN_STORE, 'readonly');
+    const r = tx.objectStore(PIN_STORE).get(key);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function idbPut(db, key, value) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(PIN_STORE, 'readwrite');
+    const r = tx.objectStore(PIN_STORE).put(value, key);
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
 }
