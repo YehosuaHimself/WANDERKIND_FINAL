@@ -93,6 +93,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (refs.prev) refs.prev.addEventListener('click', () => goPage(0));
   if (refs.next) refs.next.addEventListener('click', () => goPage(1));
   if (refs.lock) refs.lock.addEventListener('click', lockId);
+  if (refs.changePin) refs.changePin.addEventListener('click', () => {
+    /* Lock first to gate the change behind PIN verification, then open the flow */
+    lockId();
+    startSetPin();
+  });
 
   refs.setLink?.addEventListener('click', () => startSetPin());
   refs.setCancel?.addEventListener('click', () => cancelSetPin());
@@ -261,6 +266,7 @@ async function savePinHash(session, hash) {
 /* ─── PIN entry / verification ─────────────────────────────── */
 function onPadTap(e) {
   const k = e.target.closest('.pin-key'); if (!k) return;
+  if (navigator.vibrate) navigator.vibrate(10);
   const d = k.dataset.d;
   if (state.setPinStep) return handleSetPinDigit(d);
 
@@ -450,6 +456,10 @@ function bumpIdle() {
     if (state.unlocked) lockId();
   }, IDLE_LOCK_MS);
 }
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && state.unlocked) lockId();
+});
+
 ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'].forEach(evt => {
   document.addEventListener(evt, bumpIdle, { passive: true, capture: true });
 });
