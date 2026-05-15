@@ -40,15 +40,11 @@ class WkTabbar extends HTMLElement {
       </a>
 
       <a href="/more.html" class="wk-tab wk-tab-hub"${moreActive ? ' aria-current="page"' : ''}>
-        <span class="wk-tab-hub-circle" aria-hidden="true">
-          <svg viewBox="0 0 80 80" aria-hidden="true">
-            <g transform="rotate(-2.2 40 40)">
-              <circle cx="40" cy="40" r="37" fill="none" stroke="currentColor" stroke-width="2.4"/>
-              <circle cx="40" cy="40" r="33" fill="none" stroke="currentColor" stroke-width="1.0" opacity="0.65"/>
-              <path d="M 22 30 L 30 53 L 36 39 L 40 50 L 44 39 L 50 53 L 58 30"
-                    fill="none" stroke="currentColor" stroke-width="3.4"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-            </g>
+        <span class="wk-tab-hub-square" aria-hidden="true">
+          <svg viewBox="0 0 60 60" aria-hidden="true">
+            <path d="M 12 18 L 20 46 L 26 28 L 30 42 L 34 28 L 40 46 L 48 18"
+                  fill="none" stroke="currentColor" stroke-width="4"
+                  stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <span class="sr-only">More</span>
