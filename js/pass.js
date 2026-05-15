@@ -81,6 +81,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* load the PIN hash (local first, then profile) */
   await loadPinHash(session);
+  /* EPIC 01 · Reset-PIN flow — when the auth callback redirects with
+     ?reset_pin=1, clear the stored hash and force the set-PIN ceremony. */
+  if (new URLSearchParams(location.search).get('reset_pin') === '1') {
+    try {
+      state.pinHash = null;
+      const db = await openPinDB();
+      const tx = db.transaction(PIN_STORE, 'readwrite');
+      tx.objectStore(PIN_STORE).delete(session.user.id);
+      /* clear profile.pin_hash on the server too */
+      fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}`, {
+        method: 'PATCH',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ pin_hash: null }),
+      }).catch(() => {});
+      /* clean the URL */
+      history.replaceState(null, '', location.pathname);
+    } catch (_) {}
+  }
+
   refreshPinHint();
 
   /* PIN/ID listeners only mount if those elements exist (page-aware). */
