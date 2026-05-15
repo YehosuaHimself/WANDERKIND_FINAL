@@ -13,7 +13,6 @@
  * tables, falls back to a friendly empty state.
  */
 
-// @ts-check
 
 import { getSession } from './session.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
