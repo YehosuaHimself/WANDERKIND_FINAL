@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <title>Wanderkind — Messages</title>
+  <meta name="description" content="End-to-end encrypted messages between Wanderkinder." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    html, body { background: var(--wk-bg); color: var(--wk-ink); }
+    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+
+    main#msg-root {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px);
+      display: flex; flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+
+    .msg-head {
+      display: flex; align-items: baseline; gap: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .msg-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+    .msg-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .msg-kicker {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+    .msg-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 30px;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      margin: 0;
+      color: var(--wk-ink);
+    }
+    .msg-title em { font-style: italic; color: var(--wk-amber-text); }
+    .msg-sub {
+      font-family: var(--wk-font-display);
+      font-size: var(--wk-fs-small);
+      line-height: 1.5;
+      color: var(--wk-ink-soft);
+      margin: 4px 0 8px;
+      max-width: 380px;
+    }
+
+    /* ── Thread list ───────────────────────────────────────────── */
+    .thread-list { display: flex; flex-direction: column; gap: 10px; }
+    .thread {
+      display: block;
+      text-decoration: none;
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 12px 14px;
+      color: inherit;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+    .thread:hover, .thread:focus-visible {
+      background: var(--wk-amber-soft);
+      border-color: var(--wk-amber);
+      outline: none;
+    }
+    .thread-head { display: flex; align-items: center; gap: 10px; }
+    .thread-av {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--wk-amber-hi), var(--wk-amber) 60%, var(--wk-amber-press));
+      box-shadow: 0 0 0 1.5px var(--wk-bg);
+      display: grid; place-items: center;
+      color: var(--wk-bg);
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .thread-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+    .thread-name {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 14px;
+      color: var(--wk-ink);
+      line-height: 1.2;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .thread-lock {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--wk-success);
+      font-weight: var(--wk-fw-bold);
+    }
+    .thread-lock::before { content: "🔒"; font-size: 9px; }
+    .thread-time {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-muted);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .thread-snippet {
+      margin-top: 7px;
+      font-family: var(--wk-font-display);
+      font-size: 13px;
+      color: var(--wk-ink-soft);
+      line-height: 1.45;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* ── Empty state ───────────────────────────────────────────── */
+    .empty {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 32px 22px;
+      text-align: center;
+    }
+    .empty-seal {
+      width: 56px; height: 56px;
+      border-radius: 8px;
+      margin: 0 auto 14px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1.5px var(--wk-amber-text), 0 0 14px var(--wk-amber-soft);
+    }
+    .empty-seal svg { width: 100%; height: 100%; display: block; }
+    .empty-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 15px;
+      color: var(--wk-ink);
+      margin: 0 0 6px;
+    }
+    .empty-body {
+      font-family: var(--wk-font-display);
+      font-size: 13px;
+      color: var(--wk-ink-soft);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* ── Thread view (when ?t= is set) ─────────────────────────── */
+    .thread-view {
+      display: none;
+      flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+    .thread-view.active { display: flex; }
+    .thread-list.hidden { display: none; }
+
+    .tv-head {
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--wk-amber-line);
+    }
+    .tv-back {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 8px 0;
+      font-weight: var(--wk-fw-bold);
+    }
+    .tv-back::before { content: "← "; }
+    .tv-name {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 16px;
+      color: var(--wk-ink);
+    }
+    .tv-lock {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--wk-success);
+      font-weight: var(--wk-fw-bold);
+    }
+    .tv-lock::before { content: "🔒 "; }
+
+    .bubbles {
+      display: flex; flex-direction: column; gap: 8px;
+      min-height: 200px;
+    }
+    .bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--wk-ink);
+    }
+    .bubble.them {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .bubble.me {
+      background: var(--wk-amber-soft);
+      border: 1px solid var(--wk-amber-line);
+      color: var(--wk-ink);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble-time {
+      display: block;
+      margin-top: 4px;
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      color: var(--wk-ink-muted);
+      text-transform: uppercase;
+    }
+
+    .compose {
+      display: flex; gap: 10px; align-items: flex-end;
+      padding-top: 10px;
+      border-top: 1px solid var(--wk-line);
+    }
+    .compose textarea {
+      flex: 1;
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--wk-ink);
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      padding: 10px 12px;
+      min-height: 48px;
+      max-height: 160px;
+      resize: none;
+    }
+    .compose textarea:focus { outline: 2px solid var(--wk-amber); outline-offset: -1px; }
+    .send-btn {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-mono);
+      font-weight: var(--wk-fw-bold);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 14px 18px;
+      border-radius: var(--wk-r-sm);
+      border: 0;
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .send-btn:hover { background: var(--wk-amber-press); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ Canonical Wanderkind logo ══════════ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="wk-mark" viewBox="0 0 680 680">
+      <rect x="0" y="0" width="680" height="680" fill="#FAFAF5"/>
+      <circle cx="340" cy="340" r="280" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.55"/>
+      <circle cx="340" cy="340" r="220" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
+      <circle cx="340" cy="340" r="160" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.30"/>
+      <text x="340" y="395" text-anchor="middle"
+            font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+            font-size="260" font-weight="900" fill="#C8762A" letter-spacing="-10">W</text>
+    </symbol>
+  </svg>
+
+  <a href="#msg-root" class="skip-to-content">Skip to messages</a>
+
+  <main id="msg-root">
+
+    <header class="msg-head">
+      <span class="msg-eyebrow">— Messages</span>
+      <span class="msg-kicker" id="msg-count">· 0 threads</span>
+    </header>
+
+    <div id="list-view">
+      <h1 class="msg-title">Quiet <em>conversations.</em></h1>
+      <p class="msg-sub">
+        End-to-end encrypted between you and one other. The server never reads.
+      </p>
+
+      <section class="thread-list" id="thread-list" aria-label="Threads">
+        <!-- Threads injected by /js/messages.js -->
+      </section>
+
+      <section class="empty" id="empty-state" hidden>
+        <div class="empty-seal">
+          <svg viewBox="0 0 680 680" aria-hidden="true"><use href="#wk-mark"/></svg>
+        </div>
+        <h2 class="empty-title">No threads yet.</h2>
+        <p class="empty-body">
+          Threads start the moment another Wanderkind opens a door for you,
+          or you knock on theirs.
+        </p>
+      </section>
+    </div>
+
+    <div class="thread-view" id="thread-view">
+      <div class="tv-head">
+        <button class="tv-back" id="tv-back" type="button">Back</button>
+        <span class="tv-name" id="tv-name">—</span>
+        <span class="tv-lock">end-to-end</span>
+      </div>
+      <div class="bubbles" id="bubbles">
+        <!-- Bubbles injected by /js/messages.js -->
+      </div>
+      <form class="compose" id="compose">
+        <textarea
+          id="compose-text"
+          rows="2"
+          placeholder="Write a line…"
+          aria-label="Message text"></textarea>
+        <button class="send-btn" type="submit" id="send-btn">Send</button>
+      </form>
+    </div>
+
+  </main>
+
+  <wk-tabbar></wk-tabbar>
+
+  <script type="module" src="/js/pwa-mode.js"></script>
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/messages.js"></script>
+</body>
+</html>
