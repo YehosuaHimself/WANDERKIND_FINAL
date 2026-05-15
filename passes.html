@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
   <title>Wanderkind — The Passes</title>
-  <meta name="description" content="The Food, Water and Adventure passes — no PIN, walk straight in." />
+  <meta name="description" content="The Food, Water and Adventure passes — no PIN, walk straight in. Tap a card to unfold it." />
 
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#FAFAF5" />
@@ -32,26 +32,9 @@
   <link rel="stylesheet" href="/css/components.css" />
 
   <style>
-    /* ─────────────────────────────────────────────────────────────
-     * /pass.html — bearer credentials
-     *
-     * Two sections, one page, cream throughout:
-     *
-     *   §1 · THE WANDERKIND ID         (PIN-gated · two pages)
-     *        ↳ Page 1 · Contact         (bio fields, MRZ, wax seal)
-     *        ↳ Page 2 · Crypto Matrix   (SHA-256, issuer seal, etc.)
-     *
-     *   §2 · THE WANDERKIND PASSES     (no gate · always visible)
-     *        ↳ Food Pass                (deep sealing-wax red)
-     *        ↳ Water Pass               (deep marine)
-     *        ↳ Adventure Pass           (deep forest · coming soon)
-     *
-     * The 3-tab tabbar (Map · W-seal hub · Me) is preserved.
-     * Aesthetic CANON: cream paper, Helvetica Neue + Courier New only.
-     * ───────────────────────────────────────────────────────────── */
-
     html, body { background: var(--wk-bg); color: var(--wk-ink); }
-    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+    body { min-height: 100vh; min-height: 100dvh; padding: 0; overflow-x: hidden; }
+    body.passes-unfolded { overflow: hidden; }
 
     main#pass-root {
       max-width: 480px;
@@ -65,11 +48,8 @@
       gap: var(--wk-space-xl);
     }
 
-    /* ── Page head ─────────────────────────────────────────────── */
     .pass-head {
-      display: flex;
-      align-items: baseline;
-      gap: 14px;
+      display: flex; align-items: baseline; gap: 14px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--wk-line);
     }
@@ -91,11 +71,7 @@
       color: var(--wk-ink-muted);
     }
 
-    /* ── Section header — used by both ID and PASSES ──────────── */
-    .sect {
-      display: flex; flex-direction: column;
-      gap: var(--wk-space-md);
-    }
+    .sect { display: flex; flex-direction: column; gap: var(--wk-space-md); }
     .sect-head {
       display: flex; align-items: baseline; gap: 12px;
       padding-bottom: 10px;
@@ -129,485 +105,46 @@
       color: var(--wk-ink-muted);
     }
 
-    /* ════════════════════════════════════════════════════════════
-       §1 · THE WANDERKIND ID — PIN-gated
-       ════════════════════════════════════════════════════════════ */
-
-    /* ── PIN gate ──────────────────────────────────────────────── */
-    .pin-gate {
-      display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      gap: 18px;
-      padding: 24px 18px 22px;
-      background: var(--wk-bg-2);
-      border: 1px solid var(--wk-line);
-      border-radius: var(--wk-r-md);
-      position: relative;
-    }
-    .pin-seal {
-      width: 56px; height: 56px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 0 1.5px var(--wk-amber-text), 0 0 14px var(--wk-amber-soft);
-    }
-    .pin-seal svg { width: 100%; height: 100%; display: block; }
-    .pin-org {
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-black);
-      font-size: 12px;
-      letter-spacing: 0.30em;
-      text-transform: uppercase;
-      color: var(--wk-ink-deep, var(--wk-ink));
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--wk-amber);
-      min-width: 180px;
-    }
-    .pin-label {
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-mono);
-      letter-spacing: 0.30em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      margin: 0;
-    }
-    .pin-label::before, .pin-label::after { content: " ·· "; color: var(--wk-amber); }
-    .pin-dots {
-      display: flex; gap: 20px; justify-content: center;
-    }
-    .pin-dot {
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      border: 1.5px solid var(--wk-amber);
-      transition: background 0.15s ease, transform 0.1s ease;
-    }
-    .pin-dot.on {
-      background: var(--wk-amber);
-      box-shadow: 0 0 8px var(--wk-amber-soft);
-    }
-    .pin-dot.err {
-      background: var(--wk-error);
-      border-color: var(--wk-error);
-    }
-    .pin-pad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px 22px;
-      width: 100%;
-      max-width: 260px;
-    }
-    .pin-key {
-      font-family: var(--wk-font-mono);
-      font-weight: var(--wk-fw-bold);
-      font-size: 28px;
-      letter-spacing: 0.04em;
-      color: var(--wk-ink);
-      width: 60px; height: 60px;
-      margin: 0 auto;
-      border-radius: 50%;
-      display: grid; place-items: center;
-      border: 1px solid var(--wk-line);
-      background: var(--wk-bg);
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.12s ease, transform 0.08s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .pin-key:active {
-      background: var(--wk-amber-soft);
-      transform: scale(0.96);
-    }
-    .pin-key.del {
-      background: transparent;
-      border: 0;
-      color: var(--wk-amber-text);
-      font-family: var(--wk-font-mono);
-      font-size: 13px;
-      letter-spacing: 0.20em;
-    }
-    @keyframes pin-shake {
-      0%, 100% { transform: translateX(0); }
-      20%      { transform: translateX(-8px); }
-      40%      { transform: translateX(8px); }
-      60%      { transform: translateX(-5px); }
-      80%      { transform: translateX(5px); }
-    }
-    .pin-gate.shake { animation: pin-shake 0.45s ease; }
-    @media (prefers-reduced-motion: reduce) {
-      .pin-gate.shake { animation: none; }
-    }
-    .pin-hint {
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-nano);
-      letter-spacing: 0.20em;
-      text-transform: uppercase;
-      color: var(--wk-ink-muted);
-      margin: 0;
-      opacity: 0.8;
-    }
-
-    
-    /* ── PIN · set / change link + panel ─────────────────────── */
-    .pin-set-link {
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-nano);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      background: transparent;
-      border: 0;
-      cursor: pointer;
-      padding: 8px 14px;
-      font-weight: var(--wk-fw-bold);
-    }
-    .pin-set-link::before { content: "— "; color: var(--wk-amber); }
-    .pin-set-panel {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 8px;
-      padding: 8px 0 0;
-    }
-    .pin-set-msg {
-      font-family: var(--wk-font-display);
-      font-size: 12.5px;
-      color: var(--wk-ink-soft);
-      margin: 0;
-      min-height: 1.4em;
-      text-align: center;
-    }
-    .pin-set-cancel {
-      font-family: var(--wk-font-mono);
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-ink-muted);
-      background: transparent;
-      border: 1px solid var(--wk-line);
-      border-radius: var(--wk-r-sm);
-      padding: 8px 14px;
-      cursor: pointer;
-    }
-    .pin-set-cancel:hover { color: var(--wk-ink); border-color: var(--wk-amber-line); }
-
-    /* ── ID document pager (revealed on PIN) ───────────────────── */
-    .id-stack { display: none; flex-direction: column; gap: 14px; }
-    .id-stack.unlocked { display: flex; animation: idFadeIn 0.5s ease; }
-    @keyframes idFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    @media (prefers-reduced-motion: reduce) { .id-stack.unlocked { animation: none; } }
-
-    /* Page-dot indicator */
-    .id-dots {
-      display: flex; justify-content: center;
-      gap: 10px;
-      padding: 4px 0 2px;
-    }
-    .id-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--wk-line);
-      transition: background 0.18s ease;
-    }
-    .id-dot.on { background: var(--wk-amber); }
-
-    /* The two pages — sit in a horizontal slider */
-    .id-slider {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--wk-r-md);
-      box-shadow: 0 0 0 1px var(--wk-line), 0 8px 24px -12px rgba(11, 7, 5, 0.14);
-    }
-    .id-track {
+    /* ── Cross-link back to /id.html ──────────────────────────── */
+    .cross-link {
       display: flex;
-      transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    @media (prefers-reduced-motion: reduce) { .id-track { transition: none; } }
-    .id-page {
-      flex: 0 0 100%;
-      background: var(--wk-bg);
-    }
-
-    /* ── ID card (used by both pages) — cream paper ─────────────── */
-    .id-card {
-      background:
-        radial-gradient(ellipse at 20% 0%, rgba(200, 118, 42, 0.08) 0%, transparent 55%),
-        radial-gradient(ellipse at 80% 100%, rgba(200, 118, 42, 0.06) 0%, transparent 55%),
-        var(--wk-bg);
-      color: var(--wk-ink);
-      position: relative;
-      overflow: hidden;
-    }
-    .id-card::before {
-      /* Faint amber guilloché — concentric circles */
-      content: ""; position: absolute; inset: 0;
-      background:
-        repeating-radial-gradient(circle at 50% 50%,
-          transparent 0,
-          transparent 11px,
-          rgba(200, 118, 42, 0.05) 11px,
-          rgba(200, 118, 42, 0.05) 12px);
-      pointer-events: none;
-    }
-    .id-strip {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 14px;
-      background: linear-gradient(90deg, var(--wk-bg-2), var(--wk-bg-elevated) 50%, var(--wk-bg-2));
-      border-bottom: 1px solid var(--wk-amber);
-      font-family: var(--wk-font-mono);
-      font-size: 9px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      position: relative;
-      z-index: 1;
-    }
-    .id-strip .left { font-weight: var(--wk-fw-bold); }
-    .id-strip .center {
-      color: var(--wk-ink);
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      letter-spacing: 0.16em;
-      font-size: 10px;
-    }
-    .id-strip .right { color: var(--wk-ink-muted); }
-    .id-card-inner { position: relative; z-index: 1; padding: 16px 18px 14px; }
-
-    /* ── PAGE 1 · Contact — bio fields + portrait + MRZ ────────── */
-    .id-body {
-      display: grid;
-      grid-template-columns: 82px 1fr;
-      gap: 14px;
-      padding: 4px 0 8px;
-    }
-    .id-portrait {
-      width: 82px; height: 104px;
-      border-radius: 4px;
-      background:
-        linear-gradient(135deg, #EDE0BE 0%, #D8C28A 50%, #C9A871 100%);
-      box-shadow: inset 0 0 0 1px var(--wk-amber), 0 0 0 1px var(--wk-line);
-      position: relative;
-      overflow: hidden;
-    }
-    .id-portrait::after {
-      /* Subtle silhouette placeholder */
-      content: "";
-      position: absolute; inset: 14px 20px 8px;
-      background:
-        radial-gradient(ellipse at 50% 30%, rgba(90, 70, 50, 0.55) 0 22%, transparent 23%),
-        radial-gradient(ellipse at 50% 82%, rgba(90, 70, 50, 0.55) 0 38%, transparent 39%);
-    }
-    .id-portrait img {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: 2;
-    }
-    .id-fields { display: flex; flex-direction: column; gap: 6px; }
-    .id-row { display: flex; flex-direction: column; gap: 1px; }
-    .id-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .id-label {
-      font-family: var(--wk-font-mono);
-      font-size: 7.5px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-ink-muted);
-    }
-    .id-label .n { color: var(--wk-amber); font-weight: var(--wk-fw-bold); margin-right: 4px; }
-    .id-val {
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: 12.5px;
-      letter-spacing: 0.02em;
-      color: var(--wk-ink);
-      line-height: 1.15;
-    }
-    .id-val.lg { font-size: 15px; font-weight: var(--wk-fw-black); }
-    .id-val.mono {
-      font-family: var(--wk-font-mono);
-      font-weight: var(--wk-fw-bold);
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      color: var(--wk-amber-text);
-    }
-
-    .id-mrz {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px dashed var(--wk-amber-soft);
-      font-family: var(--wk-font-mono);
-      font-size: 10px;
-      letter-spacing: 0.04em;
-      color: var(--wk-ink);
-      line-height: 1.5;
-      word-break: break-all;
-    }
-    .id-mrz-h {
-      font-family: var(--wk-font-mono);
-      font-size: 7px;
-      letter-spacing: 0.30em;
-      text-transform: uppercase;
-      color: var(--wk-ink-muted);
-      margin-bottom: 6px;
-      font-weight: var(--wk-fw-bold);
-      display: flex; justify-content: space-between;
-    }
-    .id-mrz-h .ok { color: var(--wk-success); font-weight: var(--wk-fw-bold); }
-    .id-mrz-h .ok::before { content: "● "; }
-
-    .id-seal-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 0 4px;
-      border-top: 1px solid var(--wk-line);
-      margin-top: 10px;
-    }
-    .id-wax {
-      width: 38px; height: 38px;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 0 0 1px var(--wk-amber-text), 0 0 12px var(--wk-amber-soft);
-      flex-shrink: 0;
-    }
-    .id-wax svg { width: 100%; height: 100%; display: block; }
-    .id-issuer {
-      flex: 1;
-      font-family: var(--wk-font-display);
-      font-size: 10px;
-      line-height: 1.45;
-      color: var(--wk-ink-soft);
-    }
-    .id-issuer strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); font-size: 10.5px; letter-spacing: 0.04em; }
-    .id-valid {
-      background: var(--wk-amber);
-      color: var(--wk-bg);
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-black);
-      font-size: 9.5px;
-      letter-spacing: 0.18em;
-      padding: 4px 9px;
-      border-radius: 3px;
-      text-transform: uppercase;
-    }
-
-    /* ── PAGE 2 · Crypto Matrix ─────────────────────────────────── */
-    .id-matrix {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 4px 0 8px;
-    }
-    .id-cell {
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
       background: var(--wk-bg-2);
-      border: 1px solid var(--wk-amber-soft);
-      border-radius: 7px;
-      padding: 9px 10px;
-    }
-    .id-cell-h {
-      font-family: var(--wk-font-mono);
-      font-size: 7.5px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      margin-bottom: 5px;
-      font-weight: var(--wk-fw-bold);
-    }
-    .id-cell-v {
-      font-family: var(--wk-font-mono);
-      font-size: 9.5px;
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      text-decoration: none;
       color: var(--wk-ink);
-      word-break: break-all;
-      line-height: 1.4;
-    }
-    .id-cell-v.lg {
       font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-black);
+      font-weight: var(--wk-fw-bold);
       font-size: 14px;
-      letter-spacing: 0.01em;
     }
-    .id-cell-v.ok { color: var(--wk-success); font-weight: var(--wk-fw-bold); }
-
-    .id-covenant {
-      border-top: 1px solid var(--wk-line);
-      margin-top: 8px;
-      padding: 12px 0 4px;
-    }
-    .id-covenant-h {
-      font-family: var(--wk-font-mono);
-      font-size: 8px;
-      letter-spacing: 0.30em;
-      text-transform: uppercase;
+    .cross-link span.k {
       color: var(--wk-amber-text);
-      font-weight: var(--wk-fw-bold);
-      margin-bottom: 8px;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .id-covenant-h .wk-mark-mini {
-      width: 14px; height: 14px;
-      border-radius: 2px; overflow: hidden;
-      box-shadow: 0 0 0 0.5px var(--wk-amber);
-    }
-    .id-covenant-h .wk-mark-mini svg { width: 100%; height: 100%; display: block; }
-    .id-covenant-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 8px 14px;
-    }
-    .cv-k {
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: 8.5px;
-      letter-spacing: 0.16em;
-      color: var(--wk-amber-text);
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-    .cv-v {
-      font-family: var(--wk-font-display);
-      font-size: 9.5px;
-      color: var(--wk-ink-soft);
-      line-height: 1.5;
-    }
-
-    /* ── Page-nav arrows ───────────────────────────────────────── */
-    .id-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 12px;
-    }
-    .id-nav button {
-      flex: 1;
       font-family: var(--wk-font-mono);
       font-size: 11px;
-      font-weight: var(--wk-fw-bold);
       letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      background: transparent;
-      border: 1px solid var(--wk-amber-line);
-      border-radius: var(--wk-r-sm);
-      padding: 12px 14px;
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
     }
-    .id-nav button:hover { background: var(--wk-amber-soft); }
-    .id-nav button:disabled { opacity: 0.3; cursor: default; }
-    .id-nav button:disabled:hover { background: transparent; }
 
-    .id-lock-btn {
-      margin: 4px auto 0;
-      font-family: var(--wk-font-mono);
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--wk-ink-muted);
-      background: transparent;
+    /* ── Wallet stack (collapsed cards) ────────────────────────── */
+    .wallet-stack { display: flex; flex-direction: column; gap: 14px; }
+
+    .wallet-tap {
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      padding: 0;
       border: 0;
-      cursor: pointer;
-      padding: 8px 14px;
+      background: transparent;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.16s ease;
     }
-    .id-lock-btn::before { content: "🔒 "; opacity: 0.6; }
+    .wallet-tap:active { transform: scale(0.985); }
+    .wallet-tap[disabled] { cursor: default; }
+    .wallet-tap[disabled]:active { transform: none; }
 
-    /* ════════════════════════════════════════════════════════════
-       §2 · THE WANDERKIND PASSES — no PIN, always visible
-       ════════════════════════════════════════════════════════════ */
-    .wallet-stack {
-      display: flex; flex-direction: column;
-      gap: 14px;
-    }
     .wallet {
       aspect-ratio: 1.586 / 1;
       border-radius: var(--wk-r-md);
@@ -638,7 +175,7 @@
         radial-gradient(ellipse at 10% 100%, rgba(0,0,0,0.40) 0%, transparent 55%),
         linear-gradient(135deg, #1A2F1E 0%, #08160B 100%);
       box-shadow: 0 0 0 1px rgba(165, 197, 116, 0.18), 0 8px 24px -12px rgba(0,0,0,0.4);
-      opacity: 0.55;
+      opacity: 0.62;
       filter: saturate(0.7);
     }
     .wallet--adv::after {
@@ -678,9 +215,9 @@
       animation: kine 60s linear infinite;
       text-transform: uppercase;
     }
-    .wallet--food .wallet-band-track { color: rgba(232, 151, 69, 0.55); }
+    .wallet--food .wallet-band-track  { color: rgba(232, 151, 69, 0.55); }
     .wallet--water .wallet-band-track { color: rgba(133, 178, 220, 0.55); }
-    .wallet--adv .wallet-band-track { color: rgba(165, 197, 116, 0.55); }
+    .wallet--adv .wallet-band-track   { color: rgba(165, 197, 116, 0.55); }
     @keyframes kine {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
@@ -724,7 +261,6 @@
     .wallet--food .wallet-name em  { color: #E89745; }
     .wallet--water .wallet-name em { color: #85B2DC; }
     .wallet--adv .wallet-name em   { color: #A5C574; }
-
     .wallet-meta {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -767,69 +303,243 @@
     }
     .wallet-seal svg { width: 100%; height: 100%; display: block; }
 
-    /* ── Locked state — passes look the same, but tap leads to PIN ── */
-    /* No PIN gate on passes — per spec, they are always visible. */
+    /* ── Tap-hint pill on each collapsed card ─────────────────── */
+    .tap-hint {
+      position: absolute; right: 14px; top: 32px;
+      font-family: var(--wk-font-mono);
+      font-size: 8px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: rgba(243, 231, 204, 0.7);
+      padding: 4px 8px;
+      border: 1px solid rgba(243, 231, 204, 0.3);
+      border-radius: 999px;
+      z-index: 3;
+    }
+    .tap-hint::after { content: " ↗"; }
 
-    /* ── Reduced motion baseline ───────────────────────────────── */
-    @media (prefers-reduced-motion: reduce) {
-      .id-stack.unlocked { animation: none; }
+    /* ════════════════════════════════════════════════════════════
+       Unfolded detail view — overlays the page, fullscreen on phone
+       ════════════════════════════════════════════════════════════ */
+    .pass-detail {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: var(--wk-bg);
+      transform: translateY(100%);
+      transition: transform 0.36s cubic-bezier(0.65, 0, 0.35, 1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      will-change: transform;
+    }
+    .pass-detail[aria-hidden="false"] {
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) { .pass-detail { transition: none; } }
+
+    .pd-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(var(--wk-space-xl) + env(safe-area-inset-bottom));
+      display: flex; flex-direction: column;
+      gap: var(--wk-space-lg);
+    }
+
+    .pd-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .pd-close {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      background: transparent;
+      border: 0;
+      padding: 12px 14px 12px 0;
+      cursor: pointer;
+      font-weight: var(--wk-fw-bold);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pd-close::before { content: "← "; }
+    .pd-title-mini {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+
+    /* The wallet card in the unfolded view — slightly larger */
+    .pd-card-wrap { padding: 0; }
+    .pd-card-wrap .wallet {
+      aspect-ratio: 1.586 / 1;
+      box-shadow: 0 12px 36px -16px rgba(11, 7, 5, 0.35);
+    }
+    .pd-card-wrap .wallet-name { font-size: 28px; }
+
+    /* Detail copy */
+    .pd-title {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 30px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .pd-title em { color: var(--wk-amber-text); font-style: italic; }
+    .pd-sub {
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--wk-ink-soft);
+      margin: 4px 0 0;
+    }
+    .pd-body {
+      font-family: var(--wk-font-display);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--wk-ink);
+    }
+    .pd-body p { margin: 0 0 14px; }
+    .pd-body em { color: var(--wk-amber-text); font-style: italic; }
+    .pd-body strong { font-weight: var(--wk-fw-bold); color: var(--wk-ink-deep, var(--wk-ink)); }
+
+    .pd-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .pd-cell {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 14px 16px;
+    }
+    .pd-cell-h {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
+    }
+    .pd-cell-v {
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      color: var(--wk-ink);
+      line-height: 1.4;
+    }
+
+    .pd-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column;
+      gap: 10px;
+    }
+    .pd-list li {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 10px;
+      align-items: baseline;
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--wk-ink);
+    }
+    .pd-list li::before {
+      content: "·";
+      font-family: var(--wk-font-mono);
+      font-size: 20px;
+      color: var(--wk-amber);
+      line-height: 1;
+    }
+
+    .pd-art {
+      padding: 14px 16px;
+      background: var(--wk-bg-2);
+      border-left: 3px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+    }
+    .pd-art-h {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
+    }
+    .pd-art-q {
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+
+    .pd-section-h {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-bold);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      margin: 8px 0 6px;
+    }
+    .pd-section-h::before { content: "— "; color: var(--wk-amber); }
+
+    .pd-coming {
+      display: inline-block;
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      padding: 5px 10px;
+      border: 1px solid var(--wk-amber);
+      border-radius: 999px;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
 
-  <!-- ══════════ Canonical Wanderkind logo · single source ══════════ -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <symbol id="wk-mark" viewBox="0 0 680 680">
       <rect x="0" y="0" width="680" height="680" fill="#FAFAF5"/>
       <circle cx="340" cy="340" r="280" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.55"/>
       <circle cx="340" cy="340" r="220" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
       <circle cx="340" cy="340" r="160" fill="none" stroke="#C9A871" stroke-width="0.8" opacity="0.30"/>
-      <line x1="340" y1="60"  x2="340" y2="140" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
-      <line x1="340" y1="540" x2="340" y2="620" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
-      <line x1="60"  y1="340" x2="140" y2="340" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
-      <line x1="540" y1="340" x2="620" y2="340" stroke="#C9A871" stroke-width="0.8" opacity="0.40"/>
-      <g opacity="0.22">
-        <circle cx="340" cy="90"  r="3.5" fill="#C8762A"/>
-        <circle cx="340" cy="590" r="3.5" fill="#C8762A"/>
-        <circle cx="90"  cy="340" r="3.5" fill="#C8762A"/>
-        <circle cx="590" cy="340" r="3.5" fill="#C8762A"/>
-      </g>
-      <circle cx="340" cy="340" r="135" fill="none" stroke="#C8762A" stroke-width="1.5" opacity="0.14"/>
       <text x="340" y="395" text-anchor="middle"
             font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
             font-size="260" font-weight="900" fill="#C8762A" letter-spacing="-10">W</text>
     </symbol>
   </svg>
 
-  <a href="#pass-root" class="skip-to-content">Skip to my Pass</a>
+  <a href="#pass-root" class="skip-to-content">Skip to passes</a>
 
   <main id="pass-root">
 
     <header class="pass-head">
       <span class="pass-eyebrow">— The Passes</span>
-      <span class="pass-kicker" id="pass-trail">· loading</span>
+      <span class="pass-kicker" id="pass-trail">Food · Water · Adventure</span>
     </header>
 
-    <!-- ════════════════════════════════════════════════════════════
-         §2 · The Wanderkind Passes
-         ════════════════════════════════════════════════════════════ -->
-    
-    <a href="/id.html" class="cross-link" style="
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      background: var(--wk-bg-2);
-      border: 1px solid var(--wk-line);
-      border-radius: var(--wk-r-md);
-      text-decoration: none;
-      color: var(--wk-ink);
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: 14px;
-    ">
-      <span style="color: var(--wk-amber-text); font-family: var(--wk-font-mono); font-size: 11px; letter-spacing: 0.22em;">← THE ID</span>
+    <a href="/id.html" class="cross-link">
+      <span class="k">← THE ID</span>
       <span>PIN-gated bearer document</span>
     </a>
 
@@ -837,15 +547,112 @@
       <div class="sect-head">
         <span class="sect-fol">Folio II</span>
         <h2 class="sect-title" id="sect-passes-title">The Passes</h2>
-        <span class="sect-kicker">Food · Water · Adventure</span>
+        <span class="sect-kicker">Tap to unfold</span>
       </div>
 
-      <div class="wallet-stack">
+      <div class="wallet-stack" id="wallet-stack">
 
-        <!-- FOOD PASS -->
-        <article class="wallet wallet--food" aria-label="Food Pass">
+        <button class="wallet-tap" type="button" data-pass="food" aria-label="Open Food Pass details">
+          <article class="wallet wallet--food">
+            <span class="tap-hint">Open</span>
+            <div class="wallet-band" aria-hidden="true">
+              <div class="wallet-band-track">BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED ·</div>
+            </div>
+            <div class="wallet-head">
+              <div>
+                <div class="wallet-eyebrow">Wanderkind · Food</div>
+                <div class="wallet-class">Class A · A request</div>
+              </div>
+              <div class="wallet-seal" aria-hidden="true">
+                <svg viewBox="0 0 680 680"><use href="#wk-mark"/></svg>
+              </div>
+            </div>
+            <div class="wallet-name" data-name>YEHOSUA <em>·</em> CHRIST</div>
+            <div class="wallet-meta">
+              <div><div class="k">Holder</div><div class="v" data-pass-no>C4X8R2M7</div></div>
+              <div><div class="k">Issued</div><div class="v" data-issued>01.01.2026</div></div>
+              <div><div class="k">Expires</div><div class="v" data-expires>01.01.2031</div></div>
+            </div>
+            <div class="wallet-foot">
+              <span>WND · Inc.</span>
+              <span>Covenant Art. II</span>
+            </div>
+          </article>
+        </button>
+
+        <button class="wallet-tap" type="button" data-pass="water" aria-label="Open Water Pass details">
+          <article class="wallet wallet--water">
+            <span class="tap-hint">Open</span>
+            <div class="wallet-band" aria-hidden="true">
+              <div class="wallet-band-track">WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN ·</div>
+            </div>
+            <div class="wallet-head">
+              <div>
+                <div class="wallet-eyebrow">Wanderkind · Water</div>
+                <div class="wallet-class">Class A · A request</div>
+              </div>
+              <div class="wallet-seal" aria-hidden="true">
+                <svg viewBox="0 0 680 680"><use href="#wk-mark"/></svg>
+              </div>
+            </div>
+            <div class="wallet-name" data-name>YEHOSUA <em>·</em> CHRIST</div>
+            <div class="wallet-meta">
+              <div><div class="k">Holder</div><div class="v" data-pass-no>C4X8R2M7</div></div>
+              <div><div class="k">Issued</div><div class="v" data-issued>01.01.2026</div></div>
+              <div><div class="k">Expires</div><div class="v" data-expires>01.01.2031</div></div>
+            </div>
+            <div class="wallet-foot">
+              <span>WND · Inc.</span>
+              <span>Covenant Art. II</span>
+            </div>
+          </article>
+        </button>
+
+        <button class="wallet-tap" type="button" data-pass="adventure" aria-label="Open Adventure Pass details">
+          <article class="wallet wallet--adv">
+            <span class="tap-hint">Open</span>
+            <div class="wallet-band" aria-hidden="true">
+              <div class="wallet-band-track">TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE ·</div>
+            </div>
+            <div class="wallet-head">
+              <div>
+                <div class="wallet-eyebrow">Wanderkind · Adventure</div>
+                <div class="wallet-class">Class A · A request</div>
+              </div>
+              <div class="wallet-seal" aria-hidden="true">
+                <svg viewBox="0 0 680 680"><use href="#wk-mark"/></svg>
+              </div>
+            </div>
+            <div class="wallet-name">YEHOSUA <em>·</em> CHRIST</div>
+            <div class="wallet-meta">
+              <div><div class="k">Holder</div><div class="v">C4X8R2M7</div></div>
+              <div><div class="k">Issued</div><div class="v">—</div></div>
+              <div><div class="k">Expires</div><div class="v">—</div></div>
+            </div>
+            <div class="wallet-foot">
+              <span>WND · Inc.</span>
+              <span>Covenant Art. II</span>
+            </div>
+          </article>
+        </button>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════ Unfolded detail · Food ═══════════ -->
+  <aside class="pass-detail" id="pd-food" aria-hidden="true" role="dialog" aria-labelledby="pd-food-title">
+    <div class="pd-inner">
+      <div class="pd-head">
+        <button class="pd-close" type="button" data-close>Back</button>
+        <span class="pd-title-mini">Pass II · Food</span>
+      </div>
+
+      <div class="pd-card-wrap">
+        <article class="wallet wallet--food">
           <div class="wallet-band" aria-hidden="true">
-            <div class="wallet-band-track">BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED ·</div>
+            <div class="wallet-band-track">BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME · KITCHEN · SHARED · BREAD · SALT · WELCOME ·</div>
           </div>
           <div class="wallet-head">
             <div>
@@ -858,29 +665,76 @@
           </div>
           <div class="wallet-name" data-name>YEHOSUA <em>·</em> CHRIST</div>
           <div class="wallet-meta">
-            <div>
-              <div class="k">Holder</div>
-              <div class="v" data-pass-no>C4X8R2M7</div>
-            </div>
-            <div>
-              <div class="k">Issued</div>
-              <div class="v" data-issued>01.01.2026</div>
-            </div>
-            <div>
-              <div class="k">Expires</div>
-              <div class="v" data-expires>01.01.2031</div>
-            </div>
+            <div><div class="k">Holder</div><div class="v" data-pass-no>C4X8R2M7</div></div>
+            <div><div class="k">Issued</div><div class="v" data-issued>01.01.2026</div></div>
+            <div><div class="k">Expires</div><div class="v" data-expires>01.01.2031</div></div>
           </div>
           <div class="wallet-foot">
             <span>WND · Inc.</span>
             <span>Covenant Art. II</span>
           </div>
         </article>
+      </div>
 
-        <!-- WATER PASS -->
-        <article class="wallet wallet--water" aria-label="Water Pass">
+      <div>
+        <h1 class="pd-title" id="pd-food-title">Bread <em>·</em> Salt <em>·</em> Welcome</h1>
+        <p class="pd-sub">A meal at the host's table, when one is offered.</p>
+      </div>
+
+      <div class="pd-body">
+        <p>The Food Pass invites — never claims. The bearer carries it as a sign that a place at the table is welcome when a host has one to give. <em>It is a request, not an entitlement.</em></p>
+        <p>It exists because the oldest gesture of hospitality — bread and salt at the door — is also the smallest. Most kitchens have a chair to spare for a quiet stranger who walked twenty kilometres to reach them.</p>
+      </div>
+
+      <div class="pd-row">
+        <div class="pd-cell">
+          <div class="pd-cell-h">Class</div>
+          <div class="pd-cell-v">A · request</div>
+        </div>
+        <div class="pd-cell">
+          <div class="pd-cell-h">Covenant</div>
+          <div class="pd-cell-v">Article II · The Door</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="pd-section-h">What it permits</div>
+        <ul class="pd-list">
+          <li>A meal at the host's table when one is offered.</li>
+          <li>Morning bread, evening soup, leftovers in good faith.</li>
+          <li>The conversation that comes with the chair.</li>
+          <li>Nothing more — the host is always free to decline.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="pd-section-h">How it works</div>
+        <ul class="pd-list">
+          <li>You walk up, the host sees the Pass on your phone.</li>
+          <li>They offer or they don't — kindly, either way.</li>
+          <li>No payment passes through Wanderkind. The vouch is the only currency.</li>
+        </ul>
+      </div>
+
+      <div class="pd-art">
+        <div class="pd-art-h">Article II · The Door</div>
+        <p class="pd-art-q">"A host may open the door when able, may close it kindly when not. No host owes the bearer entry."</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ Unfolded detail · Water ═══════════ -->
+  <aside class="pass-detail" id="pd-water" aria-hidden="true" role="dialog" aria-labelledby="pd-water-title">
+    <div class="pd-inner">
+      <div class="pd-head">
+        <button class="pd-close" type="button" data-close>Back</button>
+        <span class="pd-title-mini">Pass III · Water</span>
+      </div>
+
+      <div class="pd-card-wrap">
+        <article class="wallet wallet--water">
           <div class="wallet-band" aria-hidden="true">
-            <div class="wallet-band-track">WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN ·</div>
+            <div class="wallet-band-track">WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST · BOTTLE · FOUNTAIN · WATER · SHOWER · REST ·</div>
           </div>
           <div class="wallet-head">
             <div>
@@ -893,29 +747,76 @@
           </div>
           <div class="wallet-name" data-name>YEHOSUA <em>·</em> CHRIST</div>
           <div class="wallet-meta">
-            <div>
-              <div class="k">Holder</div>
-              <div class="v" data-pass-no>C4X8R2M7</div>
-            </div>
-            <div>
-              <div class="k">Issued</div>
-              <div class="v" data-issued>01.01.2026</div>
-            </div>
-            <div>
-              <div class="k">Expires</div>
-              <div class="v" data-expires>01.01.2031</div>
-            </div>
+            <div><div class="k">Holder</div><div class="v" data-pass-no>C4X8R2M7</div></div>
+            <div><div class="k">Issued</div><div class="v" data-issued>01.01.2026</div></div>
+            <div><div class="k">Expires</div><div class="v" data-expires>01.01.2031</div></div>
           </div>
           <div class="wallet-foot">
             <span>WND · Inc.</span>
             <span>Covenant Art. II</span>
           </div>
         </article>
+      </div>
 
-        <!-- ADVENTURE PASS — coming soon -->
-        <article class="wallet wallet--adv" aria-label="Adventure Pass · Coming soon">
+      <div>
+        <h1 class="pd-title" id="pd-water-title">Water <em>·</em> Shower <em>·</em> Rest</h1>
+        <p class="pd-sub">Water at the door — bottle, tap, shower. The smallest unit of welcome.</p>
+      </div>
+
+      <div class="pd-body">
+        <p>The Water Pass is the most modest of the three. It asks for the thing that no host who has the means ever refuses on a hot day or in a downpour: <em>water</em>. A refill, a tap, a five-minute shower, a sit-down in the shade.</p>
+        <p>It is what makes a long day possible. It is also what allows hospitality to begin without obligation — a glass of water leaves no debt and asks no question.</p>
+      </div>
+
+      <div class="pd-row">
+        <div class="pd-cell">
+          <div class="pd-cell-h">Class</div>
+          <div class="pd-cell-v">A · request</div>
+        </div>
+        <div class="pd-cell">
+          <div class="pd-cell-h">Covenant</div>
+          <div class="pd-cell-v">Article II · The Door</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="pd-section-h">What it permits</div>
+        <ul class="pd-list">
+          <li>A bottle refilled at the tap.</li>
+          <li>A shower after rain or twenty kilometres.</li>
+          <li>A bench in the shade for ten minutes.</li>
+          <li>A roof from a sudden storm.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="pd-section-h">How it works</div>
+        <ul class="pd-list">
+          <li>You knock, present the Water Pass, the host offers what they can.</li>
+          <li>If nothing — no harm. The next door is on the trail.</li>
+          <li>If a refill or shower — thank them in the morning vouch.</li>
+        </ul>
+      </div>
+
+      <div class="pd-art">
+        <div class="pd-art-h">Article II · The Door</div>
+        <p class="pd-art-q">"A host may open the door when able, may close it kindly when not. No host owes the bearer entry."</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ Unfolded detail · Adventure (coming soon) ═══════════ -->
+  <aside class="pass-detail" id="pd-adventure" aria-hidden="true" role="dialog" aria-labelledby="pd-adv-title">
+    <div class="pd-inner">
+      <div class="pd-head">
+        <button class="pd-close" type="button" data-close>Back</button>
+        <span class="pd-title-mini">Pass IV · Adventure</span>
+      </div>
+
+      <div class="pd-card-wrap">
+        <article class="wallet wallet--adv">
           <div class="wallet-band" aria-hidden="true">
-            <div class="wallet-band-track">TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE ·</div>
+            <div class="wallet-band-track">TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP · TOGETHER · OUTSIDE · TRAIL · STORY · HELP ·</div>
           </div>
           <div class="wallet-head">
             <div>
@@ -928,29 +829,55 @@
           </div>
           <div class="wallet-name">YEHOSUA <em>·</em> CHRIST</div>
           <div class="wallet-meta">
-            <div>
-              <div class="k">Holder</div>
-              <div class="v">C4X8R2M7</div>
-            </div>
-            <div>
-              <div class="k">Issued</div>
-              <div class="v">—</div>
-            </div>
-            <div>
-              <div class="k">Expires</div>
-              <div class="v">—</div>
-            </div>
+            <div><div class="k">Holder</div><div class="v">C4X8R2M7</div></div>
+            <div><div class="k">Issued</div><div class="v">—</div></div>
+            <div><div class="k">Expires</div><div class="v">—</div></div>
           </div>
           <div class="wallet-foot">
             <span>WND · Inc.</span>
             <span>Covenant Art. II</span>
           </div>
         </article>
-
       </div>
-    </section>
 
-  </main>
+      <div>
+        <h1 class="pd-title" id="pd-adv-title">Trail <em>·</em> Story <em>·</em> Help</h1>
+        <p class="pd-sub">A walk with the host, a story by the fire, a hand in the garden.</p>
+        <span class="pd-coming">Coming soon</span>
+      </div>
+
+      <div class="pd-body">
+        <p>The Adventure Pass is the one for the things money never bought. It invites a day shared — a walk that the host knows better than you, a story by the fire, an afternoon helping with the stones in the wall.</p>
+        <p>It is the Pass that turns a stay into a memory. We're still designing how the host signals what they can offer — that's why it isn't issued yet.</p>
+      </div>
+
+      <div class="pd-row">
+        <div class="pd-cell">
+          <div class="pd-cell-h">Class</div>
+          <div class="pd-cell-v">A · request</div>
+        </div>
+        <div class="pd-cell">
+          <div class="pd-cell-h">Covenant</div>
+          <div class="pd-cell-v">Article II · The Door</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="pd-section-h">What it will permit</div>
+        <ul class="pd-list">
+          <li>A walk with the host on their trail.</li>
+          <li>An afternoon helping with the work that's there.</li>
+          <li>A story by the fire after dinner.</li>
+          <li>The day extended, by mutual agreement.</li>
+        </ul>
+      </div>
+
+      <div class="pd-art">
+        <div class="pd-art-h">Article II · The Door</div>
+        <p class="pd-art-q">"A host may open the door when able, may close it kindly when not."</p>
+      </div>
+    </div>
+  </aside>
 
   <wk-tabbar></wk-tabbar>
 
@@ -958,5 +885,46 @@
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
   <script type="module" src="/js/pass.js"></script>
+  <script type="module">
+    /* /passes.html — unfold one wallet card to its full-page detail.
+       Pure DOM toggle; pass.js handles bearer-data hydration on the
+       wallet cards inside both the stack and the unfolded view. */
+    const stack = document.getElementById('wallet-stack');
+    const details = {
+      food:      document.getElementById('pd-food'),
+      water:     document.getElementById('pd-water'),
+      adventure: document.getElementById('pd-adventure'),
+    };
+    function open(name) {
+      const el = details[name]; if (!el) return;
+      el.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('passes-unfolded');
+      const closeBtn = el.querySelector('[data-close]');
+      if (closeBtn) closeBtn.focus({ preventScroll: true });
+      history.pushState({ pass: name }, '', '#' + name);
+    }
+    function close() {
+      Object.values(details).forEach(el => el.setAttribute('aria-hidden', 'true'));
+      document.body.classList.remove('passes-unfolded');
+      if (location.hash) history.replaceState(null, '', location.pathname);
+    }
+    stack.addEventListener('click', (e) => {
+      const btn = e.target.closest('.wallet-tap');
+      if (!btn) return;
+      open(btn.dataset.pass);
+    });
+    document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('passes-unfolded')) close();
+    });
+    window.addEventListener('popstate', () => {
+      if (!location.hash) close();
+    });
+    /* Open on initial load if URL has a hash */
+    const initial = location.hash.replace('#', '');
+    if (initial && details[initial]) {
+      requestAnimationFrame(() => open(initial));
+    }
+  </script>
 </body>
 </html>
