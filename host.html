@@ -3,15 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-
   <title>Wanderkind — My House</title>
-  <meta name="description" content="Open your door. Add yourself to the map." />
+  <meta name="description" content="Open your door. Seven questions, one breath each." />
 
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#FAFAF5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
 
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
@@ -33,103 +31,467 @@
   <style>
     html, body {
       background: var(--wk-bg); color: var(--wk-ink);
-      /* Stabilize fixed tabbar — pin to small viewport height across all pages */
-      height: 100svh;
-      height: 100dvh;
-      overflow-x: hidden;
-      overflow-y: auto;
+      height: 100svh; height: 100dvh;
+      overflow-x: hidden; overflow-y: auto;
     }
-    body { overscroll-behavior-y: contain; }
-    body { min-height: 100vh; min-height: 100dvh; padding: 0; }
+    body { overscroll-behavior-y: contain; padding: 0; margin: 0; }
 
-    main.placeholder {
-      max-width: 460px;
-      margin: 0 auto;
-      padding:
-        max(var(--wk-space-md), env(safe-area-inset-top))
-        var(--wk-page-x)
-        calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: var(--wk-space-md);
-      text-align: center;
-      min-height: calc(100dvh - var(--wk-tabbar-h));
+    .browser-mode-hint {
+      max-width: 480px; margin: 12px auto 0;
+      background: rgba(200,118,42,0.08);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-md);
+      padding: 12px var(--wk-space-md);
     }
-    .ph-seal {
-      width: 80px; height: 80px; color: var(--wk-amber);
-      animation: ph-pulse 3.5s ease-in-out infinite;
-    }
-    @keyframes ph-pulse {
-      0%, 100% { filter: drop-shadow(0 0 4px rgba(200,118,42,0.18)); }
-      50%      { filter: drop-shadow(0 0 14px rgba(200,118,42,0.35)); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .ph-seal { animation: none; }
-    }
-    .ph-eyebrow {
+    .bmh-eyebrow {
+      display: block;
       font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-micro);
+      font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono-wide);
       text-transform: uppercase;
       color: var(--wk-amber-text);
       font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
     }
-    .ph-title {
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-black);
-      font-size: clamp(1.5rem, 4vw + 0.5rem, 2rem);
-      letter-spacing: var(--wk-ls-display);
-      line-height: var(--wk-lh-tight);
+    .bmh-body { font-size: var(--wk-fs-small); line-height: var(--wk-lh-body); color: var(--wk-ink-soft); margin: 0; }
+    [data-pwa="true"] [data-only="browser"] { display: none; }
+
+    main#host-root {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 30px);
+      display: flex; flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+
+    .h-head {
+      display: flex; align-items: baseline; gap: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .h-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
       text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+    }
+    .h-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .h-step {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+
+    /* Step indicator dots */
+    .h-dots {
+      display: flex; gap: 6px; justify-content: center;
+      padding: 4px 0;
+    }
+    .h-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--wk-line);
+      transition: background 0.2s ease;
+    }
+    .h-dot.on { background: var(--wk-amber); }
+    .h-dot.done { background: var(--wk-amber-text); }
+
+    /* Slide container */
+    .h-slider {
+      overflow: hidden;
+      border-radius: var(--wk-r-md);
+    }
+    .h-track {
+      display: flex;
+      transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    @media (prefers-reduced-motion: reduce) { .h-track { transition: none; } }
+    .h-slide {
+      flex: 0 0 100%;
+      padding: 4px 2px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .h-question {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
       color: var(--wk-ink);
       margin: 0;
     }
-    .ph-sub {
-      color: var(--wk-ink-soft);
-      font-size: var(--wk-fs-small);
-      line-height: var(--wk-lh-body);
-      max-width: 380px;
-    }
-    .ph-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+    .h-question em { font-style: italic; color: var(--wk-amber-text); }
+    .h-sub {
       font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: var(--wk-fs-small);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: var(--wk-ink-soft);
+      margin: 0;
+    }
+
+    .h-input, .h-textarea, .h-select {
+      width: 100%;
+      font-family: var(--wk-font-display);
+      font-size: 16px;
       color: var(--wk-ink);
-      text-decoration: none;
-      padding: 12px 18px;
+      background: var(--wk-bg-2);
       border: 1px solid var(--wk-line);
       border-radius: var(--wk-r-sm);
-      margin-top: var(--wk-space-md);
+      padding: 12px 14px;
+      line-height: 1.4;
+      box-sizing: border-box;
     }
-    .ph-back:hover, .ph-back:focus-visible {
+    .h-input:focus, .h-textarea:focus, .h-select:focus {
+      outline: 2px solid var(--wk-amber);
+      outline-offset: -1px;
+      border-color: var(--wk-amber);
+    }
+    .h-textarea { min-height: 100px; resize: vertical; font-family: var(--wk-font-display); }
+
+    /* Offer chips · multi-select */
+    .h-offers, .h-langs {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .h-offer, .h-lang {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .h-offer.on {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      border-color: var(--wk-amber);
+    }
+    .h-lang.on {
+      background: var(--wk-ink-soft);
+      color: var(--wk-bg);
+      border-color: var(--wk-ink-soft);
+    }
+
+    /* House rules input + chip list */
+    .h-rule-row { display: flex; gap: 8px; }
+    .h-rules {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .h-rule {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: var(--wk-bg-2);
+      border-left: 3px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0;
+      font-family: var(--wk-font-display);
+      font-size: 13.5px;
+      color: var(--wk-ink);
+    }
+    .h-rule-rm {
+      margin-left: auto;
+      background: transparent; border: 0;
+      cursor: pointer; color: var(--wk-ink-muted);
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.20em;
+    }
+    .h-rule-rm:hover { color: var(--wk-error); }
+
+    /* Public face preview · the world's view of your door */
+    .h-preview {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-amber);
+      border-radius: var(--wk-r-md);
+      padding: 18px 20px;
+      box-shadow: 0 8px 24px -12px rgba(11, 7, 5, 0.18);
+    }
+    .h-preview-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
       color: var(--wk-amber-text);
-      border-color: var(--wk-amber-text);
-      outline: none;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+    .h-preview-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .h-preview-name {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--wk-ink-deep, var(--wk-ink));
+      margin: 0 0 4px;
+    }
+    .h-preview-where {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-bottom: 10px;
+    }
+    .h-preview-bio {
+      font-family: var(--wk-font-display);
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--wk-ink);
+      margin: 0 0 12px;
+    }
+    .h-preview-offers {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 10px;
+    }
+    .h-preview-offer {
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-bg);
+      background: var(--wk-amber);
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .h-preview-rules {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      color: var(--wk-ink-soft);
+      line-height: 1.6;
+    }
+    .h-preview-rules div { margin-bottom: 3px; }
+    .h-preview-rules div::before { content: "· "; color: var(--wk-amber); }
+
+    /* Footer nav */
+    .h-nav {
+      display: flex; gap: 10px; align-items: center;
+      margin-top: 6px;
+    }
+    .h-nav-back, .h-nav-next, .h-nav-cta {
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 12px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .h-nav-back {
+      background: transparent;
+      color: var(--wk-ink-soft);
+      border: 1px solid var(--wk-line);
+    }
+    .h-nav-back:hover { color: var(--wk-amber-text); border-color: var(--wk-amber); }
+    .h-nav-back:disabled { opacity: 0.4; cursor: default; }
+    .h-nav-next {
+      flex: 1;
+      background: transparent;
+      color: var(--wk-amber-text);
+      border: 1px solid var(--wk-amber);
+    }
+    .h-nav-next:hover { background: var(--wk-amber-soft); }
+    .h-nav-cta {
+      flex: 1;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      border: 0;
+    }
+    .h-nav-cta:hover { background: var(--wk-amber-press); }
+    .h-nav-cta:disabled { opacity: 0.6; cursor: default; }
+
+    /* Done state */
+    .h-done {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-left: 3px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+      padding: 18px 22px;
+      text-align: center;
+    }
+    .h-done-h {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--wk-ink);
+      margin: 0 0 8px;
+    }
+    .h-done-h em { color: var(--wk-amber-text); font-style: italic; }
+    .h-done-b {
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      color: var(--wk-ink-soft);
+      line-height: 1.55;
+      margin: 0 0 12px;
+    }
+    .h-done-cta {
+      display: inline-block;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 11px 22px;
+      border-radius: 999px;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <a href="#main" class="skip-to-content">Skip to content</a>
 
-  <main class="placeholder" id="main">
-    <img class="ph-seal" src="/assets/icons/seal.svg" alt="" width="80" height="80" />
-    <span class="ph-eyebrow">— Coming soon</span>
-    <h1 class="ph-title">My House</h1>
-    <p class="ph-sub">Where you tell the world what you can offer — a bed, a meal, water, your floor. The first half of the doctrine: every wanderkind is also a host.</p>
-    <a href="/more.html" class="ph-back">← Back to More</a>
+  <a href="#host-root" class="skip-to-content">Skip to host setup</a>
+
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+
+  <main id="host-root">
+
+    <header class="h-head">
+      <span class="h-eyebrow">— My House</span>
+      <span class="h-step" id="h-step-label">Step 1 / 7</span>
+    </header>
+
+    <div class="h-dots" id="h-dots" aria-hidden="true">
+      <span class="h-dot on"></span>
+      <span class="h-dot"></span>
+      <span class="h-dot"></span>
+      <span class="h-dot"></span>
+      <span class="h-dot"></span>
+      <span class="h-dot"></span>
+      <span class="h-dot"></span>
+    </div>
+
+    <div class="h-slider">
+      <div class="h-track" id="h-track">
+
+        <!-- Step 1 · The door's name -->
+        <section class="h-slide" data-step="0" aria-label="Step 1 · The door's name">
+          <h2 class="h-question">What's the <em>name</em> of your door?</h2>
+          <p class="h-sub">"Marian's Roof", "Casa Aldo", "Schreinerhof" — the name walkers will see on the map. Yours.</p>
+          <input type="text" class="h-input" id="f-name" placeholder="Marian's Roof" maxlength="60" autocomplete="off" />
+        </section>
+
+        <!-- Step 2 · Where -->
+        <section class="h-slide" data-step="1" aria-label="Step 2 · Where">
+          <h2 class="h-question">Where is your <em>door</em>?</h2>
+          <p class="h-sub">Region or village. The exact address stays private until you accept a knock.</p>
+          <input type="text" class="h-input" id="f-region" placeholder="Vorarlberg · near Bregenz" maxlength="80" autocomplete="off" />
+        </section>
+
+        <!-- Step 3 · What you offer -->
+        <section class="h-slide" data-step="2" aria-label="Step 3 · What you offer">
+          <h2 class="h-question">What can you <em>give</em>?</h2>
+          <p class="h-sub">Pick everything that applies. You can change this any day.</p>
+          <div class="h-offers" id="f-offers" role="group">
+            <button class="h-offer" type="button" data-offer="bed">Bed</button>
+            <button class="h-offer" type="button" data-offer="food">Food</button>
+            <button class="h-offer" type="button" data-offer="water">Water</button>
+          </div>
+        </section>
+
+        <!-- Step 4 · How many can stay -->
+        <section class="h-slide" data-step="3" aria-label="Step 4 · How many can stay">
+          <h2 class="h-question">How many can <em>stay</em>?</h2>
+          <p class="h-sub">Honest number. One spare mattress counts as one.</p>
+          <select class="h-select" id="f-capacity">
+            <option value="0">None — water / food only</option>
+            <option value="1">1 walker</option>
+            <option value="2" selected>2 walkers</option>
+            <option value="3">3 walkers</option>
+            <option value="4">4 walkers</option>
+            <option value="5">5+ walkers</option>
+          </select>
+        </section>
+
+        <!-- Step 5 · House rules -->
+        <section class="h-slide" data-step="4" aria-label="Step 5 · House rules">
+          <h2 class="h-question">Three lines about how the <em>house</em> works.</h2>
+          <p class="h-sub">"No shoes inside." "Quiet after 22:00." "Coffee at dawn." Anything that helps your guest read your door.</p>
+          <div class="h-rule-row">
+            <input type="text" class="h-input" id="f-rule-input" placeholder="No shoes inside — slippers at the door" maxlength="100" autocomplete="off" />
+            <button class="h-offer" type="button" id="f-rule-add" style="flex: 0 0 auto;">+</button>
+          </div>
+          <div class="h-rules" id="f-rules"></div>
+        </section>
+
+        <!-- Step 6 · Languages + Specialty -->
+        <section class="h-slide" data-step="5" aria-label="Step 6 · Languages and specialty">
+          <h2 class="h-question">What do you <em>speak</em>?</h2>
+          <p class="h-sub">Walkers will see this on your door. Tap all that apply.</p>
+          <div class="h-langs" id="f-langs" role="group">
+            <button class="h-lang" type="button" data-lang="de">Deutsch</button>
+            <button class="h-lang" type="button" data-lang="en">English</button>
+            <button class="h-lang" type="button" data-lang="it">Italiano</button>
+            <button class="h-lang" type="button" data-lang="fr">Français</button>
+            <button class="h-lang" type="button" data-lang="es">Español</button>
+            <button class="h-lang" type="button" data-lang="other">Other</button>
+          </div>
+          <h2 class="h-question" style="margin-top: 16px; font-size: 20px;">Anything <em>special</em> on offer?</h2>
+          <p class="h-sub">"Thursday tagliatelle." "Bread from the bakery downstairs." Optional. One line.</p>
+          <input type="text" class="h-input" id="f-specialty" placeholder="Thursday tagliatelle" maxlength="80" autocomplete="off" />
+        </section>
+
+        <!-- Step 7 · Bio + preview + open the door -->
+        <section class="h-slide" data-step="6" aria-label="Step 7 · Bio and confirmation">
+          <h2 class="h-question">One paragraph the walker reads <em>before knocking</em>.</h2>
+          <p class="h-sub">Tell them who's behind the door. Three or four sentences. The voice is yours.</p>
+          <textarea class="h-textarea" id="f-bio" placeholder="Stone farmhouse on the path between Bregenz and the Pfänder. Two beds. Bread in the morning. My late husband Aldo's tagliatelle on Thursdays. Long days only end one way here — with the door already open." maxlength="400"></textarea>
+
+          <h3 class="h-question" style="font-size: 20px; margin-top: 12px;">This is what walkers will <em>see</em>.</h3>
+          <article class="h-preview" id="f-preview">
+            <p class="h-preview-eyebrow">— Wanderkind · Open</p>
+            <h4 class="h-preview-name" id="p-name">—</h4>
+            <div class="h-preview-where" id="p-where">—</div>
+            <p class="h-preview-bio" id="p-bio">—</p>
+            <div class="h-preview-offers" id="p-offers"></div>
+            <div class="h-preview-rules" id="p-rules"></div>
+          </article>
+        </section>
+
+        <!-- Step 8 · Done -->
+        <section class="h-slide" data-step="7" aria-label="Done">
+          <article class="h-done">
+            <h3 class="h-done-h">Your door is <em>open.</em></h3>
+            <p class="h-done-b">You're on the map. Walkers can now knock. Set up Magic Open in the Hosts section to share a temporary door code with each accepted guest.</p>
+            <a class="h-done-cta" href="/hosts.html">Go to Hosts →</a>
+          </article>
+        </section>
+
+      </div>
+    </div>
+
+    <nav class="h-nav" id="h-nav">
+      <button class="h-nav-back" type="button" id="h-back" disabled>← Back</button>
+      <button class="h-nav-next" type="button" id="h-next">Next →</button>
+      <button class="h-nav-cta" type="button" id="h-open" hidden>Open the door</button>
+    </nav>
+
   </main>
 
   <wk-tabbar></wk-tabbar>
 
   <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/simple-mode.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/host-setup.js"></script>
 </body>
 </html>
