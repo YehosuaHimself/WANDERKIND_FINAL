@@ -82,23 +82,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadPinHash(session);
   refreshPinHint();
 
-  refs.pad.addEventListener('click', onPadTap);
-  document.addEventListener('keydown', onKeyDown);
-
-  refs.prev.addEventListener('click', () => goPage(0));
-  refs.next.addEventListener('click', () => goPage(1));
-  refs.lock.addEventListener('click', lockId);
+  /* PIN/ID listeners only mount if those elements exist (page-aware). */
+  if (refs.pad) {
+    refs.pad.addEventListener('click', onPadTap);
+    document.addEventListener('keydown', onKeyDown);
+  }
+  if (refs.prev) refs.prev.addEventListener('click', () => goPage(0));
+  if (refs.next) refs.next.addEventListener('click', () => goPage(1));
+  if (refs.lock) refs.lock.addEventListener('click', lockId);
 
   refs.setLink?.addEventListener('click', () => startSetPin());
   refs.setCancel?.addEventListener('click', () => cancelSetPin());
 
   /* swipe */
   let startX = 0, startY = 0, swiping = false;
-  refs.track.addEventListener('touchstart', (e) => {
+  refs.track && refs.track.addEventListener('touchstart', (e) => {
     if (!state.unlocked) return;
     startX = e.touches[0].clientX; startY = e.touches[0].clientY; swiping = true;
   }, { passive: true });
-  refs.track.addEventListener('touchend', (e) => {
+  refs.track && refs.track.addEventListener('touchend', (e) => {
     if (!swiping) return;
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
