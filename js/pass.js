@@ -205,6 +205,16 @@ function applyProfile(p) {
   });
 
   hydrateMatrix(p, wkid);
+  /* EPIC 06 · youth path · render a 'minor · accompanied by' stripe when applicable */
+  try {
+    if (p.dob) {
+      const age = computeAge(p.dob);
+      if (age >= 0 && age < 18) {
+        renderMinorStripe(p);
+      }
+    }
+  } catch (_) {}
+
 }
 
 async function hydrateMatrix(p, wkid) {
@@ -488,6 +498,48 @@ function updateSetPinUI() {
 function refreshPinHint() {
   if (refs.hint) {
     refs.hint.textContent = state.pinHash ? 'Your PIN · 4 digits' : 'Demo PIN · 1234 · then set your own';
+  }
+}
+
+
+
+function computeAge(dobStr) {
+  const dob = new Date(dobStr);
+  if (isNaN(dob)) return -1;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age;
+}
+
+async function renderMinorStripe(p) {
+  // Show a stripe in the c1-head area + the strip on Card 1
+  const session = state.session;
+  if (!session) return;
+  let supervisorName = '—';
+  if (p.supervisor_id) {
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?id=eq.${p.supervisor_id}&select=trail_name,given_name,surname`,
+        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${session.accessToken}` } }
+      );
+      if (r.ok) {
+        const rows = await r.json();
+        const s = rows && rows[0];
+        if (s) supervisorName = (s.trail_name || (s.given_name + ' ' + (s.surname || ''))).trim();
+      }
+    } catch (_) {}
+  } else {
+    supervisorName = 'awaiting assignment';
+  }
+  // Inject a stripe near the top of the ID document
+  const strip = document.querySelector('.id-strip');
+  if (strip && !document.querySelector('.id-minor-stripe')) {
+    const minor = document.createElement('div');
+    minor.className = 'id-minor-stripe';
+    minor.innerHTML = '<strong>MINOR · ACCOMPANIED BY</strong> ' + supervisorName.toUpperCase().replace(/[<>\"\']/g, '');
+    strip.insertAdjacentElement('afterend', minor);
   }
 }
 
