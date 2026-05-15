@@ -147,10 +147,14 @@ async function fetchWalkers(signal) {
 }
 
 function placeRegionLabels(map) {
+  /* Zoom-aware: large regions visible at every zoom, smaller ones reveal
+     as the user zooms in. Prevents the Alps from becoming a label soup. */
+  const allMarkers = []; // [{ marker, weight }]
   const layer = L.layerGroup();
+
   for (const r of REGIONS) {
-    const size = r.weight === 3 ? 14 : r.weight === 2 ? 12 : 10;
-    const op = r.weight === 3 ? 0.55 : r.weight === 2 ? 0.40 : 0.30;
+    const size = r.weight === 3 ? 14 : r.weight === 2 ? 11 : 10;
+    const op = r.weight === 3 ? 0.55 : r.weight === 2 ? 0.42 : 0.32;
     const icon = L.divIcon({
       className: 'wk-region-label',
       iconSize: [200, 16],
@@ -158,15 +162,31 @@ function placeRegionLabels(map) {
       html: `<span style="
         display: block; text-align: center;
         font-family: 'Courier New', monospace;
-        font-size: ${size}px; letter-spacing: 0.32em;
+        font-size: ${size}px; letter-spacing: 0.30em;
         color: #3A2D1F; opacity: ${op};
         text-transform: uppercase;
-        text-shadow: 0 0 4px rgba(246,237,216,0.9), 0 0 2px rgba(246,237,216,0.9);
+        text-shadow: 0 0 4px rgba(246,237,216,0.95), 0 0 2px rgba(246,237,216,0.95);
         pointer-events: none;
+        white-space: nowrap;
       ">${r.name}</span>`,
     });
-    L.marker([r.lat, r.lng], { icon, interactive: false, keyboard: false }).addTo(layer);
+    const m = L.marker([r.lat, r.lng], { icon, interactive: false, keyboard: false });
+    allMarkers.push({ marker: m, weight: r.weight });
   }
+
+  function applyVisibility() {
+    const z = map.getZoom();
+    /* zoom < 6: only weight 3 (large countries/regions)
+       6 - 7: weight 3 + 2
+       ≥ 8:  all */
+    const threshold = z < 6 ? 3 : z < 8 ? 2 : 1;
+    layer.clearLayers();
+    for (const { marker, weight } of allMarkers) {
+      if (weight >= threshold) layer.addLayer(marker);
+    }
+  }
+  map.on('zoomend', applyVisibility);
+  applyVisibility();
   return layer;
 }
 
