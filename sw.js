@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.44-map-v3';
+const VERSION = '0.1.45-map-v3-readable';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
