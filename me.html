@@ -493,7 +493,7 @@
 
   
   <!-- Vouches summary — moved here from /more.html. Lives in the profile. -->
-  <section class="me-vouches" aria-labelledby="me-vouches-title" style="
+  <section class="me-vouches" data-loader="me-vouches-loader" aria-labelledby="me-vouches-title" style="
     max-width: 460px;
     margin: 0 auto;
     padding: 0 var(--wk-page-x) calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 30px);
@@ -560,5 +560,31 @@
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/me.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
+
+  <script type="module">
+    /* Vouches count loader — graceful: hides count if table missing. */
+    import { getSession } from '/js/session.js';
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/supabase-config.js';
+    (async function meVouchesLoader() {
+      const session = getSession();
+      const slot = document.getElementById('me-vouches-count');
+      if (!session || !slot) return;
+      try {
+        const resp = await fetch(
+          `${SUPABASE_URL}/rest/v1/vouches?bearer_id=eq.${session.user.id}&select=id`,
+          { headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${session.accessToken}`,
+              Prefer: 'count=exact',
+            }
+          }
+        );
+        if (!resp.ok) return;
+        const range = resp.headers.get('content-range');
+        const total = range ? parseInt(range.split('/').pop(), 10) : 0;
+        slot.textContent = `· ${total}`;
+      } catch (_) { /* leave the "· 0" placeholder */ }
+    })();
+  </script>
 </body>
 </html>
