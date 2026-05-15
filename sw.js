@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.41-v12-split';
+const VERSION = '0.1.42-map-boot';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -63,6 +63,7 @@ const PRECACHE = [
   '/js/auth-bypass.js',
   '/js/map-session-aware.js',
   '/js/map-leaflet.js',
+  '/js/map-boot.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',
   '/css/vendor/images/marker-icon.png',
