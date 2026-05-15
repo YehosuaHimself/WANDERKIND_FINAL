@@ -799,6 +799,12 @@
     .bmh-body strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); }
 
 
+  
+    /* EPIC 02 slice 1 · Simple Mode hides the Crypto Matrix entirely */
+    [data-simple="true"] .id-page[data-p="1"] { display: none; }
+    [data-simple="true"] .id-dot[data-p="1"]  { display: none; }
+    [data-simple="true"] .id-dots             { gap: 0; }
+
   </style>
 </head>
 <body>
@@ -1078,6 +1084,7 @@
   <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
   <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/simple-mode.js"></script>
   <script type="module" src="/js/pass.js"></script>
 </body>
 </html>
