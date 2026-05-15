@@ -23,7 +23,6 @@
  * the HTML/CSS). Reduced-motion respected by CSS.
  */
 
-// @ts-check
 
 import { getSession, signOut } from './session.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
