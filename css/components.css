@@ -153,8 +153,9 @@ wk-tabbar {
 
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  height: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
+  height: var(--wk-tabbar-h);
+  /* flush to bottom of viewport per design lock */
+  padding-bottom: 0;
 
   background: var(--wk-bg);
   border-top: 1px solid var(--wk-line);
@@ -198,33 +199,41 @@ wk-tabbar .wk-tab-hub {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
-wk-tabbar .wk-tab-hub-circle {
-  width: var(--wk-tabbar-h);            /* circle diameter = bar height */
-  height: var(--wk-tabbar-h);
-  border-radius: 50%;
+wk-tabbar .wk-tab-hub-square {
+  /* Square FAB · a little taller than the bar · rises above the top edge */
+  width: 60px;
+  height: calc(var(--wk-tabbar-h) + 14px);
+  border-radius: var(--wk-r-sm);
   border: 1.5px solid var(--wk-amber-text);
   background: var(--wk-bg);
+
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--wk-amber-text);
 
+  box-shadow: 0 -4px 14px -8px rgba(11, 7, 5, 0.20);
   transition: background 0.15s ease, color 0.15s ease;
 }
-wk-tabbar .wk-tab-hub-circle > svg {
+wk-tabbar .wk-tab-hub-square > svg {
   width: 30px;
   height: 30px;
 }
 /* Active: only the fill inverts. Same size, same position. */
-wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-circle {
+wk-tabbar .wk-tab-hub[aria-current="page"] .wk-tab-hub-square {
   background: var(--wk-amber-text);
   color: var(--wk-bg);
 }
 wk-tabbar .wk-tab-hub:focus-visible {
   outline: none;
 }
-wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-circle {
+wk-tabbar .wk-tab-hub:focus-visible .wk-tab-hub-square {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--wk-amber-text) 30%, transparent);
 }
