@@ -5,19 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 
   <title>Wanderkind — Map</title>
-  <meta name="description" content="A map of doors. See which wanderkinds are walking and who is opening their roof tonight." />
+  <meta name="description" content="A map of doors. Beds, food, water, churches, mountains, festivals — and the wanderkinder walking right now." />
 
-  <!-- Theme -->
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#FAFAF5" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0B0705" media="(prefers-color-scheme: dark)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
   <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
 
-  <!-- Strict CSP — same shape as app.html so the SPA can absorb this later -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self';
@@ -37,514 +34,221 @@
   <link rel="stylesheet" href="/css/components.css" />
 
   <style>
-    /* ─── Map page layout ─────────────────────────────────────────
-       Sticky header → sticky filter strip → map canvas → empty state.
-       The map canvas hosts a real Leaflet tile layer (CartoDB Positron)
-       with live wanderkind markers fetched from profiles where
-       show_on_map = true. Empty-state sheet reveals when zero markers. */
+    /* ────────────────────────────────────────────────────────────
+       Wanderkind Map · v3 · clean flex layout
+       ────────────────────────────────────────────────────────────
+       Vertical stack: topbar · chip-strip · map-canvas (fills) · tabbar.
+       The map is the dominant surface — every other element is thin.
+       Empty-state is a 280px floating pill at the bottom of the map.
+       Legend hidden on phones, visible on desktop. */
+
     html, body {
       background: var(--wk-bg);
       color: var(--wk-ink);
-      /* Stabilize fixed tabbar — pin to small viewport height across all pages */
       height: 100svh;
       height: 100dvh;
-      overflow-x: hidden;
-      overflow-y: auto;
+      overflow: hidden;
+      overscroll-behavior: contain;
     }
     body {
       display: flex;
       flex-direction: column;
       padding: 0;
-      overscroll-behavior-y: contain;
-    }
-
-    /* ── Top bar ─────────────────────────────────────────────────
-       Sits flush at the top respecting iOS safe area. The center
-       holds the W seal + "MAP" eyebrow as the page identity. */
-    .map-topbar {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      background: var(--wk-bg);
-      border-bottom: 1px solid var(--wk-line);
-      padding: max(var(--wk-space-md), env(safe-area-inset-top)) var(--wk-page-x) var(--wk-space-md);
-      display: grid;
-      grid-template-columns: 1fr 44px;
-      align-items: center;
-      gap: var(--wk-space-md);
-    }
-    .map-topbar a, .map-topbar button {
-      width: 44px; height: 44px;
-      display: inline-flex; align-items: center; justify-content: center;
-      background: transparent;
-      border: none;
-      color: var(--wk-ink);
-      cursor: pointer;
-      border-radius: var(--wk-r-sm);
-    }
-    .map-topbar a:focus-visible,
-    .map-topbar button:focus-visible {
-      outline: 2px solid var(--wk-amber);
-      outline-offset: 2px;
-    }
-    .map-topbar svg { width: 22px; height: 22px; }
-    .map-identity {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .map-identity .seal {
-      width: 18px; height: 18px;
-      color: var(--wk-amber);
-    }
-    .map-live-count {
-      font-family: var(--wk-font-mono);
-      font-size: 9px;
-      font-weight: var(--wk-fw-bold);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
       margin: 0;
-      padding: 0;
-      line-height: 1;
-    }
-    .map-identity .title,
-    .map-identity h1.title {
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-micro);
-      font-weight: var(--wk-fw-bold);
-      letter-spacing: var(--wk-ls-mono);
-      text-transform: uppercase;
-      color: var(--wk-ink);
-      margin: 0;
-      line-height: 1;
     }
 
-    /* ── Filter chips ────────────────────────────────────────────
-       Horizontally scrollable on narrow screens. The "Tonight"
-       chip is the default and stays first. Host-type chips carry
-       a leading color dot matching tokens.css host encoding. */
-    .filter-strip {
-      position: sticky;
-      top: calc(var(--wk-space-md) + 44px + var(--wk-space-md) + 1px);
-      z-index: 4;
-      background: var(--wk-bg);
-      border-bottom: 1px solid var(--wk-line-soft);
-      padding: var(--wk-space-sm) 0;
-    }
-    .filter-row {
-      display: flex;
-      gap: var(--wk-space-sm);
-      padding: 0 var(--wk-page-x);
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .filter-row::-webkit-scrollbar { display: none; }
-    .filter-chip {
-      flex-shrink: 0;
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-micro);
-      font-weight: var(--wk-fw-bold);
-      letter-spacing: var(--wk-ls-mono);
-      text-transform: uppercase;
-      color: var(--wk-ink-soft);
-      background: var(--wk-bg-elevated);
-      border: 1px solid var(--wk-line);
-      padding: 8px 14px;
-      border-radius: var(--wk-r-full);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-      min-height: 36px;
-    }
-    .filter-chip[aria-pressed="true"] {
-      background: var(--wk-ink);
-      color: var(--wk-bg);
-      border-color: var(--wk-ink);
-    }
-    .filter-chip:focus-visible {
-      outline: 2px solid var(--wk-amber);
-      outline-offset: 2px;
-    }
-    .filter-chip .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .filter-chip[data-host="bed"] .dot      { background: var(--wk-host-bed); }
-    .filter-chip[data-host="food"] .dot     { background: var(--wk-host-food); }
-    .filter-chip[data-host="water"] .dot    { background: var(--wk-host-water); }
-    .filter-chip[data-host="verified"] .dot { background: var(--wk-host-verified); }
-    .filter-sep {
-      align-self: center;
-      width: 1px; height: 18px;
-      background: var(--wk-line);
-      flex-shrink: 0;
-    }
-
-    /* ── Map canvas ──────────────────────────────────────────────
-       The pre-Leaflet parchment grid is retired. These rules now
-       only style residual fallback elements; the real markers come
-       from /js/map-leaflet.js via divIcon. */
-    .map-canvas {
-      flex: 1;
-      position: relative;
-      min-height: 480px;
-      background:
-        repeating-linear-gradient(0deg, var(--wk-line-soft) 0 1px, transparent 1px 48px),
-        repeating-linear-gradient(90deg, var(--wk-line-soft) 0 1px, transparent 1px 48px),
-        var(--wk-bg-2);
-      overflow: hidden;
-    }
-    .map-canvas::before {
-      /* Faint amber compass-glow at center */
-      content: "";
-      position: absolute;
-      inset: 20% 25%;
-      background: radial-gradient(ellipse, rgba(200,118,42,0.08) 0, transparent 60%);
-      pointer-events: none;
-    }
-    .map-pin {
-      position: absolute;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 4px rgba(255,255,255,0.55), 0 2px 8px rgba(26,18,10,0.18);
-    }
-    .map-pin[data-self="true"] {
-      background: var(--wk-ink);
-      width: 12px; height: 12px;
-    }
-    .map-pin[data-self="true"]::after {
-      content: "";
-      position: absolute;
-      inset: -10px;
-      border-radius: 50%;
-      border: 1px solid var(--wk-ink);
-      opacity: 0.3;
-      animation: self-pulse 2.5s ease-in-out infinite;
-    }
-    @keyframes self-pulse {
-      0%   { transform: scale(0.6); opacity: 0.4; }
-      80%  { transform: scale(1.6); opacity: 0; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-    .map-pin[data-type="bed"]      { background: var(--wk-host-bed); }
-    .map-pin[data-type="food"]     { background: var(--wk-host-food); }
-    .map-pin[data-type="water"]    { background: var(--wk-host-water); }
-    .map-pin[data-type="verified"] { background: var(--wk-host-verified); }
-
-    /* ── Empty state card ────────────────────────────────────────
-       Slides up over the bottom of the canvas. On wider screens it
-       sits as a centered card. */
-    .empty-sheet {
-      position: absolute;
-      left: 0; right: 0;
-      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 16px);
-      padding: var(--wk-space-lg) var(--wk-page-x) var(--wk-space-lg);
-      background: linear-gradient(180deg, rgba(250,250,245,0) 0, var(--wk-bg) 28%);
-      text-align: center;
-      pointer-events: none;
-    }
-    .empty-sheet > * { pointer-events: auto; }
-    .empty-sheet .eyebrow {
-      color: var(--wk-amber-text);
-      margin-bottom: var(--wk-space-xs);
-      display: inline-block;
-    }
-    .empty-sheet .empty-title {
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-black);
-      font-size: clamp(1.25rem, 3vw + 0.5rem, 1.625rem);
-      letter-spacing: var(--wk-ls-display);
-      text-transform: uppercase;
-      color: var(--wk-ink);
-      line-height: var(--wk-lh-tight);
-      margin: 0 auto var(--wk-space-sm);
-      max-width: 380px;
-    }
-    .empty-sheet .empty-sub {
-      color: var(--wk-ink-soft);
-      max-width: 360px;
-      margin: 0 auto var(--wk-space-md);
-      font-size: var(--wk-fs-small);
-      line-height: var(--wk-lh-body);
-    }
-    .empty-sheet .cta-row {
-      display: inline-flex;
-      gap: var(--wk-space-sm);
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .btn-amber {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--wk-amber-text);   /* AA-safe */
-      color: var(--wk-bg);
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: var(--wk-fs-small);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0 var(--wk-space-md);
-      height: var(--wk-button-min);
-      border-radius: var(--wk-r-sm);
-      border: none;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .btn-amber:hover, .btn-amber:focus-visible {
-      background: var(--wk-amber-press);
-      outline: none;
-    }
-    .btn-amber:focus-visible {
-      box-shadow: 0 0 0 3px rgba(200,118,42,0.35);
-    }
-    .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      color: var(--wk-ink);
-      font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: var(--wk-fs-small);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0 var(--wk-space-md);
-      height: var(--wk-button-min);
-      border-radius: var(--wk-r-sm);
-      border: 1px solid var(--wk-line);
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .btn-ghost:focus-visible {
-      outline: 2px solid var(--wk-amber);
-      outline-offset: 2px;
-    }
-
-    /* ── Legend (host-type encoding) ─────────────────────────────
-       Documents what the dot colors mean. Sits between empty-sheet
-       gradient and the canvas. */
-    .map-legend {
-      position: absolute;
-      left: var(--wk-page-x);
-      top: var(--wk-space-md);
-      background: rgba(250,250,245,0.92);
-      border: 1px solid var(--wk-line);
-      border-radius: var(--wk-r-sm);
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-family: var(--wk-font-mono);
-      font-size: var(--wk-fs-nano);
-      letter-spacing: var(--wk-ls-mono);
-      text-transform: uppercase;
-      color: var(--wk-ink-soft);
-      backdrop-filter: blur(8px);
-    }
-    .legend-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .legend-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* Leaflet container fills the canvas */
-    #map {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--wk-bg-2, #F3EDE0);
-      /* Allow normal touch panning */
-      touch-action: none;
-    }
-
-    /* Hide the parchment-grid + ghost markers when the real map exists */
-    .map-canvas .map-grid,
-    .map-canvas .map-pin[aria-hidden="true"] {
-      display: none !important;
-    }
-    .map-canvas .map-pin[data-self="true"] { display: none !important; }
-    .map-canvas::before, .map-canvas::after { display: none !important; }
-    .map-canvas { background: var(--wk-bg-2, #F3EDE0); }
-
-    /* Custom amber-dot divIcon */
-    .wk-marker { pointer-events: auto; }
-    .wk-marker .wk-marker-inner {
-      display: block;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      background: var(--wk-amber, #C8762A);
-      box-shadow: 0 0 0 3px rgba(200, 118, 42, 0.18), 0 1px 2px rgba(26, 18, 10, 0.25);
-      transition: transform 120ms ease-out;
-    }
-    .wk-marker:hover .wk-marker-inner { transform: scale(1.18); }
-    .wk-marker--self .wk-marker-inner {
-      background: var(--wk-amber-text, #B05F1F);
-      box-shadow: 0 0 0 4px rgba(176, 95, 31, 0.22), 0 0 0 6px rgba(176, 95, 31, 0.10), 0 1px 2px rgba(26, 18, 10, 0.3);
-    }
-    .wk-marker--walking .wk-marker-inner {
-      animation: wk-pulse 1.8s ease-in-out infinite;
-    }
-    @keyframes wk-pulse {
-      0%, 100% { box-shadow: 0 0 0 3px rgba(200, 118, 42, 0.18), 0 1px 2px rgba(26, 18, 10, 0.25); }
-      50%      { box-shadow: 0 0 0 8px rgba(200, 118, 42, 0.10), 0 1px 2px rgba(26, 18, 10, 0.25); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .wk-marker--walking .wk-marker-inner { animation: none; }
-    }
-
-    /* Popup styling — embassy register, cream card */
-    .leaflet-popup-content-wrapper {
-      background: var(--wk-bg, #FAFAF5);
-      color: var(--wk-ink, #1A120A);
-      border: 1px solid var(--wk-line, #E5DCC8);
-      border-radius: var(--wk-r-md, 10px);
-      box-shadow: 0 6px 18px rgba(26, 18, 10, 0.12);
-    }
-    .leaflet-popup-tip { background: var(--wk-bg, #FAFAF5); border: 1px solid var(--wk-line, #E5DCC8); }
-    .leaflet-popup-content { margin: 12px 14px; min-width: 160px; }
-    .wk-popup-name {
-      font-family: var(--wk-font-display);
-      font-weight: 900;
-      font-size: 16px;
-      color: var(--wk-ink);
-      margin-bottom: 2px;
-    }
-    .wk-popup-wkid {
-      font-family: var(--wk-font-mono);
-      font-size: 11px;
-      letter-spacing: var(--wk-ls-mono);
-      text-transform: uppercase;
-      color: var(--wk-ink-muted);
-      margin-bottom: 10px;
-    }
-    .wk-popup-link {
-      font-family: var(--wk-font-mono);
-      font-size: 12px;
-      letter-spacing: var(--wk-ls-mono-wide);
-      text-transform: uppercase;
-      color: var(--wk-amber-text);
-      text-decoration: none;
-      border-bottom: 1px solid var(--wk-amber-text);
-      padding-bottom: 1px;
-    }
-    .wk-popup-link:hover, .wk-popup-link:focus-visible { color: var(--wk-ink); border-color: var(--wk-ink); outline: none; }
-
-    /* Attribution + zoom in our register */
-    .leaflet-control-attribution {
-      background: rgba(250, 250, 245, 0.92) !important;
-      font-family: var(--wk-font-mono) !important;
-      font-size: 10px !important;
-      color: var(--wk-ink-muted) !important;
-    }
-    .leaflet-control-attribution a { color: var(--wk-amber-text) !important; }
-    .leaflet-control-zoom a {
-      background: var(--wk-bg, #FAFAF5) !important;
-      color: var(--wk-ink, #1A120A) !important;
-      border-color: var(--wk-line, #E5DCC8) !important;
-    }
-    .leaflet-control-zoom a:hover {
-      background: var(--wk-bg-2, #F3EDE0) !important;
-    }
-
-    /* Empty sheet floats above the map when shown */
-    .empty-sheet { z-index: 500; }
-    .map-legend { z-index: 500; }
-  
-    /* Browser-mode hint · "open from home screen" banner */
+    /* ── Browser-mode hint · floats on top, only outside PWA ── */
     .browser-mode-hint {
+      position: fixed;
+      top: env(safe-area-inset-top);
+      left: 50%; transform: translateX(-50%);
       max-width: 480px;
-      margin: 12px auto;
-      background: rgba(200,118,42,0.08);
+      width: calc(100% - 24px);
+      margin: 12px 0;
+      background: rgba(246, 237, 216, 0.92);
       border: 1px solid var(--wk-amber-line);
       border-radius: var(--wk-r-md);
-      padding: 12px var(--wk-space-md);
+      padding: 10px 14px;
+      z-index: 30;
+      box-shadow: 0 8px 20px -10px rgba(11,7,5,0.18);
     }
     .bmh-eyebrow {
       display: block;
       font-family: var(--wk-font-mono);
       font-size: var(--wk-fs-nano);
-      letter-spacing: var(--wk-ls-mono-wide);
+      letter-spacing: 0.30em;
       text-transform: uppercase;
       color: var(--wk-amber-text);
-      font-weight: var(--wk-fw-bold);
-      margin-bottom: 4px;
+      font-weight: 700;
+      margin-bottom: 2px;
     }
     .bmh-body {
-      font-size: var(--wk-fs-small);
-      line-height: var(--wk-lh-body);
+      font-size: 12.5px;
+      line-height: 1.4;
       color: var(--wk-ink-soft);
       margin: 0;
     }
-    [data-pwa="true"] [data-only="browser"] { display: none; }
+    [data-pwa="true"] .browser-mode-hint { display: none; }
 
-  
-    /* Marker dots · amber for doors */
-    .wk-marker { display: block; }
-    .wk-marker-dot {
-      display: block;
-      width: 12px; height: 12px;
+    /* ── Topbar · seal + MAP eyebrow + filter button ── */
+    .map-topbar {
+      flex: 0 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        var(--wk-space-sm);
+      background: var(--wk-bg);
+      border-bottom: 1px solid var(--wk-line);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+    }
+    .map-topbar-id {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px;
+      grid-column: 2;
+    }
+    .map-topbar-seal {
+      width: 28px; height: 28px;
       border-radius: 50%;
-      background: var(--wk-amber);
-      box-shadow: 0 0 0 1.5px var(--wk-bg), 0 0 0 2.5px rgba(200,118,42,0.35);
+      border: 1.5px solid var(--wk-amber);
+      display: grid; place-items: center;
+      color: var(--wk-amber);
     }
-    .wk-marker-dot.walking {
-      background: var(--wk-amber-hi);
-      box-shadow: 0 0 0 1.5px var(--wk-bg), 0 0 0 2.5px rgba(200,118,42,0.55), 0 0 10px rgba(200,118,42,0.55);
+    .map-topbar-seal svg { width: 18px; height: 18px; }
+    .map-topbar-label {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      font-weight: 700;
     }
-    .leaflet-popup-content-wrapper {
-      border-radius: var(--wk-r-sm);
-      background: var(--wk-bg-elevated);
-      box-shadow: 0 8px 24px -12px rgba(11,7,5,0.25);
+    .map-topbar-filter {
+      grid-column: 3;
+      justify-self: end;
+      width: 36px; height: 36px;
+      display: grid; place-items: center;
+      background: transparent;
+      border: none;
+      color: var(--wk-ink);
+      cursor: pointer;
+      border-radius: 50%;
     }
-    .leaflet-popup-tip { background: var(--wk-bg-elevated); }
+    .map-topbar-filter:hover { background: var(--wk-amber-soft); }
+    .map-status {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-top: 4px;
+    }
 
-  
-    /* ──────────── v2 · aged-paper aesthetic ──────────── */
-    /* The Leaflet tile pane gets the warm, slightly faded look — only here. */
+    /* ── Chip strip · horizontal scroll on mobile ── */
+    .filter-strip {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 8px;
+      padding: 10px var(--wk-page-x);
+      background: var(--wk-bg);
+      border-bottom: 1px solid var(--wk-line);
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      white-space: nowrap;
+      z-index: 9;
+    }
+    .filter-strip::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--wk-ink);
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .filter-chip[aria-pressed="true"] {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      border-color: var(--wk-amber);
+    }
+    .filter-chip .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.85;
+    }
+    .filter-chip[data-host="beds"]      .dot { background: #C8762A; }
+    .filter-chip[data-host="food"]      .dot { background: #A0522D; }
+    .filter-chip[data-host="water"]     .dot { background: #4CA8C9; }
+    .filter-chip[data-host="churches"]  .dot { background: #5A4632; }
+    .filter-chip[data-host="mountains"] .dot { background: #5C6B40; }
+    .filter-chip[data-host="festivals"] .dot { background: #9C2E5C; }
+    .filter-chip[data-host="walkers"]   .dot { background: #C8762A; box-shadow: 0 0 0 2px rgba(200,118,42,0.3); }
+    .filter-sep {
+      flex: 0 0 auto;
+      width: 1px; height: 18px;
+      background: var(--wk-line);
+      align-self: center;
+    }
+
+    /* ── Map canvas · fills the remaining space ── */
     .map-canvas {
+      flex: 1 1 auto;
+      position: relative;
+      overflow: hidden;
       background:
         radial-gradient(ellipse at 50% 40%, #F2E3C0 0%, #E5D2A0 60%, #D4BA82 100%);
+      /* leave room for the fixed bottom tabbar */
+      padding-bottom: 0;
     }
+    #map {
+      position: absolute;
+      inset: 0;
+      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom));
+      width: 100%;
+      background: transparent;
+    }
+    /* Aged-paper tile filter */
     .wk-tiles {
-      filter: sepia(0.42) saturate(0.55) brightness(1.08) contrast(0.92) hue-rotate(-6deg);
+      filter: sepia(0.38) saturate(0.6) brightness(1.08) contrast(0.95) hue-rotate(-5deg);
       mix-blend-mode: multiply;
     }
-    /* Subtle paper grain over the tiles */
+    /* Subtle paper grain */
     #map::after {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background-image:
-        radial-gradient(0.6px 0.6px at 13% 27%, rgba(90,70,50,0.18), transparent 60%),
+        radial-gradient(0.6px 0.6px at 13% 27%, rgba(90,70,50,0.16), transparent 60%),
         radial-gradient(0.6px 0.6px at 87% 41%, rgba(90,70,50,0.14), transparent 60%),
-        radial-gradient(0.6px 0.6px at 31% 73%, rgba(90,70,50,0.18), transparent 60%),
+        radial-gradient(0.6px 0.6px at 31% 73%, rgba(90,70,50,0.16), transparent 60%),
         radial-gradient(0.6px 0.6px at 67% 91%, rgba(90,70,50,0.14), transparent 60%);
       background-size: 4px 4px, 6px 6px, 5px 5px, 7px 7px;
-      opacity: 0.5;
+      opacity: 0.45;
       z-index: 400;
     }
 
-    /* Region label · ink Courier · no country names */
+    /* ── Pins ── */
     .wk-region-label { background: transparent !important; border: 0 !important; }
-
-    /* Pin · cream disc with amber/coloured glyph */
     .wk-pin { background: transparent !important; border: 0 !important; }
     .wk-pin-bg { transition: transform 0.15s ease; }
     .wk-pin:hover .wk-pin-bg { transform: scale(1.08); }
-
-    /* Walker · pulsing amber dot, footprints trailing */
     .wk-walker { background: transparent !important; border: 0 !important; }
     .wk-walker-dot { transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1); }
     .wk-walker--walking .wk-walker-dot {
@@ -554,40 +258,29 @@
       0%, 100% { transform: scale(1); }
       50%      { transform: scale(1.18); }
     }
-    .wk-walker--self .wk-walker-dot {
-      animation-duration: 1.8s;
-    }
+    .wk-walker--self .wk-walker-dot { animation-duration: 1.8s; }
     .wk-footprint { background: transparent !important; border: 0 !important; }
     @media (prefers-reduced-motion: reduce) {
       .wk-walker-dot { animation: none !important; transition: none !important; }
     }
 
-    /* Filter chip + ledger panel */
-    .filter-strip .filter-chip[data-host="churches"] { color: #5A4632; }
-    .filter-strip .filter-chip[data-host="mountains"] { color: #5C6B40; }
-    .filter-strip .filter-chip[data-host="festivals"] { color: #9C2E5C; }
-    .filter-strip .filter-chip[data-host="walkers"]   { color: var(--wk-amber-text); }
-
-  
-
-    /* Empty-state · compact bottom banner, not a hero takeover */
-    .empty-sheet {
-      position: absolute !important;
-      left: 50% !important;
-      right: auto !important;
+    /* ── Compact empty-state pill · only shown when 0 markers ── */
+    .empty-pill {
+      position: absolute;
+      left: 50%;
       transform: translateX(-50%);
-      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 14px) !important;
-      width: min(90vw, 360px) !important;
-      padding: 12px 16px !important;
-      background: var(--wk-bg-elevated) !important;
-      border: 1px solid var(--wk-amber-line) !important;
-      border-radius: var(--wk-r-md) !important;
-      box-shadow: 0 8px 20px -10px rgba(11, 7, 5, 0.25);
+      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 12px);
+      max-width: 320px;
+      width: calc(100% - 32px);
+      padding: 10px 16px;
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-amber);
+      border-radius: var(--wk-r-md);
+      box-shadow: 0 8px 20px -10px rgba(11,7,5,0.25);
       text-align: center;
-      pointer-events: auto !important;
-      z-index: 401;
+      z-index: 410;
     }
-    .empty-sheet .eyebrow {
+    .empty-pill-eyebrow {
       display: block;
       font-family: var(--wk-font-mono);
       font-size: 9px;
@@ -597,18 +290,16 @@
       font-weight: 700;
       margin-bottom: 4px;
     }
-    .empty-sheet .empty-title {
+    .empty-pill-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .empty-pill-title {
       font-family: var(--wk-font-display);
-      font-weight: var(--wk-fw-bold);
-      font-size: 14px;
+      font-weight: 700;
+      font-size: 13.5px;
       color: var(--wk-ink);
-      margin: 0 0 10px;
-      letter-spacing: 0;
-      text-transform: none;
+      margin: 0 0 8px;
+      line-height: 1.3;
     }
-    .empty-sheet .empty-sub { display: none; }
-    .empty-sheet .cta-row { display: none; }
-    .empty-sheet .btn-amber {
+    .empty-pill-cta {
       display: inline-block;
       background: var(--wk-amber);
       color: var(--wk-bg);
@@ -617,97 +308,148 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 999px;
       text-decoration: none;
     }
+    .empty-pill[hidden] { display: none; }
 
-    /* Floating legend · hide on phones · the chip strip is enough */
+    /* ── Legend · desktop only ── */
+    .map-legend {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 10px 12px;
+      background: rgba(246,237,216,0.92);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      box-shadow: 0 4px 10px -6px rgba(11,7,5,0.15);
+      z-index: 405;
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+    }
+    .map-legend .legend-row {
+      display: flex; align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .map-legend .legend-row:last-child { margin-bottom: 0; }
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
     @media (max-width: 720px) {
-      .map-legend { display: none !important; }
+      .map-legend { display: none; }
     }
 
+    /* ── Leaflet controls — themed ── */
+    .leaflet-control-zoom a {
+      background: var(--wk-bg-elevated) !important;
+      color: var(--wk-ink) !important;
+      border-color: var(--wk-line) !important;
+      font-family: var(--wk-font-mono) !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background: var(--wk-amber-soft) !important;
+    }
+    .leaflet-control-attribution {
+      background: rgba(246,237,216,0.85) !important;
+      color: var(--wk-ink-soft) !important;
+      font-family: var(--wk-font-mono) !important;
+      font-size: 9px !important;
+      letter-spacing: 0.1em;
+    }
+    .leaflet-control-attribution a {
+      color: var(--wk-amber-text) !important;
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: var(--wk-r-sm) !important;
+      background: var(--wk-bg-elevated) !important;
+      box-shadow: 0 8px 24px -12px rgba(11,7,5,0.25) !important;
+    }
+    .leaflet-popup-tip { background: var(--wk-bg-elevated) !important; }
   </style>
 </head>
 <body>
-  <a href="#map-canvas" class="skip-to-content">Skip to map</a>
-  <!-- Shows ONLY when the page is in a regular browser, not the installed PWA. -->
+
+  <a href="#map" class="skip-to-content">Skip to map</a>
+
   <aside class="browser-mode-hint" data-only="browser" role="status">
     <span class="bmh-eyebrow">— Browser mode</span>
     <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
   </aside>
 
-
   <header class="map-topbar" role="banner">
-    <div class="map-identity" aria-hidden="false">
-      <p id="walking-count" class="map-live-count" hidden></p>
-      <svg class="seal" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.65" />
-        <text x="12" y="16" text-anchor="middle" font-family="Helvetica Neue, Helvetica, sans-serif" font-weight="900" font-size="11" fill="currentColor">W</text>
-      </svg>
-      <h1 class="title">Map</h1>
+    <span aria-hidden="true"></span>
+    <div class="map-topbar-id">
+      <span class="map-topbar-seal" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M7 9 L9 16 L12 11 L15 16 L17 9"/>
+        </svg>
+      </span>
+      <span class="map-topbar-label">Map</span>
     </div>
-    <button type="button" aria-label="Filters" aria-controls="filter-strip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="4" y1="7"  x2="20" y2="7" />
-        <line x1="4" y1="12" x2="20" y2="12" />
-        <line x1="4" y1="17" x2="20" y2="17" />
-        <circle cx="9"  cy="7"  r="2" fill="var(--wk-bg)" />
-        <circle cx="15" cy="12" r="2" fill="var(--wk-bg)" />
-        <circle cx="7"  cy="17" r="2" fill="var(--wk-bg)" />
+    <button class="map-topbar-filter" type="button" aria-label="Filter map">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="7"  x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+        <circle cx="9"  cy="7"  r="2" fill="var(--wk-bg)"/>
+        <circle cx="15" cy="12" r="2" fill="var(--wk-bg)"/>
+        <circle cx="7"  cy="17" r="2" fill="var(--wk-bg)"/>
       </svg>
     </button>
-  <span class="map-status" aria-live="polite" style="display:block;text-align:center;font-family:var(--wk-font-mono);font-size:var(--wk-fs-nano);letter-spacing:0.22em;text-transform:uppercase;color:var(--wk-ink-muted);padding:6px 0 4px;">Loading the map…</span>
+    <span class="map-status" aria-live="polite">Loading the map…</span>
   </header>
 
-  <nav class="filter-strip" id="filter-strip" aria-label="Map filters">
-    <div class="filter-row" role="group">
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="beds">
-        <span class="dot" aria-hidden="true"></span>Beds
-      </button>
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="food">
-        <span class="dot" aria-hidden="true"></span>Food
-      </button>
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="water">
-        <span class="dot" aria-hidden="true"></span>Water
-      </button>
-      <span class="filter-sep" aria-hidden="true"></span>
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="churches">
-        <span class="dot" aria-hidden="true"></span>Churches
-      </button>
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="mountains">
-        <span class="dot" aria-hidden="true"></span>Mountains
-      </button>
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="festivals">
-        <span class="dot" aria-hidden="true"></span>Festivals
-      </button>
-      <span class="filter-sep" aria-hidden="true"></span>
-      <button class="filter-chip" type="button" aria-pressed="true" data-host="walkers">
-        <span class="dot" aria-hidden="true"></span>Walkers
-      </button>
-    </div>
+  <nav class="filter-strip" aria-label="Map filters">
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="beds">
+      <span class="dot" aria-hidden="true"></span>Beds
+    </button>
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="food">
+      <span class="dot" aria-hidden="true"></span>Food
+    </button>
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="water">
+      <span class="dot" aria-hidden="true"></span>Water
+    </button>
+    <span class="filter-sep" aria-hidden="true"></span>
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="churches">
+      <span class="dot" aria-hidden="true"></span>Churches
+    </button>
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="mountains">
+      <span class="dot" aria-hidden="true"></span>Mountains
+    </button>
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="festivals">
+      <span class="dot" aria-hidden="true"></span>Festivals
+    </button>
+    <span class="filter-sep" aria-hidden="true"></span>
+    <button class="filter-chip" type="button" aria-pressed="true" data-host="walkers">
+      <span class="dot" aria-hidden="true"></span>Walkers
+    </button>
   </nav>
 
-  <main class="map-canvas" id="map-canvas" role="main" aria-label="Map of nearby wanderkinds">
+  <main class="map-canvas" role="main" aria-label="Map of nearby wanderkinds">
     <div id="map"></div>
 
-    <!-- Legend (host-type encoding) -->
     <aside class="map-legend" aria-label="Map legend">
-      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-amber)"></span> Bed</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#A0522D"></span> Food</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#4CA8C9"></span> Water</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#5A4632"></span> Church</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#5C6B40"></span> Mountain</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#9C2E5C"></span> Festival</div>
-      <div class="legend-row"><span class="legend-dot" style="background:var(--wk-amber-text);box-shadow:0 0 0 2px rgba(200,118,42,0.4)"></span> Walker</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#C8762A"></span>Bed</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#A0522D"></span>Food</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#4CA8C9"></span>Water</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#5A4632"></span>Church</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#5C6B40"></span>Mountain</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#9C2E5C"></span>Festival</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#C8762A;box-shadow:0 0 0 2px rgba(200,118,42,0.4)"></span>Walker</div>
     </aside>
 
-    <!-- Empty / first-visit sheet (revealed by JS only when zero markers) -->
-    <section class="empty-sheet" aria-labelledby="empty-title" hidden>
-      <span class="eyebrow">— Day Zero</span>
-      <p class="empty-title" id="empty-title">No doors here yet.</p>
-      <a href="/install.html" class="btn-amber">Open your door</a>
+    <section class="empty-pill" id="empty-pill" hidden>
+      <span class="empty-pill-eyebrow">Day Zero</span>
+      <p class="empty-pill-title">No doors here yet — be the first.</p>
+      <a class="empty-pill-cta" href="/install.html">Open your door</a>
     </section>
   </main>
 
@@ -716,7 +458,6 @@
   <script src="/js/vendor/leaflet.js" defer></script>
   <script type="module" src="/js/map-boot.js"></script>
   <script type="module" src="/js/map-session-aware.js"></script>
-
   <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/auth-bypass.js"></script>
   <script type="module" src="/js/sw-register.js"></script>
