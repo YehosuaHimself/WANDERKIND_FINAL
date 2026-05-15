@@ -487,6 +487,27 @@
     }
     [data-pwa="true"] [data-only="browser"] { display: none; }
 
+  
+    /* Marker dots · amber for doors */
+    .wk-marker { display: block; }
+    .wk-marker-dot {
+      display: block;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+      box-shadow: 0 0 0 1.5px var(--wk-bg), 0 0 0 2.5px rgba(200,118,42,0.35);
+    }
+    .wk-marker-dot.walking {
+      background: var(--wk-amber-hi);
+      box-shadow: 0 0 0 1.5px var(--wk-bg), 0 0 0 2.5px rgba(200,118,42,0.55), 0 0 10px rgba(200,118,42,0.55);
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: var(--wk-r-sm);
+      background: var(--wk-bg-elevated);
+      box-shadow: 0 8px 24px -12px rgba(11,7,5,0.25);
+    }
+    .leaflet-popup-tip { background: var(--wk-bg-elevated); }
+
   </style>
 </head>
 <body>
@@ -518,6 +539,7 @@
         <circle cx="7"  cy="17" r="2" fill="var(--wk-bg)" />
       </svg>
     </button>
+  <span class="map-status" aria-live="polite" style="display:block;text-align:center;font-family:var(--wk-font-mono);font-size:var(--wk-fs-nano);letter-spacing:0.22em;text-transform:uppercase;color:var(--wk-ink-muted);padding:6px 0 4px;">Loading the map…</span>
   </header>
 
   <nav class="filter-strip" id="filter-strip" aria-label="Map filters">
@@ -541,7 +563,7 @@
   </nav>
 
   <main class="map-canvas" id="map-canvas" role="main" aria-label="Map of nearby wanderkinds">
-    <div id="map" aria-hidden="true" hidden></div>
+    <div id="map"></div>
 
     <!-- Legend (host-type encoding) -->
     <aside class="map-legend" aria-label="Host-type legend">
@@ -552,10 +574,10 @@
     </aside>
 
     <!-- Empty / first-visit sheet (revealed by JS only when zero markers) -->
-    <section class="empty-sheet" aria-labelledby="empty-title">
+    <section class="empty-sheet" aria-labelledby="empty-title" hidden>
       <span class="eyebrow">— Day Zero</span>
-      <p class="empty-title" id="empty-title">The first map view is being built.</p>
-      <p class="empty-sub">Live host pins from a hand-curated Wanderkind directory · landing next. For now: pick a door to open or check your pass.</p>
+      <p class="empty-title" id="empty-title">No doors here yet.</p>
+      <p class="empty-sub">Be the first to host your block. Open your door — even just for a glass of water — and you put a pin on this map.</p>
       <div class="cta-row">
         <a href="/install.html" class="btn-amber">Open your door</a>
         <a href="/" class="btn-ghost">What is Wanderkind?</a>
@@ -565,6 +587,8 @@
 
   <wk-tabbar></wk-tabbar>
 
+  <script src="/js/vendor/leaflet.js" defer></script>
+  <script type="module" src="/js/map-boot.js"></script>
   <script type="module" src="/js/map-session-aware.js"></script>
 
   <script type="module" src="/js/pwa-mode.js"></script>
