@@ -38,8 +38,8 @@ const state = {
 
 function $(s) { return document.querySelector(s); }
 function setStatus(t) { const el = $('.map-status'); if (el) el.textContent = t; }
-function showEmpty() { const s = $('.empty-sheet'); if (s) s.hidden = false; }
-function hideEmpty() { const s = $('.empty-sheet'); if (s) s.hidden = true; }
+function showEmpty() { const s = $('.empty-pill'); if (s) s.hidden = false; }
+function hideEmpty() { const s = $('.empty-pill'); if (s) s.hidden = true; }
 
 /* ─── glyph icons ─────────────────────────────────────────────────
  * Eight icon classes. All inline SVG inside a Leaflet divIcon so the
