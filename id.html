@@ -880,7 +880,18 @@
           <button class="pin-key" type="button" data-d="0">0</button>
           <button class="pin-key del" type="button" data-d="del" aria-label="Delete">Del</button>
         </div>
-        <p class="pin-hint" id="pin-hint">Demo PIN · 1234 · then set your own</p>
+        <p class="pin-hint" id="pin-hint">Demo PIN · 1234 · you'll set yours after first unlock</p>
+        <a href="/auth.html?next=/id.html&amp;reset_pin=1" class="pin-reset-link" style="
+          font-family: var(--wk-font-mono);
+          font-size: var(--wk-fs-nano);
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--wk-amber-text);
+          text-decoration: none;
+          padding: 4px 10px;
+          margin-top: 2px;
+          font-weight: var(--wk-fw-bold);
+        ">— Reset PIN</a>
         <button type="button" class="pin-set-link" id="pin-set-link">Set / change your PIN</button>
         <div class="pin-set-panel" id="pin-set-panel" hidden>
           <p class="pin-set-msg" id="pin-set-msg"></p>
