@@ -45,13 +45,17 @@
     html, body {
       background: var(--wk-bg);
       color: var(--wk-ink);
-      min-height: 100vh;
-      min-height: 100dvh;
+      /* Stabilize fixed tabbar — pin to small viewport height across all pages */
+      height: 100svh;
+      height: 100dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
     body {
       display: flex;
       flex-direction: column;
       padding: 0;
+      overscroll-behavior-y: contain;
     }
 
     /* ── Top bar ─────────────────────────────────────────────────
