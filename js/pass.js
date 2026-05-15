@@ -61,8 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   refs.setCancel = $('pin-set-cancel');
   refs.stack    = $('id-stack');
   refs.track    = $('id-track');
-  refs.prev     = $('id-prev');
-  refs.next     = $('id-next');
   refs.lock     = $('id-lock');
   refs.trail    = $('pass-trail');
 
@@ -90,9 +88,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     refs.pad.addEventListener('click', onPadTap);
     document.addEventListener('keydown', onKeyDown);
   }
-  if (refs.prev) refs.prev.addEventListener('click', () => goPage(0));
-  if (refs.next) refs.next.addEventListener('click', () => goPage(1));
   if (refs.lock) refs.lock.addEventListener('click', lockId);
+
+  /* Tap a dot to jump to that page */
+  document.querySelectorAll('.id-dot').forEach((dot) => {
+    dot.addEventListener('click', () => {
+      const p = parseInt(dot.getAttribute('data-p'), 10);
+      if (!isNaN(p) && state.unlocked) goPage(p);
+    });
+  });
+
+
   if (refs.changePin) refs.changePin.addEventListener('click', () => {
     /* Lock first to gate the change behind PIN verification, then open the flow */
     lockId();
@@ -342,8 +348,8 @@ function lockId() {
 function goPage(p) {
   state.page = p;
   refs.track.style.transform = `translateX(${p === 0 ? 0 : '-100%'})`;
-  refs.prev.disabled = p === 0;
-  refs.next.disabled = p === 1;
+  if (refs.prev) refs.prev.disabled = p === 0;
+  if (refs.next) refs.next.disabled = p === 1;
   document.querySelectorAll('.id-dot').forEach((d, i) => {
     d.classList.toggle('on', i === p);
     d.setAttribute('aria-selected', i === p ? 'true' : 'false');
