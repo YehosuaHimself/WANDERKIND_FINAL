@@ -570,16 +570,20 @@
       const slot = document.getElementById('me-vouches-count');
       if (!session || !slot) return;
       try {
-        const resp = await fetch(
-          `${SUPABASE_URL}/rest/v1/vouches?bearer_id=eq.${session.user.id}&select=id`,
-          { headers: {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${session.accessToken}`,
-              Prefer: 'count=exact',
+        let resp = null;
+        for (const col of ['bearer_id', 'recipient_id', 'about_id', 'subject_id']) {
+          const r = await fetch(
+            `${SUPABASE_URL}/rest/v1/vouches?${col}=eq.${session.user.id}&select=id`,
+            { headers: {
+                apikey: SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${session.accessToken}`,
+                Prefer: 'count=exact',
+              }
             }
-          }
-        );
-        if (!resp.ok) return;
+          );
+          if (r.ok) { resp = r; break; }
+        }
+        if (!resp) return;
         const range = resp.headers.get('content-range');
         const total = range ? parseInt(range.split('/').pop(), 10) : 0;
         slot.textContent = `· ${total}`;
