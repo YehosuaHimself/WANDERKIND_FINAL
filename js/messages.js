@@ -256,8 +256,10 @@ function fmtTime(iso) {
 function fmtRel(iso) {
   const d = new Date(iso); const days = (Date.now() - d) / 86400000;
   if (days < 1) return d.toTimeString().slice(0, 5);
-  if (days < 7) return d.toLocaleDateString(undefined, { weekday: 'short' });
-  return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short' });
+  if (days < 2) return 'YEST';
+  /* DD·ROMAN format for older */
+  const roman = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  return d.getDate() + '·' + roman[d.getMonth()];
 }
 function b64encode(u8) { let s=''; for (const b of u8) s += String.fromCharCode(b); return btoa(s); }
 function b64decode(b64) { const s = atob(b64); const u8 = new Uint8Array(s.length); for (let i=0;i<s.length;i++) u8[i] = s.charCodeAt(i); return u8; }
