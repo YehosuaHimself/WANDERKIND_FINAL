@@ -17,7 +17,6 @@
  *   public read of profiles with show_profile_public = true.
  */
 
-// @ts-check
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
