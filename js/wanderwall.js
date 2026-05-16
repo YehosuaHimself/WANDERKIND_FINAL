@@ -79,6 +79,8 @@ async function open() {
   $('wanderwall').classList.add('open');
   $('wanderwall').removeAttribute('inert');
   $('wanderwall-handle').setAttribute('aria-expanded', 'true');
+  const scrim = $('wanderwall-scrim');
+  if (scrim) { scrim.hidden = false; scrim.onclick = close; }
   await fetchRows(false);
   render();
   // Trap-light focus management: move focus to close button
@@ -91,6 +93,8 @@ function close() {
   $('wanderwall').classList.remove('open');
   $('wanderwall').setAttribute('inert', '');
   $('wanderwall-handle').setAttribute('aria-expanded', 'false');
+  const scrim = $('wanderwall-scrim');
+  if (scrim) scrim.hidden = true;
   $('wanderwall-handle').focus();
 }
 
