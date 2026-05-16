@@ -145,25 +145,41 @@
  * ────────────────────────────────────────────────────────────────── */
 
 wk-tabbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
+  /* ─── BULLETPROOF LOCK · ruled May 2026 · do not unpin ────────────────
+   * The tabbar must remain flush with the viewport bottom on every device,
+   * every OS, every layout state. Every property here has !important
+   * because we've fixed this regression too many times.
+   * Companion: /js/wk-tabbar.js runs lockTabbar() on resize/orientation. */
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 999 !important;
+  /* Reset any inherited transform that could shift us */
+  transform: none !important;
 
-  display: grid;
-  /* Middle column locked at 64px so the truly-square FAB hub never affects side-tab geometry */
-  grid-template-columns: 1fr 64px 1fr;
-  height: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom, 0px));
-  /* Safe-area padding so icons sit above the home indicator instead of behind it */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: grid !important;
+  /* Middle column locked at 64px for the truly-square FAB hub */
+  grid-template-columns: 1fr 64px 1fr !important;
+  /* Total height = bar + iOS home-indicator safe area */
+  height: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  margin: 0 !important;
 
   background: var(--wk-bg);
   border-top: 1px solid var(--wk-line);
 
-  /* Belt-and-suspenders for iOS Safari sub-pixel rounding */
-  overflow: visible;
+  /* Overflow visible so the hub can sit half-above the bar */
+  overflow: visible !important;
 }
+
+/* Defense: no descendant can pull the bar via transform */
+wk-tabbar, wk-tabbar * { will-change: auto; }
+
+/* Defense: ensure body never creates a containing block that breaks our fixed */
+html, body { transform: none; filter: none; perspective: none; }
+
 
 /* Side tabs (Me, Map) ───────────────────────────────────────────── */
 wk-tabbar .wk-tab {
