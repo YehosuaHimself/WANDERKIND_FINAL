@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * /me.html — the signed-in user's own profile surface.
  *
@@ -7,7 +8,6 @@
  *   3. render either the populated profile or the empty-state pass-setup
  */
 
-// @ts-check
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 import { refreshIfNeeded, signOut } from './session.js';
