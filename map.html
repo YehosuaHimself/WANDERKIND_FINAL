@@ -422,7 +422,7 @@
       display: flex; flex-direction: column;
     }
     .wanderwall.open { transform: translateY(0); }
-    .wanderwall[aria-hidden="true"] .ww-list { pointer-events: none; }
+    .wanderwall[inert] .ww-list { pointer-events: none; }
     .ww-grip {
       align-self: center;
       width: 36px; height: 4px;
@@ -813,7 +813,7 @@
     <button id="wanderwall-handle" class="wanderwall-handle" type="button"
             aria-expanded="false" aria-controls="wanderwall">The WanderWall</button>
 
-    <aside id="wanderwall" class="wanderwall" role="dialog" aria-modal="false" aria-labelledby="wanderwall-title" aria-hidden="true">
+    <aside id="wanderwall" class="wanderwall" role="dialog" aria-modal="false" aria-labelledby="wanderwall-title" inert>
       <span class="ww-grip" aria-hidden="true"></span>
       <header class="ww-header">
         <div>
