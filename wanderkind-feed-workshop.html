@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Feed × Map — Workshop · Wanderkind</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/typography.css">
+<style>
+  body { background: #FAEFCF; color: #1A120A; font-family: 'Helvetica Neue', sans-serif; line-height: 1.55; }
+  .shell { max-width: 760px; margin: 0 auto; padding: 56px 28px 120px; }
+  .eyebrow { font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: #6B5A3E; margin-bottom: 4px; }
+  h1 { font-family: 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 40px; line-height: 1.05; letter-spacing: -0.015em; margin: 6px 0 8px; text-transform: uppercase; }
+  h1 em { color: #9C5A1E; font-style: italic; font-weight: 800; }
+  h2 { font-family: 'Helvetica Neue', sans-serif; font-weight: 700; font-size: 22px; line-height: 1.18; margin: 44px 0 10px; text-transform: uppercase; letter-spacing: 0.005em; border-top: 1px solid rgba(26,18,10,0.18); padding-top: 28px; }
+  h3 { font-family: 'Helvetica Neue', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; margin: 24px 0 6px; color: #1A120A; }
+  h4 { font-family: 'Helvetica Neue', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin: 16px 0 4px; color: #6B5A3E; }
+  p { font-size: 15.5px; margin: 0 0 12px; max-width: 64ch; }
+  ul, ol { padding-left: 22px; max-width: 64ch; }
+  li { margin: 6px 0; font-size: 15px; }
+  blockquote { border-left: 2px solid #C8762A; padding: 4px 0 4px 18px; margin: 14px 0; color: #1A120A; font-style: italic; font-size: 15.5px; line-height: 1.55; }
+  blockquote .who { display: block; font-style: normal; font-family: 'Courier New', monospace; font-size: 10.5px; letter-spacing: 0.22em; color: #6B5A3E; text-transform: uppercase; margin-top: 8px; }
+  .row-mono { font-family: 'Courier New', monospace; font-size: 11.5px; letter-spacing: 0.06em; color: #1A120A; }
+  .doctrine { background: rgba(200,118,42,0.07); border: 1px solid rgba(200,118,42,0.35); border-radius: 10px; padding: 18px 22px; margin: 18px 0 6px; }
+  .doctrine .who { display: block; font-family: 'Courier New', monospace; font-size: 10.5px; letter-spacing: 0.22em; color: #9C5A1E; text-transform: uppercase; margin-top: 8px; }
+  .shape { background: rgba(255,255,255,0.55); border: 1px solid rgba(26,18,10,0.14); border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .shape-head { display: flex; align-items: baseline; gap: 10px; }
+  .shape-num { font-family: 'Courier New', monospace; font-size: 12px; letter-spacing: 0.2em; color: #9C5A1E; font-weight: 700; }
+  .shape-name { font-family: 'Helvetica Neue', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.01em; }
+  .shape-body { margin-top: 6px; font-size: 14.5px; }
+  .ruling { background: #1A120A; color: #FAEFCF; border-radius: 12px; padding: 26px 30px; margin: 40px 0; }
+  .ruling h2 { color: #FAEFCF; border-top: 0; padding-top: 0; margin-top: 0; }
+  .ruling p { color: rgba(250,239,207,0.9); }
+  .ruling .row-mono { color: #C8762A; }
+  .ruling ul li, .ruling ol li { color: rgba(250,239,207,0.92); }
+  .brief { border: 2px solid #C8762A; border-radius: 12px; padding: 24px 28px; background: rgba(200,118,42,0.05); margin: 28px 0 12px; }
+  .brief h2 { border-top: 0; padding-top: 0; margin-top: 0; color: #1A120A; }
+  .yes, .no { font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+  .yes { background: rgba(76,168,201,0.18); color: #2A5F73; }
+  .no { background: rgba(156,46,92,0.16); color: #7D2046; }
+  hr { border: 0; border-top: 1px solid rgba(26,18,10,0.12); margin: 32px 0; }
+  .small { font-size: 13px; color: #6B5A3E; }
+  .signature { font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.22em; color: #9C5A1E; margin-top: 60px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<main class="shell">
+
+<div class="eyebrow">— Workshop · 2026 · Wanderkind Board + 7 Personas</div>
+<h1>The Feed × Map question.<br><em>What it is. What it refuses.</em></h1>
+
+<p class="small">A working document. Convened to answer the most consequential temporary question Wanderkind faces: <strong>what is the Feed, and how does it connect to the Map?</strong> Drafted under the constraint that any answer must survive a literal reading of <code>DOCTRINE.md</code> and <code>CANON.md</code>.</p>
+
+<h2>Why this question is the largest</h2>
+<p>Stamps are memories. Vouches are encounters. Hosts are doors. Walkers are paths. Each of those features has natural pacing — they happen at human speed, one at a time, when something real occurs. The Feed is different: it is the first surface where the product would speak to the walker continuously. That is the precise mechanism by which apps stop being tools and start being habits, and habits stop being healthy and start being compulsions. The Doctrine forbids this. The Canon forbids this. Most "feed" implementations in modern software directly violate both. So the question is not which flavor of feed to build; the question is whether a feed can exist at Wanderkind at all, and if so, in what shape so unfamiliar that it would not be recognized as a feed by anyone trained on the apps of the last decade.</p>
+
+<p>This is also the largest question because <strong>the Map is where Wanderkind lives in space, and the Feed is where Wanderkind lives in time</strong>. Together they constitute the network's presence to a walker. Get this wrong and the entire product re-orients around an attention loop. Get it right and we have invented a quieter shape that nobody else has shipped.</p>
+
+<h2>The constraint, read aloud</h2>
+<div class="doctrine">
+<p>"No leaderboards, no streak notifications, no FOMO. Stamps are memories. Status tiers are milestones on a personal journey. No dark patterns. No 'are you sure you want to miss out?' copy. No addictive scroll patterns. We refuse anything we wouldn't show to a designer we respect."</p>
+<span class="who">— CANON.md · the lines that hold</span>
+</div>
+
+<div class="doctrine">
+<p>"Every Way begins at your door. It means: the road is not a fixed route. It is what unfolds when you step out from where you live, in any direction, with the knowledge that someone, somewhere, will welcome you."</p>
+<span class="who">— DOCTRINE.md · the mantra</span>
+</div>
+
+<p>Any Feed we accept must be a Feed that <em>someone in this list of personas would still want to use</em> after their fourth visit, not because it has hooked them, but because it has earned its place in their day. If we cannot describe such a Feed, we conclude there is no Feed.</p>
+
+<h2>The events available to a Wanderkind Feed</h2>
+<p>The network generates ten kinds of event. Six are doctrinally clean enough to surface in a shared timeline; four are not. The four private events stay where they are (private inboxes, personal records).</p>
+
+<h4>Eligible</h4>
+<ol>
+<li><strong>A new door opened</strong> — a host turned on <code>show_on_map</code> in a region. Inviting; geographic; not urgent.</li>
+<li><strong>A walker is walking</strong> — a Wanderkind is on the road right now. Borderline. The Engagement Skeptic flags this for review.</li>
+<li><strong>A vouch was published</strong> — two-line blind reveal between walker and host, by design public after publication. The heartbeat of trust.</li>
+<li><strong>A stamp was sealed</strong> — a memory entered into someone's Wanderbuch. Doctrinally pure (Stamps are memories).</li>
+<li><strong>A stamp was proposed for canonical status</strong> — community co-signing event, public by design.</li>
+<li><strong>A group walk has started</strong> — 48h ephemeral, invitational by nature.</li>
+</ol>
+<h4>Ineligible</h4>
+<ol start="7">
+<li>Knock sent → host (private)</li>
+<li>Knock accepted (private)</li>
+<li>Stay began / Stay ended (visible only to participants)</li>
+<li>Face verified (a credential moment, not a social one)</li>
+</ol>
+
+<h2>Six possible shapes, all laid open</h2>
+
+<div class="shape">
+<div class="shape-head"><span class="shape-num">Shape 1</span><span class="shape-name">Chronological flat feed</span></div>
+<div class="shape-body">The traditional pattern. One column of cards, time-sorted, mixed event types, infinite scroll. Simple, dense, what every other product ships. <strong>Almost certainly forbidden by Canon</strong> (addictive scroll patterns; engagement loop).</div>
+</div>
+
+<div class="shape">
+<div class="shape-head"><span class="shape-num">Shape 2</span><span class="shape-name">Map-anchored live feed</span></div>
+<div class="shape-body">Split view. Map on top; feed below. Pan the map → the feed filters to that viewport. Tap a card → the map flies to that location. The feed becomes a narration of what the map shows.</div>
+</div>
+
+<div class="shape">
+<div class="shape-head"><span class="shape-num">Shape 3</span><span class="shape-name">Place-grouped daily digest</span></div>
+<div class="shape-body">Events bundled by region, presented once per day. "Today on the Camino: 4 new doors, 2 vouches, 1 stamp proposed." Slow, contemplative. Like a newspaper. Opens in the morning, closes after reading.</div>
+</div>
+
+<div class="shape">
+<div class="shape-head"><span class="shape-num">Shape 4</span><span class="shape-name">Witnessing feed (Stamps + Vouches only)</span></div>
+<div class="shape-body">Only the two doctrinally pure events: stamps sealed and vouches published. Nothing operational; only moments of meaning. Reads more like a slow magazine than a feed.</div>
+</div>
+
+<div class="shape">
+<div class="shape-head"><span class="shape-num">Shape 5</span><span class="shape-name">Personal-only feed</span></div>
+<div class="shape-body">Only events that touch you directly. The knock you received. The vouch awaiting you. The walker who started near you. Not a window into the world — a window into your immediate orbit.</div>
+</div>
+
+<div class="shape">
+<div class="shape-head"><span class="shape-num">Shape 6</span><span class="shape-name">No Feed</span></div>
+<div class="shape-body">The Map shows what is now. The Gästebuch shows your house's visitors. The Wanderbuch / Stamps page shows your memory. Vouches archive shows your encounters. There is no global timeline because the Wanderkind does not need to attend to one. Time belongs to the walker, not the network. <strong>The most doctrinally honest option.</strong></div>
+</div>
+
+<h2>Seven persona voices</h2>
+<p>Each persona was shown the six shapes and asked one question: <em>"After your fourth visit, which Feed (if any) would you still want?"</em> Voices below are paraphrased; they are not unanimous.</p>
+
+<h3>Clara Hofmann · 21 · Backpacker Beginner</h3>
+<blockquote>
+"My instinct is to want a feed because that's how I check anything. But I also got off Instagram for this walk. If Wanderkind feels like Instagram, I'll start treating it like Instagram, which means I'll start dreading it. A small feed is fine, but please don't make it ✨ algorithmic. I want to see what happened, not what I should care about."
+<span class="who">— Clara, in favour of <strong>Shape 4 (Witnessing)</strong> or <strong>Shape 3 (Digest)</strong></span>
+</blockquote>
+
+<h3>Helmut Winkler · 62 · Dedicated Host (20 years)</h3>
+<blockquote>
+"Twenty years of walkers. Hundreds of them. I don't want my house to be on a 'trending' list. I want to know when a real walker is coming so I can put the kettle on. The map already tells me who's near. What I would read is a once-a-week letter — who passed through, who was here, what people said. Not a stream. A letter."
+<span class="who">— Helmut, in favour of <strong>Shape 3 (Digest)</strong> or <strong>Shape 6 (No Feed)</strong></span>
+</blockquote>
+
+<h3>Claudia Fischer · 43 · Burnout Corporate Reset</h3>
+<blockquote>
+"I left a job where seven different apps had badges on them. I am here because Wanderkind promised me it would not be that. If a feed exists, it must not notify me. It must not have a 'new' indicator. I must check it deliberately, like opening a book. The moment it pings me, the moment it grows a red dot, I uninstall and walk paper."
+<span class="who">— Claudia, in favour of <strong>Shape 6 (No Feed)</strong>, or any shape with hard refusals on notifications and badges</span>
+</blockquote>
+
+<h3>Margarethe Schneider · 58 · Christian Pilgrim</h3>
+<blockquote>
+"I carry a paper journal. The Camino has not needed a feed in a thousand years. But I understand younger walkers want one. If you build it, build it like a parish bulletin — pinned to a wall, read by those who pass, no obligation. Weekly is more honest than daily. The walking is daily; the reading does not need to be."
+<span class="who">— Margarethe, in favour of <strong>Shape 3</strong> at weekly cadence, or <strong>Shape 6</strong></span>
+</blockquote>
+
+<h3>Julian Neumann · 31 · Digital Nomad Founder</h3>
+<blockquote>
+"Professionally I would say: feed = retention = network effects. I have built that growth loop three times. But here I would say: if Wanderkind copies that pattern, you have built another product, and it isn't this one. The strongest move is to make the feed look <em>anti-feed</em> — no infinite scroll, no badges, no recommendations, no engagement metrics. Make it look so wrong that it feels right. That is the moat."
+<span class="who">— Julian, in favour of <strong>Shape 2 with hard edges</strong> — map-anchored, finite per session, no notifications</span>
+</blockquote>
+
+<h3>Sabine Leitner · 44 · Tourist Office Professional</h3>
+<blockquote>
+"Our office has a bulletin board on the wall. Walkers stop in, read it, sometimes pin something themselves. It is the most useful surface in the building because it is small. There is room for maybe twelve items. Items expire. New ones replace them. If Wanderkind has a feed, build it like our wall: bounded, geographic, ephemeral. Not a river — a board."
+<span class="who">— Sabine, in favour of <strong>Shape 2 + Shape 3 hybrid</strong> — bounded, place-anchored, time-decaying</span>
+</blockquote>
+
+<h3>Lukas Schneider · 15 · Scout Participant (youth-path)</h3>
+<blockquote>
+"I love feeds because that's how my friends and I see what's happening. But my dad set up my Wanderkind account on the youth path, and we agreed I wouldn't see hosts' private things. Vouches feel private. Stamps and group walks feel fine. Maybe just show me those, not the rest. Otherwise it's like a private chat I shouldn't be reading."
+<span class="who">— Lukas, in favour of <strong>youth-restricted Shape 4</strong> — Stamps + Walks only for under-18</span>
+</blockquote>
+
+<h2>Five board voices</h2>
+
+<h3>The Designer-in-Residence</h3>
+<blockquote>
+"Every element on Wanderkind has to be defensible against the Canon. A standard feed fails on three Canon clauses simultaneously: addictive scroll, FOMO copy, dark-pattern adjacency. If the Feed cannot be defended in those terms, it does not ship. The question for me is whether <em>any</em> Feed shape passes the Canon read-aloud test. I think exactly one does: a bounded, place-anchored, time-bounded panel attached to the Map, with no notifications, no infinite scroll, no badges, and no reactions. Anything else fails the test."
+<span class="who">— DiR</span>
+</blockquote>
+
+<h3>The Doctrine Custodian</h3>
+<blockquote>
+"'Every Way begins at your door' means time is local, not global. The walker's clock is their own footsteps. A global feed introduces an external clock — a metronome the walker is asked to consult. That subordinates the walking to the consulting. We refuse it as a default. We allow it as a window — opened when wanted, closed when not — but it does not call to the walker, ever."
+<span class="who">— DC</span>
+</blockquote>
+
+<h3>The Engagement Skeptic</h3>
+<blockquote>
+"I built feeds at two attention-economy companies. The only feed that does not become addictive is one that <strong>ends</strong>. Infinite scroll is the addictive ingredient. So is the 'new' badge. So is the count of unread. Remove all three and you have a feed nobody scrolls compulsively, because there is nothing to scroll to. Show what happened in this region today, in finite form. When the list ends, the list ends. The user closes the panel and walks on."
+<span class="who">— ES</span>
+</blockquote>
+
+<h3>The Cartographer</h3>
+<blockquote>
+"The Map is the network's body. The Feed is the network's voice. A voice without a body is disembodied; a body without a voice is silent. The right shape is for the voice to come <em>from</em> the body — the Feed lives attached to the Map, draws its scope from the Map's viewport, and returns the user's eye to the Map after each card. Reading the Feed is reading the Map's narration of itself, at a finite length, for the past 24 hours."
+<span class="who">— CG</span>
+</blockquote>
+
+<h3>The Network Anthropologist</h3>
+<blockquote>
+"Communities have always had bulletin boards, parish newsletters, village criers, market-day announcements. The pace was slow and bounded; you read the board, you went home. Trust was built across those bounded surfaces precisely because they did not compete for attention. The Wanderkind Feed should descend from <em>those</em> ancestors, not from Twitter. Call it a Wall, a Bulletin, a Daily, anything other than 'Feed' — the word itself carries the patterns we are refusing."
+<span class="who">— NA</span>
+</blockquote>
+
+<h2>The synthesis</h2>
+
+<p>The seven personas and five board voices converge with unusual clarity. Different starting points, same arrival.</p>
+
+<p><strong>The Wanderkind Feed is not a Feed. It is a Bulletin attached to the Map.</strong></p>
+
+<p>It lives inside the Map. It does not have its own page. It is opened by pulling a panel up from the bottom of the Map, like the existing host drawer. It shows what has happened, in this geographic viewport, over the last 24 hours. The list is finite. When it ends, it ends. There is no scroll past the end. There is no "load more." There is no "new" badge calling the walker back. The walker comes to the Bulletin when the walker wants to come; the Bulletin never reaches out.</p>
+
+<p>The card types are limited to four doctrinally pure events: a door opened, a vouch was published (excerpt only), a stamp was sealed, a stamp was proposed. The two ambiguous events ("walker is walking" and "group walk started") will be reviewed in Phase 2; for v1 we leave them off the Bulletin and let them remain visible only on the Map itself, which is their natural home. The personas Lukas and Margarethe both flagged "walker is walking" as too close to surveillance; we honor that flag.</p>
+
+<p>The Bulletin is geographically scoped. Pan the Map and the Bulletin re-filters to the new viewport. Zoom out and the Bulletin shows the whole continent (and will mostly be short). Zoom in and the Bulletin shows only this town (and may be empty, which is fine). The empty state is a feature: "The road is quiet here today. Walk on." That is a sentence we are proud to ship.</p>
+
+<p>The Bulletin has no hearts, no likes, no reactions. Stamps and vouches already carry meaning-loaded gestures elsewhere in the app; the Bulletin does not duplicate them. There is exactly one allowed interaction per card: <strong>tap to open the underlying record</strong> — the host's pass, the vouch detail, the stamp page. After that the Bulletin closes and the walker is somewhere meaningful.</p>
+
+<p>Cadence: the Bulletin refreshes when the user opens it, when the user pans the map, and when the user pulls down on the panel. It does <em>not</em> refresh in the background. It does <em>not</em> push notifications. It does <em>not</em> grow a red dot. None of these are "we'll add them later" — they are explicit, permanent refusals.</p>
+
+<p>Youth-path accounts (under 18, supervised credential) see only Stamps and Stamp Proposals on the Bulletin. Vouches and host activity are filtered out. Lukas's concern is settled.</p>
+
+<div class="ruling">
+<h2>Ruling</h2>
+<p>The product surface formerly imagined as the <em>Feed</em> is renamed <strong>The Bulletin</strong>. It is not a separate destination. It is a drawer attached to the Map. It is bounded by viewport and bounded by 24 hours. It is checked, not pushed. It refuses six things by design (notifications, infinite scroll, recommendations, reactions, "new" badges, background refresh) and we treat those refusals as features, not omissions. The existing <code>/feed.html</code> page is retired. The <code>feed_posts</code> table is retired in its current form and will be replaced by a read-only join over <code>stays</code>, <code>vouches</code>, <code>stamps</code>, and <code>stamp_proposals</code> filtered by lat/lng and last 24h.</p>
+</div>
+
+<div class="brief">
+<h2>The Brief — what we now build</h2>
+
+<h3>What the Bulletin <span class="yes">IS</span></h3>
+<ul>
+<li>A pull-up drawer on <code>/map.html</code>, accessible from a small handle at the bottom of the map.</li>
+<li>A finite, geographically-scoped list of the last 24 hours of public events in the current Map viewport.</li>
+<li>A reflection of the Map's current view — it filters when the Map pans.</li>
+<li>A way to land on a host's pass, a vouch detail, or a stamp page in one tap.</li>
+</ul>
+
+<h3>What the Bulletin is <span class="no">NOT</span></h3>
+<ul>
+<li>NOT a separate page. There is no <code>/feed.html</code> after this brief lands.</li>
+<li>NOT a notification source. The Bulletin never pings.</li>
+<li>NOT a scroll surface. The list ends where the list ends.</li>
+<li>NOT a reaction surface. No hearts, no likes, no reposts.</li>
+<li>NOT a recommender. No "for you," no algorithmic ranking, no personalization beyond geographic viewport.</li>
+<li>NOT a stream of every event. Knocks, stays, face verifications, and walking-now toggles do not appear on the Bulletin.</li>
+</ul>
+
+<h3>Surface</h3>
+<ul>
+<li>Pull handle at the bottom of the Map. Tap or swipe up to open.</li>
+<li>Drawer height: 60dvh by default; can be dragged to full-screen or back to peek.</li>
+<li>Map remains visible behind a slightly-darkened scrim when the drawer is open.</li>
+<li>Tap any card → drawer collapses, Map flies to event location, underlying record opens.</li>
+</ul>
+
+<h3>Card types (v1)</h3>
+<ol>
+<li><strong>Door opened</strong> — host trail name, region label, "opened a door" verb, time-ago. CTA: open their pass.</li>
+<li><strong>Vouch published</strong> — two names ("Anneliese & Greta"), region, the two-line vouch excerpt, time-ago. CTA: open the vouch detail.</li>
+<li><strong>Stamp sealed</strong> — walker name, stamp name + tier ring, region. CTA: open the stamp page.</li>
+<li><strong>Stamp proposed</strong> — proposer name, stamp name, co-sign progress (e.g., "3 of 5 signatures"). CTA: open the proposal page.</li>
+</ol>
+
+<h3>Refresh cadence</h3>
+<ul>
+<li>On drawer open: refresh.</li>
+<li>On Map viewport change: re-filter (no network fetch needed — events are joined client-side from the existing fetches).</li>
+<li>On pull-down inside the drawer: refresh.</li>
+<li>NO background polling. NO push. NO timer.</li>
+</ul>
+
+<h3>Youth-path filter</h3>
+<ul>
+<li>Accounts with <code>youth_account = true</code> see Stamp Sealed and Stamp Proposed only. Doors and Vouches are hidden from their Bulletin.</li>
+</ul>
+
+<h3>MVP scope (build order)</h3>
+<ol>
+<li>Retire <code>/feed.html</code> and the existing <code>feed.js</code>.</li>
+<li>SQL: a read-only view <code>v_bulletin_24h</code> that unions doors-opened, vouches-published, stamps-sealed, stamp-proposals with lat/lng + ts.</li>
+<li>HTML: add <code>&lt;section class="map-bulletin"&gt;</code> drawer to <code>/map.html</code> with the pull handle.</li>
+<li>JS: <code>/js/map-bulletin.js</code> reads the view, filters by current Map bounds, renders the four card types.</li>
+<li>A11y: keyboard-openable, focus-trapped while open, esc-closes, screen-reader announces "Bulletin · 4 events in this region today."</li>
+<li>Performance: must not increase the Map page's LCP by more than 80 ms. Lazy-fetched on drawer open.</li>
+</ol>
+
+<h3>Open questions for Phase 2</h3>
+<ul>
+<li>Should "walker is walking" be added later, as a low-priority card type, or excluded permanently? (current default: excluded)</li>
+<li>Should the Bulletin support a "this week" toggle alongside the default 24-hour scope? Margarethe's request — review once we have real users.</li>
+<li>Should hosts get a separate "House Bulletin" for events around their door? Helmut's idea — defer until host phase E.</li>
+</ul>
+
+</div>
+
+<hr>
+
+<div class="signature">— Convened, reasoned, ruled. Wanderkind Board + 7 Personas. May 2026.</div>
+
+</main>
+</body>
+</html>
