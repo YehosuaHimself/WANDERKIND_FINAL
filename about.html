@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-pwa="browser" data-simple="false">
+<head>
+<meta charset="UTF-8">
+<title>About · Wanderkind</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#FAEFCF">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" sizes="48x48" href="/icons/icon-192.png">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/typography.css">
+<link rel="stylesheet" href="/css/components.css">
+<style>
+  body{background:var(--wk-cream);color:var(--wk-ink);}
+  .ab-shell{max-width:480px;margin:0 auto;padding:28px 22px 120px;}
+  .ab-eyebrow{font-family:var(--wk-font-mono);font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:var(--wk-ink-soft);}
+  .ab-h1{font-family:var(--wk-font-display);font-weight:800;font-size:32px;line-height:1.08;letter-spacing:-0.01em;margin:8px 0 4px;text-transform:uppercase;}
+  .ab-h2{font-family:var(--wk-font-display);font-weight:700;font-size:18px;line-height:1.2;margin:28px 0 8px;letter-spacing:0.01em;text-transform:uppercase;}
+  .ab-lead{font-family:var(--wk-font-sans);font-size:16px;line-height:1.5;color:var(--wk-ink);margin:14px 0 0;}
+  .ab-body{font-family:var(--wk-font-sans);font-size:15px;line-height:1.55;color:var(--wk-ink);margin:8px 0 0;}
+  .ab-quote{font-family:var(--wk-font-display);font-style:italic;font-weight:600;font-size:18px;line-height:1.35;color:var(--wk-amber-text);border-left:2px solid var(--wk-amber);padding:6px 0 6px 16px;margin:22px 0 6px;}
+
+  .ab-divider{margin:24px auto;width:60px;height:1px;background:var(--wk-ink-muted);opacity:0.4;}
+
+  /* Three duties block */
+  .ab-duties{margin:8px 0 0;display:flex;flex-direction:column;gap:14px;}
+  .ab-duty{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:rgba(255,255,255,0.45);border:1px solid var(--wk-line);border-radius:var(--wk-r-md);}
+  .ab-duty-glyph{flex:0 0 auto;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--wk-amber);font-family:var(--wk-font-mono);font-size:16px;font-weight:700;}
+  .ab-duty-h{font-family:var(--wk-font-display);font-weight:800;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:var(--wk-ink);}
+  .ab-duty-b{font-family:var(--wk-font-sans);font-size:13.5px;line-height:1.45;color:var(--wk-ink-soft);margin-top:2px;}
+
+  .ab-cta{display:flex;flex-direction:column;gap:10px;margin:28px 0 0;}
+  .ab-btn{display:block;text-align:center;font-family:var(--wk-font-sans);font-weight:600;font-size:15px;padding:13px 18px;border-radius:8px;text-decoration:none;letter-spacing:0.01em;}
+  .ab-btn-primary{background:var(--wk-ink);color:var(--wk-cream);}
+  .ab-btn-ghost{background:transparent;color:var(--wk-ink-soft);border:1px solid var(--wk-line);}
+
+  .ab-foot{margin:36px 0 0;font-family:var(--wk-font-mono);font-size:10px;letter-spacing:0.16em;color:var(--wk-ink-muted);text-transform:uppercase;text-align:center;}
+</style>
+</head>
+<body>
+<aside class="browser-mode-hint" data-only="browser" aria-live="polite">
+  <span class="bmh-eyebrow">— Browser mode</span>
+  <p class="bmh-body">Add Wanderkind to your home screen for the full experience.</p>
+</aside>
+
+<main class="ab-shell" role="main">
+  <div class="ab-eyebrow">— About · Wanderkind</div>
+  <h1 class="ab-h1">Every Wanderkind is a Host</h1>
+  <p class="ab-lead">Wanderkind is not a service. It is a road, and the road has houses. Every traveler is also someone's host, and every host was once a traveler. That symmetry is the whole thing.</p>
+
+  <div class="ab-divider" aria-hidden="true"></div>
+
+  <h2 class="ab-h2">The three duties</h2>
+  <p class="ab-body">When you keep a door open on Wanderkind, you commit to three small acts. Not all at once, and not for every walker — only what you can do.</p>
+
+  <div class="ab-duties">
+    <div class="ab-duty">
+      <span class="ab-duty-glyph" aria-hidden="true">⌂</span>
+      <div>
+        <div class="ab-duty-h">Open the door</div>
+        <div class="ab-duty-b">A roof, a bed, a corner of the garden — whatever you can offer. The walker steps in. You step back.</div>
+      </div>
+    </div>
+    <div class="ab-duty">
+      <span class="ab-duty-glyph" aria-hidden="true">◓</span>
+      <div>
+        <div class="ab-duty-h">Share the table</div>
+        <div class="ab-duty-b">Bread, soup, what's already on the stove. Hosting is not a restaurant. It is an extra plate.</div>
+      </div>
+    </div>
+    <div class="ab-duty">
+      <span class="ab-duty-glyph" aria-hidden="true">◊</span>
+      <div>
+        <div class="ab-duty-h">Pass the water</div>
+        <div class="ab-duty-b">The smallest gift, the oldest one. A bottle filled, a fountain pointed to. Nobody walks dry.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="ab-h2">No money. No score.</h2>
+  <p class="ab-body">There is no payment between walker and host. There is no rating. Money would turn the road into a market, and a number would turn the door into a transaction. Instead there is the morning vouch — two short lines, written blind, revealed together — and a stamp in the Wanderbuch. That is the only record.</p>
+
+  <p class="ab-quote">"The walker is not a guest. The host is not a service. They are two Wanderkinder who met on the road."</p>
+
+  <h2 class="ab-h2">What this app is</h2>
+  <p class="ab-body">A pass you can show. A map you can read. A door you can open. Some hashes that let strangers trust each other without surrendering their privacy. Everything else — the conversation, the bread, the morning — is between you and the road.</p>
+
+  <div class="ab-cta">
+    <a href="/host.html" class="ab-btn ab-btn-primary">Open my door</a>
+    <a href="/map.html" class="ab-btn ab-btn-ghost">Walk the map</a>
+  </div>
+
+  <p class="ab-foot">— Wanderkind · the road has houses</p>
+</main>
+
+<script type="module" src="/js/sw-register.js"></script>
+<script type="module" src="/js/pwa-mode.js"></script>
+<script type="module" src="/js/wk-tabbar.js"></script>
+<script type="module" src="/js/simple-mode.js"></script>
+</body>
+</html>
