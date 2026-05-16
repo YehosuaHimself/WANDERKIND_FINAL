@@ -228,3 +228,30 @@ html {
 .wk-ripple:active::after {
   opacity: 0.10;
 }
+
+
+/* ════════════════════════════════════════════════════════════════════════
+ * TARGET-SIZE ENFORCEMENT · Apple HIG / Lighthouse a11y · ≥ 24×24px
+ * Applied to every interactive control. The exemption list is small:
+ * inline text-links inside paragraphs (which inherit reading flow), filter
+ * chips with their own larger hit-area via padding, etc.
+ * ──────────────────────────────────────────────────────────────────── */
+button:not(.no-press),
+[role="button"]:not(.no-press),
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+select {
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* Anchors that look like buttons (have .btn-* or .onb-btn or .v-btn etc.) */
+a.btn-amber, a.btn-ghost, a[class*="-btn"],
+a.onb-btn, a.tile, a.wk-tab {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+}
