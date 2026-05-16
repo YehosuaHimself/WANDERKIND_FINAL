@@ -189,6 +189,56 @@ function renderProfile(p, email) {
   wireSignOut();
   wireWalkingToggle(p);
   toggleVerifyBanner(p);
+  renderPhotosAndInterests(p);
+}
+
+/**
+ * 3×3 photo gallery + interest pills.
+ * profiles.photos is a jsonb array (max 9 URLs).
+ * profiles.interests is a jsonb array of free-text tags.
+ * Both are optional — empty arrays render placeholder slots / hidden pills.
+ * @param {any} p
+ */
+function renderPhotosAndInterests(p) {
+  const grid = document.getElementById('me-photo-grid');
+  if (grid) {
+    grid.innerHTML = '';
+    const photos = Array.isArray(p.photos) ? p.photos.slice(0, 9) : [];
+    for (let i = 0; i < 9; i++) {
+      const url = photos[i];
+      const slot = document.createElement('div');
+      slot.style.cssText = 'aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; background: rgba(26,18,10,0.05); border: 1px dashed var(--wk-line);';
+      if (url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; object-position: center 30%; display: block;';
+        slot.style.border = '1px solid var(--wk-line)';
+        slot.appendChild(img);
+      } else {
+        slot.innerHTML = '<span style="display:grid;place-items:center;width:100%;height:100%;color:var(--wk-ink-muted);font-family:var(--wk-font-display);font-size:9px;letter-spacing:0.20em;text-transform:uppercase;">+ photo</span>';
+      }
+      grid.appendChild(slot);
+    }
+  }
+
+  const ints = document.getElementById('me-interests');
+  if (ints) {
+    const arr = Array.isArray(p.interests) ? p.interests.filter((s) => s && String(s).trim().length) : [];
+    ints.innerHTML = '';
+    if (!arr.length) {
+      ints.hidden = true;
+      return;
+    }
+    ints.hidden = false;
+    for (const tag of arr.slice(0, 12)) {
+      const pill = document.createElement('span');
+      pill.style.cssText = 'padding: 5px 11px; background: rgba(200,118,42,0.10); border: 1px solid rgba(200,118,42,0.32); border-radius: 999px; font-family: var(--wk-font-display); font-size: 12px; color: var(--wk-amber-text); font-weight: 600;';
+      pill.textContent = String(tag);
+      ints.appendChild(pill);
+    }
+  }
 }
 
 /**
