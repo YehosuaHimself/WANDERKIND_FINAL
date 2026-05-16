@@ -188,6 +188,20 @@ function renderProfile(p, email) {
 
   wireSignOut();
   wireWalkingToggle(p);
+  toggleVerifyBanner(p);
+}
+
+/**
+ * EPIC 11 · show the 'Get verified' amber CTA when face_verified_at is null.
+ * Mandatory for new users via the auth.js redirect — this banner is the
+ * fallback for existing users who haven't gone through the FaceScan yet.
+ * @param {ProfileRow} p
+ */
+function toggleVerifyBanner(p) {
+  const banner = document.getElementById('me-verify-banner');
+  if (!banner) return;
+  // @ts-ignore — face_verified_at added by EPIC 11 SQL
+  banner.hidden = !!p.face_verified_at;
 }
 
 /**
