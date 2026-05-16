@@ -104,12 +104,38 @@
 
     /* ── Hero block ────────────────────────────────────────────── */
     .hero {
-      text-align: center;
+      text-align: left;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: var(--wk-space-md);
+      align-items: flex-start;
+      gap: 28px;
     }
+    .hero-logo {
+      width: 64px; height: 64px;
+      display: grid; place-items: center;
+      background: var(--wk-embassy-bg);
+      border: 1.5px solid var(--wk-amber-text);
+      border-radius: 8px;
+      color: var(--wk-amber-text);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 800;
+      font-size: 36px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .hero-line {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.005em;
+      line-height: 1.05;
+      margin: 0;
+      color: var(--wk-embassy-ink);
+      text-transform: uppercase;
+    }
+    .hero-line--brand   { font-size: clamp(2rem, 8vw, 2.75rem); letter-spacing: 0.005em; }
+    .hero-line--join    { font-size: clamp(1.625rem, 6vw, 2.125rem); font-weight: 700; color: var(--wk-amber-text); }
+    .hero-line--tagline { font-size: clamp(1.125rem, 4vw, 1.375rem); font-weight: 600; letter-spacing: 0.04em; color: var(--wk-embassy-ink); }
+    .hero-line--mantra  { font-size: clamp(0.875rem, 3vw, 1rem); font-weight: 600; letter-spacing: 0.18em; color: rgba(243, 231, 204, 0.65); text-transform: uppercase; }
     .pass-line {
       display: inline-flex;
       align-items: center;
@@ -734,26 +760,11 @@
 
     <!-- ── Hero ───────────────────────────────────────────────── -->
     <section class="hero" aria-labelledby="hero-h">
-
-      <div class="pass-line">
-        <span>Pass No.</span>
-        <span class="pass-num" id="pass-number">0024</span>
-        <span>of First Thousand</span>
-      </div>
-
-      <div class="seal-wrap" aria-hidden="true">
-        <img src="/assets/icons/seal-parchment.svg" alt="" width="152" height="152" />
-      </div>
-
-      <h1 class="mantra" id="hero-h">
-        Every Way<br/>begins at<br/><em>your door.</em>
-      </h1>
-
-      <p class="hero-sub">
-        Wanderkind installs as a small app on your home screen. No app
-        store. No tracking. Just a door &mdash; yours, and the doors that
-        open for you in return.
-      </p>
+      <div class="hero-logo" aria-hidden="true">W</div>
+      <div class="hero-line hero-line--brand">Wanderkind</div>
+      <h1 class="hero-line hero-line--join" id="hero-h">Join the network</h1>
+      <div class="hero-line hero-line--tagline">Walk forever free</div>
+      <div class="hero-line hero-line--mantra">Every walk begins at your door</div>
     </section>
 
     <!-- ── Promise · what you unlock ─────────────────────────── -->
