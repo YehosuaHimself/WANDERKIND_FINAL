@@ -241,6 +241,10 @@ nav {
   font-weight: 900; font-size: 18px; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--gold); pointer-events: auto; text-decoration: none; transition: color 0.2s;
   position: absolute; left: 50%; transform: translateX(-50%);
+  /* a11y · Lighthouse target-size: ≥ 24×24 hit area */
+  min-width: 44px; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 12px;
 }
 .nav-logo:hover { color: var(--gold-soft); }
 .nav-status { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-muted); pointer-events: auto; }
