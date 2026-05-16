@@ -160,7 +160,22 @@ if (codeForm && codeInput && verifyBtn && stateCode && stateSuccess) {
       try { sessionStorage.removeItem('wk-auth-pending'); } catch { /* ignore */ }
       stateCode.hidden = true;
       stateSuccess.hidden = false;
-      setTimeout(() => location.replace('/map.html'), 900);
+      setTimeout(async () => {
+        // EPIC 11 · face verification gate · route to /verify-me.html if not yet verified
+        let nextUrl = '/map.html';
+        try {
+          const profResp = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=face_verified_at`, {
+            headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${data.access_token}` }
+          });
+          if (profResp.ok) {
+            const rows = await profResp.json();
+            if (rows[0] && rows[0].face_verified_at == null) {
+              nextUrl = '/verify-me.html?next=/map.html';
+            }
+          }
+        } catch (_) { /* fall through to /map.html */ }
+        location.replace(nextUrl);
+      }, 900);
     } catch (err) {
       showError(codeError, err instanceof Error ? err.message : 'Network error.');
     } finally {
