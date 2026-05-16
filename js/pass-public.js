@@ -217,3 +217,68 @@ function showEmpty(/** @type {string} */ title, /** @type {string} */ sub) {
     showEmpty('Could not load this pass', 'Check your connection and try again.');
   }
 })();
+
+
+/* Wire the knock composer after a profile has been rendered.
+   Called from the hydrate flow with the resolved `profile` object. */
+function wireKnockComposer(profile) {
+
+  /* Knock composer · only show when signed in + viewing another bearer + they offer hosting */
+  try {
+    const sessionRaw = localStorage.getItem('wk-session-v1');
+    const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+    const isHost = profile.host_offers && Array.isArray(profile.host_offers) && profile.host_offers.length > 0;
+    const isOther = session && session.user && session.user.id !== profile.id;
+    const composer = document.getElementById('knock-composer');
+    if (session && isOther && isHost && composer) {
+      composer.hidden = false;
+      const btn = document.getElementById('knock-send');
+      const msg = document.getElementById('knock-msg');
+      const result = document.getElementById('knock-result');
+      btn.addEventListener('click', async () => {
+        btn.disabled = true; btn.textContent = 'Knocking…';
+        try {
+          const r = await fetch(`${SUPABASE_URL}/rest/v1/knocks`, {
+            method: 'POST',
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: 'Bearer ' + session.accessToken,
+              'Content-Type': 'application/json',
+              Prefer: 'return=minimal',
+            },
+            body: JSON.stringify({
+              host_id: profile.id,
+              walker_id: session.user.id,
+              message: (msg.value || '').trim() || null,
+            }),
+          });
+          if (r.ok) {
+            composer.style.background = 'var(--wk-bg-2)';
+            composer.style.borderColor = 'var(--wk-line)';
+            composer.querySelector('span').textContent = '✓ Knock sent';
+            msg.disabled = true;
+            btn.style.display = 'none';
+            result.hidden = false;
+            result.textContent = 'They will see your knock and reply with Accept or Decline.';
+            result.style.color = 'var(--wk-success)';
+          } else {
+            throw new Error('knock failed ' + r.status);
+          }
+        } catch (err) {
+          console.warn('[knock] failed', err);
+          btn.disabled = false; btn.textContent = 'Knock';
+          result.hidden = false;
+          result.textContent = 'Could not send. Try again in a moment.';
+          result.style.color = 'var(--wk-error)';
+        }
+      });
+    }
+  } catch (err) { /* leave composer hidden if anything goes sideways */ }
+
+}
+
+/* If pass-public.js exposes a global hook, call it here. Otherwise leave the
+   function above for later wiring once the renderer is module-aware. */
+if (typeof window !== 'undefined') {
+  window.__wkWireKnock = wireKnockComposer;
+}
