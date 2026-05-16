@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.57-map-pois';
+const VERSION = '0.1.58-bulletin';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -70,11 +70,9 @@ const PRECACHE = [
   '/js/scanner-mode.js',
   '/js/stamp.js',
   '/js/walks.js',
-  '/js/feed.js',
   '/verify/index.html',
   '/stamp.html',
   '/walks.html',
-  '/feed.html',
   '/js/stamps.js',
   '/js/simple-mode.js',
   '/js/supabase-config.js',
@@ -83,6 +81,7 @@ const PRECACHE = [
   '/js/map-leaflet.js',
   '/js/map-boot.js',
   '/js/map-pois.js',
+  '/js/map-bulletin.js',
   '/js/region-labels.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',
