@@ -384,8 +384,8 @@
     .legend-dot--sm { width: 7px; height: 7px; }
 
 
-    /* ── The Bulletin · ruled May 2026 (FEED_BRIEF.md) ─────── */
-    .bulletin-handle {
+    /* ── The WanderWall · ruled May 2026 (FEED_BRIEF.md) ─────── */
+    .wanderwall-handle {
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
@@ -403,12 +403,12 @@
       color: var(--wk-ink);
       cursor: pointer;
     }
-    .bulletin-handle::before {
+    .wanderwall-handle::before {
       content: ""; width: 24px; height: 2px;
       background: var(--wk-ink-soft); border-radius: 1px; display: inline-block;
     }
-    .bulletin-handle:hover { background: rgba(246,237,216,1); }
-    .bulletin {
+    .wanderwall-handle:hover { background: rgba(246,237,216,1); }
+    .wanderwall {
       position: fixed;
       left: 0; right: 0; bottom: 0;
       z-index: 420;
@@ -421,49 +421,49 @@
       transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
       display: flex; flex-direction: column;
     }
-    .bulletin.open { transform: translateY(0); }
-    .bulletin[aria-hidden="true"] .bul-list { pointer-events: none; }
-    .bul-grip {
+    .wanderwall.open { transform: translateY(0); }
+    .wanderwall[aria-hidden="true"] .ww-list { pointer-events: none; }
+    .ww-grip {
       align-self: center;
       width: 36px; height: 4px;
       background: rgba(26,18,10,0.18);
       border-radius: 2px;
       margin: 8px 0 4px;
     }
-    .bul-header {
+    .ww-header {
       display: flex; align-items: baseline; justify-content: space-between;
       padding: 8px 18px 6px;
     }
-    .bul-title {
+    .ww-title {
       font-family: var(--wk-font-display);
       font-weight: 800; font-size: 18px;
       letter-spacing: 0.01em; text-transform: uppercase;
       color: var(--wk-ink); margin: 0;
     }
-    .bul-summary {
+    .ww-summary {
       font-family: var(--wk-font-mono);
       font-size: 10px; letter-spacing: 0.20em;
       text-transform: uppercase; color: var(--wk-ink-soft);
       margin: 0;
     }
-    .bul-actions {
+    .ww-actions {
       display: flex; gap: 4px; align-items: center;
     }
-    .bul-action {
+    .ww-action {
       background: transparent; border: 0; cursor: pointer;
       font-family: var(--wk-font-mono); font-size: 10px;
       letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--wk-ink-soft); padding: 4px 8px; border-radius: 4px;
     }
-    .bul-action:hover { color: var(--wk-amber-text); background: rgba(200,118,42,0.08); }
-    .bul-list {
+    .ww-action:hover { color: var(--wk-amber-text); background: rgba(200,118,42,0.08); }
+    .ww-list {
       flex: 1; overflow-y: auto;
       padding: 6px 14px 80px;
       display: flex; flex-direction: column; gap: 8px;
       scrollbar-width: thin;
       /* NOT a scroll surface in the addictive sense: finite, ends where it ends */
     }
-    .bul-end {
+    .ww-end {
       text-align: center;
       font-family: var(--wk-font-mono);
       font-size: 9.5px; letter-spacing: 0.22em;
@@ -473,7 +473,7 @@
       border-top: 1px solid var(--wk-line);
       margin-top: 10px;
     }
-    .bul-card {
+    .ww-card {
       display: grid;
       grid-template-columns: 32px 1fr auto;
       gap: 10px; align-items: start;
@@ -483,8 +483,8 @@
       border-radius: var(--wk-r-md);
       text-decoration: none; color: var(--wk-ink);
     }
-    .bul-card:hover { background: rgba(255,255,255,0.7); }
-    .bul-glyph {
+    .ww-card:hover { background: rgba(255,255,255,0.7); }
+    .ww-glyph {
       width: 28px; height: 28px;
       display: grid; place-items: center;
       font-family: var(--wk-font-mono);
@@ -494,47 +494,47 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .bul-card--vouch .bul-glyph { background: rgba(76,168,201,0.16); color: #2A5F73; }
-    .bul-card--stamp .bul-glyph { background: rgba(200,118,42,0.18); color: var(--wk-amber-text); }
-    .bul-card--proposal .bul-glyph { background: rgba(122,90,48,0.18); color: #5A4632; }
-    .bul-h {
+    .ww-card--vouch .ww-glyph { background: rgba(76,168,201,0.16); color: #2A5F73; }
+    .ww-card--stamp .ww-glyph { background: rgba(200,118,42,0.18); color: var(--wk-amber-text); }
+    .ww-card--proposal .ww-glyph { background: rgba(122,90,48,0.18); color: #5A4632; }
+    .ww-h {
       font-family: var(--wk-font-display);
       font-weight: 700; font-size: 14px;
       color: var(--wk-ink);
       line-height: 1.3;
     }
-    .bul-actor { font-weight: 800; color: var(--wk-ink); }
-    .bul-sub {
+    .ww-actor { font-weight: 800; color: var(--wk-ink); }
+    .ww-sub {
       font-family: var(--wk-font-sans);
       font-size: 13px;
       color: var(--wk-ink-soft);
       margin-top: 3px;
       line-height: 1.4;
     }
-    .bul-quote { font-style: italic; color: var(--wk-ink); }
-    .bul-ago {
+    .ww-quote { font-style: italic; color: var(--wk-ink); }
+    .ww-ago {
       align-self: flex-start;
       font-family: var(--wk-font-mono);
       font-size: 10px; letter-spacing: 0.16em;
       color: var(--wk-ink-muted); text-transform: uppercase;
       white-space: nowrap;
     }
-    .bul-empty {
+    .ww-empty {
       text-align: center;
       padding: 60px 24px 40px;
       color: var(--wk-ink-soft);
     }
-    .bul-empty-h {
+    .ww-empty-h {
       font-family: var(--wk-font-display);
       font-weight: 700; font-size: 15px;
       color: var(--wk-ink); margin: 0 0 6px;
     }
-    .bul-empty-b {
+    .ww-empty-b {
       font-family: var(--wk-font-sans);
       font-size: 13.5px; line-height: 1.4;
       color: var(--wk-ink-soft); margin: 0;
     }
-    .bulletin-close {
+    .wanderwall-close {
       background: transparent; border: 0;
       font-family: var(--wk-font-mono);
       font-size: 11px; letter-spacing: 0.22em;
@@ -542,7 +542,7 @@
       cursor: pointer; padding: 4px 10px;
     }
     @media (prefers-reduced-motion: reduce) {
-      .bulletin { transition: none; }
+      .wanderwall { transition: none; }
     }
 
     /* ── Leaflet controls — themed ── */
@@ -810,25 +810,25 @@
       <a class="empty-pill-cta" href="/install.html">Open your door</a>
     </section>
 
-    <button id="bulletin-handle" class="bulletin-handle" type="button"
-            aria-expanded="false" aria-controls="bulletin">The Bulletin</button>
+    <button id="wanderwall-handle" class="wanderwall-handle" type="button"
+            aria-expanded="false" aria-controls="wanderwall">The WanderWall</button>
 
-    <aside id="bulletin" class="bulletin" role="dialog" aria-modal="false" aria-labelledby="bulletin-title" aria-hidden="true">
-      <span class="bul-grip" aria-hidden="true"></span>
-      <header class="bul-header">
+    <aside id="wanderwall" class="wanderwall" role="dialog" aria-modal="false" aria-labelledby="wanderwall-title" aria-hidden="true">
+      <span class="ww-grip" aria-hidden="true"></span>
+      <header class="ww-header">
         <div>
-          <h2 id="bulletin-title" class="bul-title">The Bulletin</h2>
-          <p id="bulletin-summary" class="bul-summary">— Last 24 hours · this viewport</p>
+          <h2 id="wanderwall-title" class="ww-title">The WanderWall</h2>
+          <p id="wanderwall-summary" class="ww-summary">— Last 24 hours · this viewport</p>
         </div>
-        <div class="bul-actions">
-          <button id="bulletin-refresh" class="bul-action" type="button">Refresh</button>
-          <button id="bulletin-close" class="bulletin-close" type="button">Close</button>
+        <div class="ww-actions">
+          <button id="wanderwall-refresh" class="ww-action" type="button">Refresh</button>
+          <button id="wanderwall-close" class="wanderwall-close" type="button">Close</button>
         </div>
       </header>
-      <div id="bulletin-list" class="bul-list" role="list" aria-live="polite"></div>
-      <section id="bulletin-empty" class="bul-empty" hidden>
-        <p class="bul-empty-h">The road is quiet here today.</p>
-        <p class="bul-empty-b">Pan the map to another region, or walk on. The Bulletin reflects what is happening in the view you see.</p>
+      <div id="wanderwall-list" class="ww-list" role="list" aria-live="polite"></div>
+      <section id="wanderwall-empty" class="ww-empty" hidden>
+        <p class="ww-empty-h">The road is quiet here today.</p>
+        <p class="ww-empty-b">Pan the map to another region, or walk on. The WanderWall reflects what is happening in the view you see.</p>
       </section>
     </aside>
   </main>
@@ -837,7 +837,7 @@
 
   <script src="/js/vendor/leaflet.js" defer></script>
   <script type="module" src="/js/map-boot.js"></script>
-  <script type="module" src="/js/map-bulletin.js"></script>
+  <script type="module" src="/js/wanderwall.js"></script>
   <script type="module" src="/js/map-session-aware.js"></script>
   <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/auth-bypass.js"></script>
