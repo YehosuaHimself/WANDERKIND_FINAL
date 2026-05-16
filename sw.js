@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.63-onboarding';
+const VERSION = '0.1.64-marker-alt';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
