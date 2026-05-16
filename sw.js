@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.71-chapels';
+const VERSION = '0.1.72-typographic-W';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
