@@ -161,12 +161,20 @@ function wireStep2_signup() {
       }
       if (!r.ok) throw new Error(payload.msg || payload.error_description || 'Could not create the account.');
 
-      // Persist session in the same shape session.js expects
+      // Persist session in the shape session.js expects. Supabase's
+      // /signup response shape varies: sometimes the tokens are at the
+      // top level, sometimes nested under .session. /token?grant_type=password
+      // returns the top-level shape. Normalize either way.
+      const tokenSrc = payload.session || payload;
+      const userSrc  = payload.user || (payload.session && payload.session.user) || { id: payload.id, email };
+      if (!tokenSrc.access_token || !userSrc.id) {
+        throw new Error('Signup succeeded but no session was returned. Please try signing in.');
+      }
       const sess = {
-        accessToken: payload.access_token,
-        refreshToken: payload.refresh_token,
-        user: payload.user || { id: payload.user_id, email },
-        user_metadata: (payload.user && payload.user.user_metadata) || {},
+        accessToken: tokenSrc.access_token,
+        refreshToken: tokenSrc.refresh_token,
+        expiresAt: Date.now() + ((tokenSrc.expires_in || 3600) * 1000),
+        user: { id: userSrc.id, email: userSrc.email || email, user_metadata: userSrc.user_metadata || {} },
       };
       localStorage.setItem('wk-session-v1', JSON.stringify(sess));
 
