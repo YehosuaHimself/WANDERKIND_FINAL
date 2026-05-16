@@ -511,6 +511,16 @@ footer::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%;
 #wk-qr-domain { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:0.95rem; font-weight:300; letter-spacing:0.1em; color:rgba(240,236,226,0.75); margin-bottom:0.9rem; }
 #wk-qr-domain strong { color:#c9a84c; font-weight:400; }
 #wk-qr-instruction { font-family:'Courier New',monospace; font-size:0.54rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(163,148,125,0.35); line-height:2; }
+
+/* a11y · Lighthouse target-size · all footer/hero legal links + ghost button get 44×44 hit area */
+.footer-legal-link,
+.hero-legal-link,
+.btn-ghost-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+}
 </style>
     <script>
       /* ── Standalone redirect: if opened from home screen, go to the app ── */
