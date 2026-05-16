@@ -30,6 +30,20 @@ export const POIS = [
   { kind: 'church', name: 'Hochkönig · Bergkapelle',   lat: 47.4170, lng: 13.0610, note: 'Kapelle am Aufstieg' },
   { kind: 'church', name: 'Pfarrkirche · Hinterzarten',lat: 47.9089, lng:  8.1075, note: 'Maria in der Zarten' },
 
+  // ─── Chapels (primary · small wayside chapels distinct from churches) ─
+  { kind: 'chapel', name: 'Wegkapelle Hochkönig',     lat: 47.4150, lng: 13.0680, note: 'Wayside chapel · 1827 · pilgrim shelter' },
+  { kind: 'chapel', name: 'Marienkapelle · Hinterzarten', lat: 47.9100, lng:  8.1090, note: 'Forest chapel · 18th c.' },
+  { kind: 'chapel', name: 'St-Anne · Pfänder',        lat: 47.5108, lng:  9.7798, note: 'Mountaintop chapel · view of Bodensee' },
+  { kind: 'chapel', name: 'Kapelle am Belchen',       lat: 47.8235, lng:  7.8340, note: 'Summit chapel · Schwarzwald' },
+  { kind: 'chapel', name: 'Cappella di San Vili',     lat: 46.0680, lng: 11.1180, note: 'Trentino · Cammino di San Vili' },
+  { kind: 'chapel', name: 'Ermita San Andrés',        lat: 42.6720, lng: -2.0340, note: 'Estella · pilgrim chapel' },
+  { kind: 'chapel', name: 'Capela do Cebreiro',       lat: 42.7050, lng: -7.0440, note: 'Camino · pre-Romanesque chapel' },
+  { kind: 'chapel', name: 'Kapelle Watzmannhaus',     lat: 47.5510, lng: 12.9200, note: 'Hut chapel · climbers stop' },
+  { kind: 'chapel', name: 'Cappella di Santa Croce',  lat: 46.4990, lng: 11.3560, note: 'Bolzano · 14th c.' },
+  { kind: 'chapel', name: 'Wallfahrtskapelle Maria Schnee', lat: 47.6320, lng: 13.0040, note: 'Berchtesgaden · pilgrim chapel' },
+  { kind: 'chapel', name: 'Ermita San Salvador',      lat: 42.8200, lng: -1.6450, note: 'Pamplona · oldest chapel in town' },
+
+
   // ─── Mountains (primary) ─────────────────────────────────────────────
   { kind: 'mountain', name: 'Hochkönig',         lat: 47.4189, lng: 13.0625, note: '2941 m · classic summit' },
   { kind: 'mountain', name: 'Untersberg',        lat: 47.7283, lng: 13.0117, note: '1973 m · Salzburg' },
@@ -86,6 +100,7 @@ export const POIS = [
 
 export const POI_META = {
   tier: {
+    chapel:   'primary',
     church:   'primary',
     mountain: 'primary',
     festival: 'primary',
