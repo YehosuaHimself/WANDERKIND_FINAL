@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.51-loop-closed';
+const VERSION = '0.1.52-master-pass';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -64,6 +64,16 @@ const PRECACHE = [
   '/js/me-edit.js',
   '/js/uploads.js',
   '/js/wk-tabbar.js',
+  '/js/scanner-mode.js',
+  '/js/stamp.js',
+  '/js/propose.js',
+  '/js/walks.js',
+  '/js/feed.js',
+  '/verify/index.html',
+  '/stamp.html',
+  '/propose.html',
+  '/walks.html',
+  '/feed.html',
   '/js/stamps.js',
   '/js/simple-mode.js',
   '/js/supabase-config.js',
