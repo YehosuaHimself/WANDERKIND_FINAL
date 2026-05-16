@@ -523,6 +523,22 @@
         <div id="bio-count-wrap" class="bio-count-wrap"><span id="bio-count">0</span>/500</div>
       </div>
 
+      <!-- Interests · optional · self-described tag pills ─────────────────── -->
+      <div class="field">
+        <label class="field-label" for="interests-input">Interests <span style="text-transform: none; color: var(--wk-ink-muted)">— optional</span></label>
+        <p class="field-hint">A few words about what you love. Examples: <em>techno</em>, <em>wandering</em>, <em>religion</em>. Up to 12. Press Enter or comma to add.</p>
+        <div id="interests-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;"></div>
+        <input id="interests-input" class="input" type="text" placeholder="Add an interest…" maxlength="32" autocomplete="off" />
+      </div>
+
+      <!-- Photo gallery · optional · 3×3 grid ─────────────────────────────────── -->
+      <div class="field">
+        <label class="field-label">Photo gallery <span style="text-transform: none; color: var(--wk-ink-muted)">— optional</span></label>
+        <p class="field-hint">Up to 9 photos including your profile pic. Tap a slot to upload, tap a filled slot to remove. Photos help hosts decide whether to open their door — they are recommended, not required.</p>
+        <div id="photo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;"></div>
+        <input id="photo-file" type="file" accept="image/*" hidden />
+      </div>
+
       <p id="edit-error" class="edit-error" role="alert" hidden></p>
 
       <div class="edit-actions">
