@@ -396,6 +396,51 @@
         <div class="pass-stat"><span class="pass-stat-n">0</span><span class="pass-stat-l">Nights hosted</span></div>
       </div>
 
+      
+      <!-- Knock composer · visible only when signed in, viewing another bearer's profile, and they're hosting -->
+      <section id="knock-composer" hidden style="
+        margin-top: 16px;
+        padding: 14px 16px;
+        background: var(--wk-bg-elevated);
+        border: 1px solid var(--wk-amber);
+        border-radius: var(--wk-r-md);
+      ">
+        <span style="display:block; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 8px;">— Knock at this door</span>
+        <textarea id="knock-msg" placeholder="Optional · one line · what brings you here?" maxlength="280" style="
+          width: 100%; min-height: 70px;
+          font-family: var(--wk-font-display);
+          font-size: 14px;
+          color: var(--wk-ink);
+          background: var(--wk-bg-2);
+          border: 1px solid var(--wk-line);
+          border-radius: var(--wk-r-sm);
+          padding: 10px 12px;
+          resize: vertical;
+          box-sizing: border-box;
+        "></textarea>
+        <button id="knock-send" type="button" style="
+          margin-top: 10px;
+          width: 100%;
+          background: var(--wk-amber);
+          color: var(--wk-bg);
+          font-family: var(--wk-font-mono);
+          font-weight: 700;
+          font-size: 11px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          padding: 12px 0;
+          border-radius: 999px;
+          border: 0;
+          cursor: pointer;
+        ">Knock</button>
+        <p id="knock-result" hidden style="
+          margin: 8px 0 0;
+          font-family: var(--wk-font-display);
+          font-size: 13px;
+          text-align: center;
+        "></p>
+      </section>
+
       <div class="pass-cta-row">
         <a href="/install.html" id="pass-cta" class="btn-amber">Open in Wanderkind</a>
         <a href="/" class="btn-ghost">What is Wanderkind?</a>
