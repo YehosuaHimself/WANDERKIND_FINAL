@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>Wanderkind — Vouch</title>
+  <meta name="description" content="Write one line about the night. Mutual, blind, simultaneous." />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    html, body {
+      background: var(--wk-bg); color: var(--wk-ink);
+      height: 100svh; height: 100dvh;
+      overflow-x: hidden; overflow-y: auto;
+    }
+    body { overscroll-behavior-y: contain; padding: 0; margin: 0; }
+
+    .browser-mode-hint {
+      max-width: 480px; margin: 12px auto 0;
+      background: rgba(200,118,42,0.08);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-md);
+      padding: 12px var(--wk-space-md);
+    }
+    .bmh-eyebrow {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: var(--wk-ls-mono-wide);
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin-bottom: 4px;
+    }
+    .bmh-body { font-size: var(--wk-fs-small); line-height: var(--wk-lh-body); color: var(--wk-ink-soft); margin: 0; }
+    [data-pwa="true"] [data-only="browser"] { display: none; }
+
+    main#vouch-root {
+      max-width: 480px;
+      margin: 0 auto;
+      padding:
+        max(var(--wk-space-md), env(safe-area-inset-top))
+        var(--wk-page-x)
+        calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 30px);
+      display: flex; flex-direction: column;
+      gap: var(--wk-space-md);
+    }
+
+    .v-head {
+      display: flex; align-items: baseline; gap: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .v-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+    }
+    .v-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .v-stage {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+    .v-title {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .v-title em { font-style: italic; color: var(--wk-amber-text); }
+    .v-sub {
+      font-family: var(--wk-font-display);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--wk-ink-soft);
+      margin: 0;
+    }
+
+    /* The other party's identity card · who you're writing about */
+    .v-other {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-left: 3px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .v-av {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--wk-amber-hi), var(--wk-amber) 60%, var(--wk-amber-press));
+      color: var(--wk-bg);
+      display: grid; place-items: center;
+      font-family: var(--wk-font-display);
+      font-weight: 900; font-size: 14px;
+    }
+    .v-other-name {
+      font-family: var(--wk-font-display);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--wk-ink);
+    }
+    .v-other-meta {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* The blind compose area */
+    .v-card {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 16px 18px;
+    }
+    .v-card-label {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .v-card-label::before { content: "— "; color: var(--wk-amber); }
+    .v-textarea {
+      width: 100%;
+      min-height: 100px;
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--wk-ink);
+      background: transparent;
+      border: 0;
+      resize: vertical;
+      box-sizing: border-box;
+      padding: 0;
+    }
+    .v-textarea:focus { outline: none; }
+    .v-count {
+      display: flex; justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--wk-line);
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+    }
+    .v-count strong { color: var(--wk-amber-text); }
+
+    .v-lock-btn {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 14px 0;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      width: 100%;
+    }
+    .v-lock-btn:hover { background: var(--wk-amber-press); }
+    .v-lock-btn:disabled { opacity: 0.5; cursor: default; }
+    .v-save-btn {
+      background: transparent;
+      color: var(--wk-amber-text);
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 10px 0;
+      border: 1px solid var(--wk-line);
+      border-radius: 999px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .v-save-btn:hover { border-color: var(--wk-amber); }
+
+    /* Waiting state · I locked, waiting for the other to lock */
+    .v-waiting {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-amber);
+      border-radius: var(--wk-r-md);
+      padding: 22px 20px;
+      text-align: center;
+    }
+    .v-waiting-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .v-waiting-eyebrow::before { content: "✓ "; color: var(--wk-amber); }
+    .v-waiting-title {
+      font-family: var(--wk-font-display);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--wk-ink);
+      margin: 0 0 6px;
+    }
+    .v-waiting-body {
+      font-family: var(--wk-font-display);
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--wk-ink-soft);
+      margin: 0;
+    }
+    .v-waiting-yours {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--wk-bg);
+      border-left: 2px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0;
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--wk-ink);
+      text-align: left;
+    }
+
+    /* Reveal state · both locked */
+    .v-reveal {
+      display: flex; flex-direction: column;
+      gap: 12px;
+    }
+    .v-reveal-card {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-left: 4px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+      padding: 14px 16px;
+    }
+    .v-reveal-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+    .v-reveal-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .v-reveal-text {
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .v-reveal-done {
+      text-align: center;
+      padding: 18px 0;
+    }
+    .v-reveal-done-cta {
+      display: inline-block;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 12px 22px;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+
+    /* Error / not-permitted */
+    .v-error {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 22px 20px;
+      text-align: center;
+    }
+    .v-error-h {
+      font-family: var(--wk-font-display);
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--wk-ink);
+      margin: 0 0 8px;
+    }
+    .v-error-b {
+      font-family: var(--wk-font-display);
+      font-size: 13.5px;
+      color: var(--wk-ink-soft);
+      line-height: 1.55;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#vouch-root" class="skip-to-content">Skip to vouch</a>
+
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+
+  <main id="vouch-root">
+
+    <header class="v-head">
+      <span class="v-eyebrow">— The vouching</span>
+      <span class="v-stage" id="v-stage">Compose</span>
+    </header>
+
+    <div id="v-loading" style="text-align:center; padding: 30px 0; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-ink-muted);">Loading the morning…</div>
+
+    <div id="v-compose" hidden>
+      <h1 class="v-title">Write one <em>line</em> about the night.</h1>
+      <p class="v-sub">They won't see yours until they write theirs. Then both reveal at the same moment. <em>What was written is what was written.</em></p>
+
+      <section class="v-other" id="v-other-card">
+        <div class="v-av" id="v-other-initial">M</div>
+        <div>
+          <div class="v-other-name" id="v-other-name">—</div>
+          <div class="v-other-meta" id="v-other-meta">—</div>
+        </div>
+      </section>
+
+      <div class="v-card">
+        <span class="v-card-label">Your one line</span>
+        <textarea class="v-textarea" id="v-textarea" placeholder="They walked in tired and left lighter. They washed the dishes I had not asked them to wash." maxlength="280"></textarea>
+        <div class="v-count">
+          <span>One sentence is enough.</span>
+          <span><strong id="v-count">0</strong> / 280</span>
+        </div>
+      </div>
+
+      <button class="v-lock-btn" type="button" id="v-lock-btn" disabled>Lock my vouch</button>
+      <button class="v-save-btn" type="button" id="v-save-btn">Save as draft</button>
+    </div>
+
+    <div id="v-waiting" hidden class="v-waiting">
+      <div class="v-waiting-eyebrow">Locked</div>
+      <h3 class="v-waiting-title">Your vouch is locked.</h3>
+      <p class="v-waiting-body">It will reveal the moment <strong id="v-waiting-other">they</strong> lock theirs. Until then no one sees it.</p>
+      <div class="v-waiting-yours" id="v-waiting-yours"></div>
+    </div>
+
+    <div id="v-reveal" hidden class="v-reveal">
+      <h1 class="v-title">Both <em>locked.</em></h1>
+      <p class="v-sub">Here is what was written.</p>
+
+      <article class="v-reveal-card">
+        <p class="v-reveal-eyebrow" id="v-reveal-mine-eyebrow">— You wrote</p>
+        <p class="v-reveal-text" id="v-reveal-mine">—</p>
+      </article>
+
+      <article class="v-reveal-card">
+        <p class="v-reveal-eyebrow" id="v-reveal-theirs-eyebrow">— They wrote</p>
+        <p class="v-reveal-text" id="v-reveal-theirs">—</p>
+      </article>
+
+      <div class="v-reveal-done">
+        <a class="v-reveal-done-cta" href="/stamps.html">Open the Wanderbuch →</a>
+      </div>
+    </div>
+
+    <div id="v-error" hidden class="v-error">
+      <h3 class="v-error-h" id="v-error-h">Vouching unavailable</h3>
+      <p class="v-error-b" id="v-error-b">This vouch could not be opened.</p>
+    </div>
+
+  </main>
+
+  <wk-tabbar></wk-tabbar>
+
+  <script type="module" src="/js/pwa-mode.js"></script>
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/simple-mode.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/vouch.js"></script>
+</body>
+</html>
