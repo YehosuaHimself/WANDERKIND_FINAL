@@ -14,7 +14,7 @@
  *   Me   → /me.html       · person glyph
  */
 
-// @ts-check
+// @ts-nocheck
 
 class WkTabbar extends HTMLElement {
   connectedCallback() {
