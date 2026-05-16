@@ -134,22 +134,34 @@ async function renderKnocks(session) {
     btn.disabled = true;
     btn.textContent = action === 'accepted' ? 'Accepting…' : 'Declining…';
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/knocks?id=eq.${btn.dataset.id}`, {
-        method: 'PATCH',
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${session.accessToken}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=minimal',
-        },
-        body: JSON.stringify({ status: action, resolved_at: new Date().toISOString() }),
-      });
+      if (action === 'accepted') {
+        /* RPC: atomically marks knock + mints a stay row */
+        await fetch(`${SUPABASE_URL}/rest/v1/rpc/accept_knock_to_stay`, {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ p_knock: btn.dataset.id }),
+        });
+      } else {
+        await fetch(`${SUPABASE_URL}/rest/v1/rpc/decline_knock`, {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ p_knock: btn.dataset.id }),
+        });
+      }
       const card = btn.closest('.knock-card');
       if (card) card.remove();
       if (container.children.length === 0) container.parentElement.hidden = true;
-      // If accepted, refresh active stay
       if (action === 'accepted') renderActiveStay(session);
-    } catch {
+    } catch (err) {
+      console.warn('[knock] action failed', err);
       btn.disabled = false;
       btn.textContent = action === 'accepted' ? 'Accept' : 'Decline';
     }
