@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.62-tabbar-lock';
+const VERSION = '0.1.63-onboarding';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -82,6 +82,7 @@ const PRECACHE = [
   '/js/map-boot.js',
   '/js/map-pois.js',
   '/js/wanderwall.js',
+  '/js/onboarding.js',
   '/js/region-labels.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',
