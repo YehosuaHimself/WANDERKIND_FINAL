@@ -591,6 +591,154 @@
   </main>
 
   
+  
+  <!-- Master pass P5 · 7-image trust grid + snooze + journey tier bar -->
+  <section style="max-width: 480px; margin: 16px auto 0; padding: 0 var(--wk-page-x);">
+    <div style="display:flex; align-items:baseline; gap:10px; margin-bottom: 8px;">
+      <span style="font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700;">— Photos · 0 / 7</span>
+    </div>
+    <div id="me-photo-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;"></div>
+    <p style="font-family: var(--wk-font-mono); font-size: 9px; letter-spacing: 0.18em; color: var(--wk-ink-muted); text-transform: uppercase; margin: 6px 0 0; text-align: center;">7 photos build trust between host and guest.</p>
+  </section>
+
+  <section style="max-width: 480px; margin: 18px auto 0; padding: 0 var(--wk-page-x);">
+    <div style="background: var(--wk-bg-elevated); border: 1px solid var(--wk-line); border-radius: var(--wk-r-md); padding: 14px 16px;">
+      <div style="display:flex; align-items:center; gap: 12px;">
+        <div style="flex:1;">
+          <div style="font-family: var(--wk-font-display); font-weight: 800; font-size: 14.5px; color: var(--wk-ink);">Host mode</div>
+          <div id="me-host-status" style="font-family: var(--wk-font-mono); font-size: 9.5px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--wk-ink-muted); margin-top: 2px;">Loading…</div>
+        </div>
+        <label style="width: 44px; height: 24px; position: relative; display: inline-block; cursor: pointer; flex: 0 0 auto;">
+          <input type="checkbox" id="me-host-toggle" style="position: absolute; opacity: 0; width: 0; height: 0;" />
+          <span style="position: absolute; inset: 0; background: var(--wk-line); border-radius: 999px; transition: background 0.18s ease;"></span>
+        </label>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button id="me-snooze" type="button" style="flex:1; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px; border-radius: 999px; background: rgba(200,118,42,0.12); color: var(--wk-amber-text); border: 1px solid var(--wk-amber-line); cursor: pointer;">Snooze 24h</button>
+        <a href="/me-edit.html" style="flex:1; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px 0; border-radius: 999px; background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); cursor: pointer; text-decoration: none; text-align: center;">Edit address</a>
+        <a href="/host.html" style="flex:1; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px 0; border-radius: 999px; background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); cursor: pointer; text-decoration: none; text-align: center;">Preferences</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width: 480px; margin: 18px auto 0; padding: 0 var(--wk-page-x);">
+    <div style="padding: 12px 16px; background: rgba(200,118,42,0.06); border: 1px solid var(--wk-line); border-radius: var(--wk-r-md);">
+      <div style="font-family: var(--wk-font-display); font-weight: 800; font-size: 12px; color: var(--wk-ink); text-transform: uppercase; letter-spacing: 0.10em; margin-bottom: 8px;">Journey status</div>
+      <div style="display:flex; gap: 4px;">
+        <div class="me-tier on">Wochenend</div>
+        <div class="me-tier on">Wandersm.</div>
+        <div class="me-tier">Ehrenm.</div>
+        <div class="me-tier">Prinzen</div>
+        <div class="me-tier">Königs</div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .me-tier {
+      flex: 1;
+      padding: 6px 4px;
+      text-align: center;
+      font-family: var(--wk-font-mono);
+      font-size: 8px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--wk-ink-muted);
+      background: transparent;
+      border: 1px solid var(--wk-line);
+      border-radius: 4px;
+    }
+    .me-tier.on {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      border-color: var(--wk-amber);
+    }
+  </style>
+
+  <script type="module">
+    import { getSession } from '/js/session.js';
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/supabase-config.js';
+    (async () => {
+      const session = getSession();
+      if (!session) return;
+      try {
+        const r = await fetch(
+          `${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=photos,host_paused,snooze_until,last_location_label,journey_tier`,
+          { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + session.accessToken } }
+        );
+        if (!r.ok) return;
+        const rows = await r.json();
+        const p = rows && rows[0];
+        if (!p) return;
+
+        /* Photo grid · 7 slots */
+        const grid = document.getElementById('me-photo-grid');
+        const photos = Array.isArray(p.photos) ? p.photos : [];
+        const count = photos.length;
+        document.querySelector('section span[style*="Photos"]').textContent = `— Photos · ${count} / 7`;
+        for (let i = 0; i < 7; i++) {
+          const slot = document.createElement('div');
+          slot.style.aspectRatio = '1';
+          slot.style.borderRadius = '6px';
+          if (photos[i]) {
+            slot.style.background = `url(${photos[i]}) center/cover, linear-gradient(135deg, #E8D6A4, #D8C28A)`;
+          } else {
+            slot.style.background = 'var(--wk-bg-2)';
+            slot.style.border = '1px dashed var(--wk-amber)';
+            slot.style.display = 'grid';
+            slot.style.placeItems = 'center';
+            slot.style.color = 'var(--wk-amber-text)';
+            slot.style.fontFamily = 'var(--wk-font-display)';
+            slot.style.fontWeight = '900';
+            slot.style.fontSize = '20px';
+            slot.style.cursor = 'pointer';
+            slot.textContent = '＋';
+          }
+          grid.appendChild(slot);
+        }
+
+        /* Host toggle */
+        const toggle = document.getElementById('me-host-toggle');
+        const status = document.getElementById('me-host-status');
+        const isHostOn = !p.host_paused;
+        toggle.checked = isHostOn;
+        status.textContent = (isHostOn ? 'Active' : 'Paused') + ' · ' + (p.last_location_label || 'no address set');
+        toggle.addEventListener('change', async () => {
+          const next = toggle.checked;
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}`, {
+              method: 'PATCH',
+              headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + session.accessToken, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+              body: JSON.stringify({ host_paused: !next, show_on_map: next }),
+            });
+            status.textContent = (next ? 'Active' : 'Paused') + ' · ' + (p.last_location_label || 'no address set');
+          } catch {}
+        });
+
+        /* Snooze 24h · pause the door for 24 hours */
+        document.getElementById('me-snooze').addEventListener('click', async () => {
+          const until = new Date(Date.now() + 24*60*60*1000).toISOString();
+          await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}`, {
+            method: 'PATCH',
+            headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + session.accessToken, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+            body: JSON.stringify({ snooze_until: until, host_paused: true, show_on_map: false }),
+          });
+          toggle.checked = false;
+          status.textContent = 'Snoozed · 24h';
+        });
+
+        /* Journey tier · light up tiers up to current */
+        const tiers = ['wochenend','wandersmann','ehrenmann','prinzen','koenigs'];
+        const reached = tiers.indexOf(p.journey_tier || 'wochenend');
+        document.querySelectorAll('.me-tier').forEach((t, i) => {
+          if (i <= reached) t.classList.add('on');
+          else t.classList.remove('on');
+        });
+      } catch (err) { console.warn('[me/master-p5]', err); }
+    })();
+  </script>
+
   <!-- Vouches summary — moved here from /more.html. Lives in the profile. -->
   <section class="me-vouches" data-loader="me-vouches-loader" aria-labelledby="me-vouches-title" style="
     max-width: 460px;
