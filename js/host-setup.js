@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (_) {}
 
   /* — Wire all inputs — */
+  const donation = document.getElementById('f-donation');
+  if (donation) donation.addEventListener('change', (e) => { state.data.donation_based = e.target.checked; });
+
   $('f-name').addEventListener('input', (e) => { state.data.name = e.target.value.trim(); });
   $('f-region').addEventListener('input', (e) => { state.data.region = e.target.value.trim(); });
   $('f-capacity').addEventListener('change', (e) => { state.data.capacity = parseInt(e.target.value, 10) || 0; });
@@ -225,6 +228,7 @@ async function commitProfile() {
     house_rules: state.data.rules,
     host_languages: Array.from(state.data.languages),
     host_specialty: state.data.specialty || null,
+    donation_based: !!state.data.donation_based,
     host_bio: state.data.bio || null,
     show_on_map: true,
     host_paused: false,
