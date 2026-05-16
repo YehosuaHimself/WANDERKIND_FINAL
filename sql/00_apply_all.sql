@@ -875,19 +875,17 @@ begin
     returning * into v_row;
 
   if v_pass then
+    -- face verification is independent of journey_tier (which is earned by
+    -- walks/stamps/vouches). We only mark the door-key here.
     update profiles
-       set face_verified_at = coalesce(face_verified_at, now()),
-           journey_tier     = case
-             when journey_tier in ('newcomer','walker') then 'verified-walker'
-             else journey_tier
-           end
+       set face_verified_at = coalesce(face_verified_at, now())
      where id = v_uid;
   end if;
 
   return jsonb_build_object(
-    'ok',     v_pass,
-    'id',     v_row.id,
-    'tier',   case when v_pass then 'verified-walker' else null end
+    'ok',       v_pass,
+    'id',       v_row.id,
+    'verified', v_pass
   );
 end;
 $$;
