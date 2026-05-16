@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>Wanderkind — Propose a stamp</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    html, body { background: var(--wk-bg); color: var(--wk-ink); height: 100svh; height: 100dvh; overflow-x: hidden; overflow-y: auto; }
+    body { overscroll-behavior-y: contain; padding: 0; }
+    [data-pwa="true"] [data-only="browser"] { display: none; }
+    .browser-mode-hint { max-width: 480px; margin: 12px auto 0; background: rgba(200,118,42,0.08); border: 1px solid var(--wk-amber-line); border-radius: var(--wk-r-md); padding: 12px var(--wk-space-md); }
+    .bmh-eyebrow { display: block; font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono-wide); text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 4px; }
+    .bmh-body { font-size: var(--wk-fs-small); line-height: var(--wk-lh-body); color: var(--wk-ink-soft); margin: 0; }
+    main#propose-root { max-width: 480px; margin: 0 auto; padding: max(var(--wk-space-md), env(safe-area-inset-top)) var(--wk-page-x) calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 30px); display: flex; flex-direction: column; gap: var(--wk-space-md); }
+    .pp-eyebrow { font-family: var(--wk-font-mono); font-size: var(--wk-fs-mono); letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid var(--wk-line); }
+    .pp-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .pp-title { font-family: var(--wk-font-display); font-weight: 900; font-size: 28px; letter-spacing: -0.02em; line-height: 0.95; margin: 0; color: var(--wk-ink); }
+    .pp-title em { color: var(--wk-amber-text); font-style: italic; }
+    .pp-sub { font-family: var(--wk-font-display); font-size: 14.5px; line-height: 1.55; color: var(--wk-ink-soft); margin: 4px 0 0; }
+    .pp-field { display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--wk-line); }
+    .pp-label { font-family: var(--wk-font-mono); font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; }
+    .pp-label::before { content: "· "; color: var(--wk-amber); }
+    .pp-input, .pp-cats { width: 100%; font-family: var(--wk-font-display); font-size: 15px; color: var(--wk-ink); background: var(--wk-bg-2); border: 1px solid var(--wk-line); border-radius: var(--wk-r-sm); padding: 10px 14px; box-sizing: border-box; }
+    .pp-input:focus { outline: 2px solid var(--wk-amber); outline-offset: -1px; }
+    .pp-value-locked { font-family: var(--wk-font-mono); font-size: 13px; color: var(--wk-ink); letter-spacing: 0.04em; }
+    .pp-cats { display: flex; gap: 6px; flex-wrap: wrap; background: transparent; padding: 0; border: 0; }
+    .pp-cat { flex: 1; min-width: 80px; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; padding: 10px; border: 1px solid var(--wk-line); border-radius: 999px; cursor: pointer; text-align: center; color: var(--wk-ink); background: var(--wk-bg-2); }
+    .pp-cat[aria-pressed="true"] { background: var(--wk-amber); color: var(--wk-bg); border-color: var(--wk-amber); }
+    .pp-tier { background: var(--wk-bg-elevated); border: 1px solid var(--wk-line); border-left: 3px solid var(--wk-amber); border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0; padding: 14px 16px; }
+    .pp-tier-line { display: flex; justify-content: space-between; padding: 4px 0; font-family: var(--wk-font-mono); font-size: 11px; }
+    .pp-tier-line .l { color: var(--wk-ink-muted); letter-spacing: 0.18em; text-transform: uppercase; }
+    .pp-tier-line .r { color: var(--wk-ink); font-weight: 700; }
+    .pp-tier-line .r.amb { color: var(--wk-amber-text); }
+    .pp-cta { background: var(--wk-amber); color: var(--wk-bg); font-family: var(--wk-font-mono); font-weight: 700; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; padding: 14px 0; border-radius: 999px; border: 0; cursor: pointer; }
+    .pp-cta:disabled { opacity: 0.5; cursor: default; }
+    .pp-hint { font-family: var(--wk-font-display); font-style: italic; font-size: 13px; line-height: 1.55; color: var(--wk-ink-soft); padding: 10px 0; }
+    .pp-hint em { color: var(--wk-amber-text); }
+    .pp-result { padding: 14px 16px; background: var(--wk-bg-2); border-radius: var(--wk-r-md); font-family: var(--wk-font-display); font-size: 14px; line-height: 1.55; }
+    .pp-result.ok { background: rgba(78,107,35,0.12); border-left: 3px solid var(--wk-success); }
+    .pp-result.err { background: rgba(176,65,58,0.08); border-left: 3px solid var(--wk-error); }
+  </style>
+</head>
+<body>
+  <a href="#propose-root" class="skip-to-content">Skip to propose</a>
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+  <main id="propose-root">
+    <h2 class="pp-eyebrow">— You are here</h2>
+    <div>
+      <h1 class="pp-title">Propose a <em>stamp.</em></h1>
+      <p class="pp-sub">Drop a pin where you stand. It starts on your pass. If 5 Wanderkinder sign it, it joins the canon.</p>
+    </div>
+
+    <div class="pp-field">
+      <label class="pp-label">Location · geo-locked</label>
+      <div class="pp-value-locked" id="pp-loc">determining…</div>
+    </div>
+
+    <div class="pp-field">
+      <label class="pp-label" for="pp-name">Name</label>
+      <input id="pp-name" class="pp-input" type="text" maxlength="40" placeholder="e.g. Café Lucia · Pfarrkirche Maria · Adlersee" />
+    </div>
+
+    <div class="pp-field">
+      <label class="pp-label">Category</label>
+      <div class="pp-cats" role="group">
+        <button class="pp-cat" type="button" aria-pressed="false" data-cat="church">Church</button>
+        <button class="pp-cat" type="button" aria-pressed="false" data-cat="mountain">Mountain</button>
+        <button class="pp-cat" type="button" aria-pressed="false" data-cat="festival">Festival</button>
+        <button class="pp-cat" type="button" aria-pressed="true" data-cat="other">Other</button>
+      </div>
+    </div>
+
+    <article class="pp-tier">
+      <div class="pp-tier-line"><span class="l">· Starts as</span><span class="r">Tier 3 · Personal</span></div>
+      <div class="pp-tier-line"><span class="l">· Promotes at</span><span class="r">5 Wanderkinder signs</span></div>
+      <div class="pp-tier-line"><span class="l">· Progress</span><span class="r amb">1 / 5</span></div>
+    </article>
+
+    <p class="pp-hint">Until others walk here, it lives only on your pass. When four more stamp this door, it becomes <em>canonical</em> — visible to every Wanderkind. <em>Your first stamp is remembered.</em></p>
+
+    <button id="pp-seal" class="pp-cta" type="button" disabled>Seal &amp; add to my pass</button>
+
+    <div id="pp-result" class="pp-result" hidden></div>
+  </main>
+  <wk-tabbar></wk-tabbar>
+  <script type="module" src="/js/pwa-mode.js"></script>
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/simple-mode.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/propose.js"></script>
+</body>
+</html>
