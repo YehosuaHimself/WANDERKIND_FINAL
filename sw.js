@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.68-lh100-fix';
+const VERSION = '0.1.69-lh100-final';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
