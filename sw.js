@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.70-target-size';
+const VERSION = '0.1.71-chapels';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
