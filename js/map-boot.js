@@ -131,6 +131,7 @@ const GLYPH = {
   'host-bed-food': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/><circle cx="12" cy="15" r="2.6" fill="currentColor" fill-opacity="0.35"/></svg>`,
   'host-food': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v8a2 2 0 0 0 2 2v6M9 4v8M18 4l-2 6c0 1.5 1 2 2 2v6"/></svg>`,
   'host-water': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L7 11 a6 6 0 0 0 10 0 L12 3 Z"/></svg>`,
+  'chapel': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 v4 M10 5 h4 M7 10 L12 7 L17 10 V20 H7 Z"/><rect x="10" y="14" width="4" height="6"/></svg>`,
   'church': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 v6 M10 5 h4 M5 11 L12 7 L19 11 V21 H5 Z"/><rect x="10" y="15" width="4" height="6"/></svg>`,
   'mountain': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 L9 8 L13 14 L16 10 L21 20 Z"/><path d="M8 12 L9.5 10 L11 11 Z" fill="currentColor"/></svg>`,
   'festival': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21 V4 L18 8 L6 12"/><circle cx="6" cy="3" r="0.8" fill="currentColor"/></svg>`,
@@ -148,6 +149,7 @@ const PIN_THEME = {
   'host-bed-food':  { glyph: 'host-bed-food',  color: 'var(--wk-amber)',      ring: 'var(--wk-amber-press)' },
   'host-food':      { glyph: 'host-food',      color: '#A0522D',              ring: '#7A3E20' },
   'host-water':     { glyph: 'host-water',     color: '#4CA8C9',              ring: '#2E7997' },
+  'chapel':         { glyph: 'chapel',         color: '#7A5A3E',              ring: '#5A4632' },
   'church':         { glyph: 'church',         color: '#5A4632',              ring: '#3A2D1F' },
   'mountain':       { glyph: 'mountain',       color: '#5C6B40',              ring: '#3D4828' },
   'festival':       { glyph: 'festival',       color: '#9C2E5C',              ring: '#6A1E3F' },
@@ -282,7 +284,7 @@ function isVisible(kind) {
   if (kind === 'host-food') return state.filters.has('food');
   if (kind === 'host-water') return state.filters.has('water');
   // primary landmarks · always visible (no filter)
-  if (kind === 'church' || kind === 'mountain' || kind === 'festival') return true;
+  if (kind === 'chapel' || kind === 'church' || kind === 'mountain' || kind === 'festival') return true;
   // secondary services · always visible (zoom-gated in renderPOIs)
   if (kind === 'wifi' || kind === 'fountain' || kind === 'info' || kind === 'parish') return true;
   return true;
@@ -328,6 +330,7 @@ function kindLabel(kind) {
     'host-bed-food':  'Bed · Food',
     'host-food':      'Food only',
     'host-water':     'Water only',
+    'chapel':         'Chapel',
     'church':         'Church',
     'mountain':       'Mountain',
     'festival':       'Festival',
