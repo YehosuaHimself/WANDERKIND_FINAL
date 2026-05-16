@@ -196,6 +196,8 @@ form.addEventListener('submit', async (e) => {
         // columns are NOT NULL DEFAULT '' on the server.
         given_name: '',
         surname: '',
+        // Profile extras · interests + 3×3 photos · optional, set elsewhere
+        ...(window.__wkProfileExtrasPatch ? window.__wkProfileExtrasPatch() : {}),
       }),
     });
 
