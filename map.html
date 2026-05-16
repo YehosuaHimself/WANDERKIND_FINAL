@@ -534,13 +534,33 @@
       font-size: 13.5px; line-height: 1.4;
       color: var(--wk-ink-soft); margin: 0;
     }
-    .wanderwall-close {
-      background: transparent; border: 0;
-      font-family: var(--wk-font-mono);
-      font-size: 11px; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--wk-ink);
-      cursor: pointer; padding: 4px 10px;
+/* ── WanderWall · scrim + bigger close × ─────────────────── */
+    .wanderwall-scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(11,7,5,0.12);
+      z-index: 415;
+      animation: ww-scrim-in 200ms ease-out;
+      cursor: pointer;
     }
+    @keyframes ww-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      .wanderwall-scrim { animation: none; }
+    }
+    .wanderwall-close {
+      display: grid;
+      place-items: center;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(26,18,10,0.06);
+      border: 0;
+      cursor: pointer;
+      color: var(--wk-ink);
+      padding: 0;
+      transition: background 0.12s;
+    }
+    .wanderwall-close:hover { background: rgba(26,18,10,0.12); }
+    .wanderwall-close svg { width: 18px; height: 18px; }
     @media (prefers-reduced-motion: reduce) {
       .wanderwall { transition: none; }
     }
@@ -810,6 +830,7 @@
       <a class="empty-pill-cta" href="/install.html">Open your door</a>
     </section>
 
+    <div id="wanderwall-scrim" class="wanderwall-scrim" hidden aria-hidden="true"></div>
     <button id="wanderwall-handle" class="wanderwall-handle" type="button"
             aria-expanded="false" aria-controls="wanderwall">The WanderWall</button>
 
@@ -822,7 +843,7 @@
         </div>
         <div class="ww-actions">
           <button id="wanderwall-refresh" class="ww-action" type="button">Refresh</button>
-          <button id="wanderwall-close" class="wanderwall-close" type="button">Close</button>
+          <button id="wanderwall-close" class="wanderwall-close" type="button" aria-label="Close WanderWall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
       </header>
       <div id="wanderwall-list" class="ww-list" role="list" aria-live="polite"></div>
