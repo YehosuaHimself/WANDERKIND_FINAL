@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.65-image-crop';
+const VERSION = '0.1.66-apple-grade';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -57,7 +57,9 @@ const PRECACHE = [
   '/css/base.css',
   '/css/typography.css',
   '/css/components.css',
+  '/css/motion.css',
   '/js/main.js',
+  '/js/motion.js',
   '/js/sw-register.js',
   '/js/install-gate.js',
   '/js/auth.js',
