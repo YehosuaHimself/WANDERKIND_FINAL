@@ -1,21 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Wanderkind">
-  <defs>
-    <filter id="seal-noise" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="9"/>
-      <feDisplacementMap in="SourceGraphic" scale="0.45"/>
-    </filter>
-  </defs>
-  <g filter="url(#seal-noise)" transform="rotate(-2.2 40 40)">
-    <!-- Outer ring (the canonical "stamp" frame) -->
-    <circle cx="40" cy="40" r="37" fill="none" stroke="currentColor" stroke-width="1.6"/>
-    <!-- Inner ring (double-ring impression) -->
-    <circle cx="40" cy="40" r="33" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.55"/>
-    <!-- Inner dashed (the worn-paper detail) -->
-    <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="0.5"
-            stroke-dasharray="2.4 2.4" opacity="0.45"/>
-    <!-- The W glyph — minimal, geometric, four strokes meeting at apex -->
-    <path d="M 22 30 L 30 53 L 36 39 L 40 50 L 44 39 L 50 53 L 58 30"
-          fill="none" stroke="currentColor" stroke-width="2.4"
-          stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Wanderkind W">
+  <!-- Cream background -->
+  <rect width="80" height="80" fill="#FAEFCF"/>
+  <!-- A plain Helvetica Neue "W" in brown · per design canon -->
+  <text x="40" y="56" text-anchor="middle"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="800"
+        font-size="48"
+        letter-spacing="-0.02em"
+        fill="#9C5A1E">W</text>
 </svg>
