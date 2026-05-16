@@ -1,36 +1,43 @@
 name: Screenshots
 
+# Runs:
+#   • on every push to main (so every commit has a visual baseline)
+#   • every day at 06:00 UTC (so deploy drift gets caught)
+#   • manually via workflow_dispatch (so you can re-run on demand)
 on:
-  workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'scripts/screenshots.mjs'
       - '.github/workflows/screenshots.yml'
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
 
 jobs:
   shots:
+    name: Screenshots + Lighthouse
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install Playwright
+      - name: Install Playwright + Lighthouse
         run: |
-          npm install --no-save playwright
+          npm install --no-save playwright lighthouse
           npx playwright install chromium --with-deps
-      - name: Wait 90s for Pages deploy (if this run was triggered by code push)
+      - name: Wait 90s for Pages deploy (push trigger)
         if: github.event_name == 'push'
         run: sleep 90
-      - name: Run screenshot harness
+      - name: Run harness
         env:
           BASE_URL: https://wanderkind.love
         run: node scripts/screenshots.mjs
-      - name: Upload screenshots artifact
+      - name: Upload screenshots + Lighthouse artifact
         uses: actions/upload-artifact@v4
         with:
           name: wk-shots
           path: wk-shots/
-          retention-days: 14
+          retention-days: 30
