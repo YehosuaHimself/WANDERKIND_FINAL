@@ -383,6 +383,168 @@
     }
     .legend-dot--sm { width: 7px; height: 7px; }
 
+
+    /* ── The Bulletin · ruled May 2026 (FEED_BRIEF.md) ─────── */
+    .bulletin-handle {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(var(--wk-tabbar-h, 64px) + 12px);
+      z-index: 410;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px 9px 14px;
+      background: rgba(246,237,216,0.96);
+      border: 1px solid var(--wk-line);
+      border-radius: 999px;
+      box-shadow: 0 6px 14px -8px rgba(11,7,5,0.25);
+      font-family: var(--wk-font-mono);
+      font-size: 11px; letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      cursor: pointer;
+    }
+    .bulletin-handle::before {
+      content: ""; width: 24px; height: 2px;
+      background: var(--wk-ink-soft); border-radius: 1px; display: inline-block;
+    }
+    .bulletin-handle:hover { background: rgba(246,237,216,1); }
+    .bulletin {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 420;
+      height: 60dvh; min-height: 320px; max-height: 80dvh;
+      background: var(--wk-bg);
+      border-top: 1px solid var(--wk-line);
+      border-top-left-radius: 16px; border-top-right-radius: 16px;
+      box-shadow: 0 -10px 30px -16px rgba(11,7,5,0.4);
+      transform: translateY(100%);
+      transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column;
+    }
+    .bulletin.open { transform: translateY(0); }
+    .bulletin[aria-hidden="true"] .bul-list { pointer-events: none; }
+    .bul-grip {
+      align-self: center;
+      width: 36px; height: 4px;
+      background: rgba(26,18,10,0.18);
+      border-radius: 2px;
+      margin: 8px 0 4px;
+    }
+    .bul-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding: 8px 18px 6px;
+    }
+    .bul-title {
+      font-family: var(--wk-font-display);
+      font-weight: 800; font-size: 18px;
+      letter-spacing: 0.01em; text-transform: uppercase;
+      color: var(--wk-ink); margin: 0;
+    }
+    .bul-summary {
+      font-family: var(--wk-font-mono);
+      font-size: 10px; letter-spacing: 0.20em;
+      text-transform: uppercase; color: var(--wk-ink-soft);
+      margin: 0;
+    }
+    .bul-actions {
+      display: flex; gap: 4px; align-items: center;
+    }
+    .bul-action {
+      background: transparent; border: 0; cursor: pointer;
+      font-family: var(--wk-font-mono); font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--wk-ink-soft); padding: 4px 8px; border-radius: 4px;
+    }
+    .bul-action:hover { color: var(--wk-amber-text); background: rgba(200,118,42,0.08); }
+    .bul-list {
+      flex: 1; overflow-y: auto;
+      padding: 6px 14px 80px;
+      display: flex; flex-direction: column; gap: 8px;
+      scrollbar-width: thin;
+      /* NOT a scroll surface in the addictive sense: finite, ends where it ends */
+    }
+    .bul-end {
+      text-align: center;
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px; letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      padding: 18px 0 8px;
+      border-top: 1px solid var(--wk-line);
+      margin-top: 10px;
+    }
+    .bul-card {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 10px; align-items: start;
+      padding: 12px 14px;
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      text-decoration: none; color: var(--wk-ink);
+    }
+    .bul-card:hover { background: rgba(255,255,255,0.7); }
+    .bul-glyph {
+      width: 28px; height: 28px;
+      display: grid; place-items: center;
+      font-family: var(--wk-font-mono);
+      font-size: 16px; font-weight: 700;
+      background: rgba(200,118,42,0.10);
+      color: var(--wk-amber-text);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .bul-card--vouch .bul-glyph { background: rgba(76,168,201,0.16); color: #2A5F73; }
+    .bul-card--stamp .bul-glyph { background: rgba(200,118,42,0.18); color: var(--wk-amber-text); }
+    .bul-card--proposal .bul-glyph { background: rgba(122,90,48,0.18); color: #5A4632; }
+    .bul-h {
+      font-family: var(--wk-font-display);
+      font-weight: 700; font-size: 14px;
+      color: var(--wk-ink);
+      line-height: 1.3;
+    }
+    .bul-actor { font-weight: 800; color: var(--wk-ink); }
+    .bul-sub {
+      font-family: var(--wk-font-sans);
+      font-size: 13px;
+      color: var(--wk-ink-soft);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+    .bul-quote { font-style: italic; color: var(--wk-ink); }
+    .bul-ago {
+      align-self: flex-start;
+      font-family: var(--wk-font-mono);
+      font-size: 10px; letter-spacing: 0.16em;
+      color: var(--wk-ink-muted); text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .bul-empty {
+      text-align: center;
+      padding: 60px 24px 40px;
+      color: var(--wk-ink-soft);
+    }
+    .bul-empty-h {
+      font-family: var(--wk-font-display);
+      font-weight: 700; font-size: 15px;
+      color: var(--wk-ink); margin: 0 0 6px;
+    }
+    .bul-empty-b {
+      font-family: var(--wk-font-sans);
+      font-size: 13.5px; line-height: 1.4;
+      color: var(--wk-ink-soft); margin: 0;
+    }
+    .bulletin-close {
+      background: transparent; border: 0;
+      font-family: var(--wk-font-mono);
+      font-size: 11px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--wk-ink);
+      cursor: pointer; padding: 4px 10px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bulletin { transition: none; }
+    }
+
     /* ── Leaflet controls — themed ── */
     .leaflet-control-zoom a {
       background: var(--wk-bg-elevated) !important;
@@ -647,12 +809,35 @@
       <p class="empty-pill-title">No doors here yet — be the first.</p>
       <a class="empty-pill-cta" href="/install.html">Open your door</a>
     </section>
+
+    <button id="bulletin-handle" class="bulletin-handle" type="button"
+            aria-expanded="false" aria-controls="bulletin">The Bulletin</button>
+
+    <aside id="bulletin" class="bulletin" role="dialog" aria-modal="false" aria-labelledby="bulletin-title" aria-hidden="true">
+      <span class="bul-grip" aria-hidden="true"></span>
+      <header class="bul-header">
+        <div>
+          <h2 id="bulletin-title" class="bul-title">The Bulletin</h2>
+          <p id="bulletin-summary" class="bul-summary">— Last 24 hours · this viewport</p>
+        </div>
+        <div class="bul-actions">
+          <button id="bulletin-refresh" class="bul-action" type="button">Refresh</button>
+          <button id="bulletin-close" class="bulletin-close" type="button">Close</button>
+        </div>
+      </header>
+      <div id="bulletin-list" class="bul-list" role="list" aria-live="polite"></div>
+      <section id="bulletin-empty" class="bul-empty" hidden>
+        <p class="bul-empty-h">The road is quiet here today.</p>
+        <p class="bul-empty-b">Pan the map to another region, or walk on. The Bulletin reflects what is happening in the view you see.</p>
+      </section>
+    </aside>
   </main>
 
   <wk-tabbar></wk-tabbar>
 
   <script src="/js/vendor/leaflet.js" defer></script>
   <script type="module" src="/js/map-boot.js"></script>
+  <script type="module" src="/js/map-bulletin.js"></script>
   <script type="module" src="/js/map-session-aware.js"></script>
   <script type="module" src="/js/pwa-mode.js"></script>
   <script type="module" src="/js/auth-bypass.js"></script>
