@@ -140,16 +140,18 @@
     }
     .me-cover {
       width: 100%;
-      aspect-ratio: 3/1;
-      min-height: 130px;
-      max-height: 200px;
+      aspect-ratio: 5/2;            /* gentler than 3/1 — preserves more of the image */
+      min-height: 160px;
+      max-height: 280px;
       background: linear-gradient(135deg, var(--wk-bg-2, #F3EDE0) 0%, var(--wk-parchment, #F3E7CC) 100%);
       overflow: hidden;
       position: relative;
     }
     .me-cover img {
       width: 100%; height: 100%;
-      object-fit: cover; display: block;
+      object-fit: cover;
+      object-position: center 35%;  /* favor upper portion (sky / face) */
+      display: block;
     }
     .me-cover:has(img)::after {
       content: '';
@@ -174,6 +176,7 @@
     .me-avatar img {
       width: 100%; height: 100%;
       object-fit: cover;
+      object-position: center 30%;  /* favor face area */
     }
     .me-avatar-initial {
       font-family: var(--wk-font-display);
