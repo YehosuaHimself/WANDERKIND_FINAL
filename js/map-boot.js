@@ -511,6 +511,23 @@ async function bootMap() {
   renderPOIs();
   state.map.on('zoomend', renderPOIs);
 
+  // ── Bulletin integration · expose bounds + flyTo so /js/map-bulletin.js
+  //    can filter cards by viewport and return the user to the Map. ────
+  const _publishBounds = () => {
+    if (!state.map) return;
+    const b = state.map.getBounds();
+    window.__wkMapBounds = {
+      south: b.getSouth(), west: b.getWest(),
+      north: b.getNorth(), east: b.getEast(),
+    };
+    window.dispatchEvent(new CustomEvent('wk-map-moved'));
+  };
+  _publishBounds();
+  state.map.on('moveend', _publishBounds);
+  window.__wkMapFlyTo = (lat, lng) => {
+    if (state.map) state.map.flyTo([lat, lng], Math.max(state.map.getZoom(), 12), { duration: 0.8 });
+  };
+
   wireFilterChips();
 
   setStatus('Loading doors…');
