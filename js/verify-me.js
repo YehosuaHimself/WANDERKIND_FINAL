@@ -146,7 +146,7 @@ async function runLivenessSequence(video) {
   const bDelta = Math.abs(frames[1].brightness - frames[0].brightness)
                + Math.abs(frames[2].brightness - frames[1].brightness);
   const bScore = Math.min(1, bDelta / 12); // typical movement = 6-15
-  // Signal 3: timing is plausible (rejects automated replay)
+  // Signal 3: timing is within a valid human window (rejects automated replay)
   const tScore = (frames[2].ts > 5000 && frames[2].ts < 8000) ? 1 : 0.4;
 
   const liveness = distinct
