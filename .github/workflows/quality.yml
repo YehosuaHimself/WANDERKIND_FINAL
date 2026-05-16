@@ -111,24 +111,26 @@ jobs:
             --output=json --output-path=lh.json --quiet \
             --chrome-flags="--headless=new --no-sandbox --disable-gpu"
           node -e "
+            // Doctrine: Lighthouse 100 / 100 / 100 / 100 across performance,
+            // accessibility, best-practices, SEO. After restoring pinch-zoom
+            // (removing user-scalable=no), accessibility can hit 100 again.
             const r = require('./lh.json');
-            const cats = ['performance','accessibility','best-practices','seo'];
+            const floors = {
+              performance:    95,   // 95 floor (real-world network variance)
+              accessibility:  100,  // 100 mandatory — doctrine
+              'best-practices': 95, // 95 floor (Lighthouse adds new audits each release)
+              seo:            100,  // 100 mandatory — doctrine
+            };
             let failed = false;
-            for (const c of cats) {
+            for (const c of Object.keys(floors)) {
               const score = Math.round(r.categories[c].score * 100);
+              const floor = floors[c];
               const label = c.toUpperCase();
-              // Best-Practices is harder to score 100 since Lighthouse adds
-              // new audits per release. 90 is a stricter floor than the
-              // industry norm and still real-world good.
-              // Accessibility floor is 90 because the design intentionally
-              // sets user-scalable=no on the viewport (PWA-style chrome).
-              // axe-core covers the real a11y violations in a separate job.
-              const floor = (c === 'best-practices' || c === 'accessibility') ? 90 : 95;
               if (score < floor) {
                 console.error('✗ ' + label + ': ' + score + ' (required: ' + floor + '+)');
                 failed = true;
               } else {
-                console.log('✓ ' + label + ': ' + score);
+                console.log((score === 100 ? '✓ ' : '◐ ') + label + ': ' + score);
               }
             }
             process.exit(failed ? 1 : 0);
