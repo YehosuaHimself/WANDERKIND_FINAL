@@ -1,3 +1,22 @@
+/* ════════════════════════════════════════════════════════════════════════
+ * WK GLOBAL FONT RESET · enforce Helvetica Neue on every element
+ * Defends against browsers / extensions / nested includes that would
+ * otherwise fall back to system serif. Courier is opt-in via .wk-mono.
+ * ──────────────────────────────────────────────────────────────────── */
+html, body,
+p, li, ul, ol, dl, dt, dd,
+h1, h2, h3, h4, h5, h6,
+button, input, textarea, select, label,
+blockquote, figcaption, caption,
+section, article, header, footer, main, aside, nav, div, span {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Opt-in monospace for the canonical places (pass, ID, PIN, map). */
+.wk-mono, code, kbd, samp, pre {
+  font-family: 'Courier New', Courier, monospace;
+}
+
 @import url('./motion.css');
 /* ─────────────────────────────────────────────────────────────────────
  *  Base reset + element styling — V3 aligned
