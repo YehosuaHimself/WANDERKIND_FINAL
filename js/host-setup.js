@@ -40,6 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const session = getSession();
   if (!session) { location.replace('/auth.html?next=/host.html'); return; }
   state.session = session;
+  // Honor ?next= for onboarding hand-off (e.g. /onboarding/?step=11)
+  try {
+    const params = new URLSearchParams(location.search);
+    state.next = params.get('next') || null;
+  } catch { state.next = null; }
 
   // Pre-load any existing host setup from the user's profile
   try {
@@ -94,6 +99,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('h-open').disabled = true;
     $('h-open').textContent = 'Opening…';
     await commitProfile();
+    if (state.next) {
+      location.replace(state.next);
+      return;
+    }
     goStep(TOTAL_STEPS); // → done slide
   });
 
