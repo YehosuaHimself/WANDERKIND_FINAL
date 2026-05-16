@@ -87,7 +87,7 @@ async function boot() {
   accessToken = session.accessToken;
 
   // Prefill from existing row (RLS scopes by id)
-  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,cover_url,lat,lng,show_on_map,home_country&limit=1`;
+  const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=trail_name,bio,avatar_url,cover_url,lat,lng,show_on_map,interests,photos,show_map,home_country&limit=1`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -601,3 +601,117 @@ function setLocBusy(busy, msg) {
     }
   }
 }
+
+
+/* ─── Interests + 3x3 photo gallery · profile extras ──────────────────── */
+let __interests = [];
+let __photos = [];
+
+function wireInterests() {
+  const input = document.getElementById('interests-input');
+  const chips = document.getElementById('interests-chips');
+  if (!input || !chips) return;
+  const render = () => {
+    chips.innerHTML = '';
+    __interests.forEach((tag, i) => {
+      const p = document.createElement('span');
+      p.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:rgba(200,118,42,0.10);border:1px solid rgba(200,118,42,0.32);border-radius:999px;font-family:var(--wk-font-display);font-size:12px;color:var(--wk-amber-text);font-weight:600;';
+      p.innerHTML = '<span>' + escapeHtml(tag) + '</span><button type="button" aria-label="Remove" style="background:transparent;border:0;cursor:pointer;color:inherit;font-size:14px;line-height:1;padding:0;">×</button>';
+      p.querySelector('button').addEventListener('click', () => { __interests.splice(i, 1); render(); });
+      chips.appendChild(p);
+    });
+  };
+  const add = () => {
+    const v = (input.value || '').trim();
+    if (!v) return;
+    if (__interests.length >= 12) return;
+    if (!__interests.includes(v)) __interests.push(v);
+    input.value = '';
+    render();
+  };
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); }
+  });
+  input.addEventListener('blur', add);
+  window.__renderInterests = render;
+  render();
+}
+
+function wirePhotoGrid() {
+  const grid = document.getElementById('photo-grid');
+  const file = document.getElementById('photo-file');
+  if (!grid || !file) return;
+  let targetSlot = -1;
+
+  const render = () => {
+    grid.innerHTML = '';
+    for (let i = 0; i < 9; i++) {
+      const url = __photos[i];
+      const slot = document.createElement('button');
+      slot.type = 'button';
+      slot.setAttribute('aria-label', url ? 'Replace photo ' + (i + 1) : 'Add photo ' + (i + 1));
+      slot.style.cssText = 'aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:rgba(26,18,10,0.04);border:' + (url ? '1px solid var(--wk-line)' : '1px dashed var(--wk-line)') + ';cursor:pointer;padding:0;';
+      if (url) {
+        slot.innerHTML = '<img src="' + escapeAttr(url) + '" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;" />';
+        slot.addEventListener('click', () => {
+          if (confirm('Remove this photo?')) { __photos.splice(i, 1); render(); }
+        });
+      } else {
+        slot.innerHTML = '<span style="display:grid;place-items:center;width:100%;height:100%;color:var(--wk-ink-muted);font-family:var(--wk-font-display);font-size:9px;letter-spacing:0.20em;text-transform:uppercase;">+ photo</span>';
+        slot.addEventListener('click', () => { targetSlot = i; file.click(); });
+      }
+      grid.appendChild(slot);
+    }
+  };
+
+  file.addEventListener('change', async () => {
+    const f = file.files && file.files[0];
+    if (!f || targetSlot < 0) return;
+    try {
+      const dataUrl = await new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(fr.result);
+        fr.onerror = () => rej(new Error('read fail'));
+        fr.readAsDataURL(f);
+      });
+      __photos[targetSlot] = dataUrl;
+      render();
+    } catch {}
+    file.value = '';
+    targetSlot = -1;
+  });
+
+  window.__renderPhotos = render;
+  render();
+}
+
+function hydratePhotosAndInterests(p) {
+  __interests = Array.isArray(p && p.interests) ? p.interests.slice(0, 12).filter((s) => typeof s === 'string') : [];
+  __photos = Array.isArray(p && p.photos) ? p.photos.slice(0, 9).filter((s) => typeof s === 'string') : [];
+  if (window.__renderInterests) window.__renderInterests();
+  if (window.__renderPhotos) window.__renderPhotos();
+}
+
+function getPhotosAndInterestsPatch() {
+  return {
+    interests: __interests,
+    photos: __photos,
+  };
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[<>&"']/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) {
+  return String(s == null ? '' : s).replace(/["<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+}
+
+// Wire on DOM ready (in addition to the existing setup the original module does)
+document.addEventListener('DOMContentLoaded', () => {
+  wireInterests();
+  wirePhotoGrid();
+});
+
+// Expose so the existing PATCH builder can merge in our fields
+window.__wkProfileExtrasHydrate = hydratePhotosAndInterests;
+window.__wkProfileExtrasPatch = getPhotosAndInterestsPatch;
