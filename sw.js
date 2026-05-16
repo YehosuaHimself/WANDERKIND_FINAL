@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.56-more-grid';
+const VERSION = '0.1.57-map-pois';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -82,6 +82,7 @@ const PRECACHE = [
   '/js/map-session-aware.js',
   '/js/map-leaflet.js',
   '/js/map-boot.js',
+  '/js/map-pois.js',
   '/js/region-labels.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',
