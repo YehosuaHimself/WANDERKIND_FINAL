@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.58-bulletin';
+const VERSION = '0.1.59-wanderwall';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -81,7 +81,7 @@ const PRECACHE = [
   '/js/map-leaflet.js',
   '/js/map-boot.js',
   '/js/map-pois.js',
-  '/js/map-bulletin.js',
+  '/js/wanderwall.js',
   '/js/region-labels.js',
   '/js/vendor/leaflet.js',
   '/css/vendor/leaflet.css',
