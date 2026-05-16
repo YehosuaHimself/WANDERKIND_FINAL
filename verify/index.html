@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wanderkind — Verify</title>
+  <meta name="description" content="Verify a Wanderkind credential." />
+  <meta name="theme-color" content="#FAFAF5" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    html, body { background: #F6ECD2; color: #1A120A; }
+    body { margin: 0; padding: 28px 18px 40px; font-family: 'Helvetica Neue', sans-serif; }
+    .v-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .v-lock { font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.20em; color: #6B5A3E; }
+    .v-tag { font-family: 'Courier New', monospace; font-size: 9px; color: var(--wk-amber); letter-spacing: 0.22em; }
+    .v-title { font-family: 'Helvetica Neue', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: -0.01em; color: #1A120A; text-transform: uppercase; line-height: 1.05; margin: 0 0 4px; }
+    .v-title em { color: var(--wk-amber); font-style: italic; }
+    .v-sub { font-family: 'Courier New', monospace; font-size: 9px; color: #6B5A3E; letter-spacing: 0.12em; line-height: 1.45; margin-bottom: 14px; }
+    .v-sub strong { color: var(--wk-amber); }
+    .booklet-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+    .booklet { width: min(260px, 90vw); aspect-ratio: 125/176; background: linear-gradient(180deg, #F5E9CC 0%, #E9D9B0 100%); border-radius: 4px; padding: 16px; position: relative; box-shadow: 0 14px 32px -10px rgba(0,0,0,0.30); border: 0.5px solid rgba(26,18,10,0.20); }
+    .booklet-guilloche { position: absolute; inset: 0; background-image: radial-gradient(circle at 50% 50%, transparent 24%, rgba(200,118,42,0.10) 25%, transparent 26%), radial-gradient(circle at 50% 50%, transparent 32%, rgba(200,118,42,0.08) 33%, transparent 34%), radial-gradient(circle at 50% 50%, transparent 40%, rgba(200,118,42,0.06) 41%, transparent 42%); border-radius: 4px; opacity: 0.6; }
+    .booklet-inner { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; }
+    .b-head { text-align: center; margin-bottom: 10px; }
+    .b-eyebrow { font-family: 'Courier New', monospace; font-size: 6.5px; letter-spacing: 0.30em; color: #6B5A3E; }
+    .b-title { font-family: 'Helvetica Neue', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: 0.15em; color: #1A120A; text-transform: uppercase; margin-top: 2px; }
+    .b-divider { width: 24px; height: 1px; background: var(--wk-amber); margin: 4px auto; }
+    .b-portrait { width: 52px; height: 64px; background: linear-gradient(160deg, #D8C8A4, #C7B584); border: 0.5px solid rgba(26,18,10,0.30); border-radius: 1px; flex: 0 0 auto; }
+    .b-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+    .b-fields { flex: 1; }
+    .b-k { font-family: 'Helvetica Neue', sans-serif; font-weight: 700; font-size: 5.5px; letter-spacing: 0.25em; color: #6B5A3E; }
+    .b-v { font-family: 'Helvetica Neue', sans-serif; font-weight: 900; font-size: 10px; color: #1A120A; letter-spacing: -0.01em; margin-bottom: 4px; }
+    .b-bot { margin-top: auto; }
+    .b-valid { font-family: 'Helvetica Neue', sans-serif; font-weight: 700; font-size: 8px; letter-spacing: 0.18em; color: var(--wk-amber); text-transform: uppercase; }
+    .v-cta { text-align: center; padding-top: 16px; }
+    .v-cta a { display: inline-block; font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--wk-bg); background: var(--wk-amber); padding: 12px 20px; border-radius: 999px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header class="v-head">
+    <span class="v-lock">🔒 verify.wanderkind.love</span>
+    <span class="v-tag">PUBLIC</span>
+  </header>
+  <h1 class="v-title">This is a <em>real</em><br>travel document.</h1>
+  <p class="v-sub">ISSUED BY <strong>WANDERKIND INC.</strong><br>AUTHENTICATED FOR PASS №&nbsp;<b id="v-wkid" style="color: var(--wk-amber);">—</b></p>
+
+  <div class="booklet-wrap">
+    <div class="booklet">
+      <div class="booklet-guilloche" aria-hidden="true"></div>
+      <div class="booklet-inner">
+        <div class="b-head">
+          <div class="b-eyebrow">PASSEPORT DIPLOMATIQUE · PW</div>
+          <div class="b-title">Wanderkind Inc.</div>
+          <div class="b-divider"></div>
+        </div>
+        <div class="b-row">
+          <div class="b-portrait" aria-hidden="true"></div>
+          <div class="b-fields">
+            <div class="b-k">Surname</div>
+            <div class="b-v" id="v-surname">—</div>
+            <div class="b-k">Given name</div>
+            <div class="b-v" id="v-given">—</div>
+            <div class="b-k">Pass №</div>
+            <div class="b-v" id="v-wkid2" style="color: var(--wk-amber); font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.08em;">—</div>
+          </div>
+        </div>
+        <div class="b-row">
+          <div style="flex:1;">
+            <div class="b-k">Nationality</div>
+            <div class="b-v" id="v-nat">—</div>
+          </div>
+          <div style="flex:1;">
+            <div class="b-k">Issued</div>
+            <div class="b-v" id="v-issued" style="font-size: 8px;">—</div>
+          </div>
+        </div>
+        <div class="b-bot">
+          <div class="b-valid" id="v-valid">— VALID — WND-ROOT-CA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-cta">
+    <a href="/">Open wanderkind.love</a>
+  </div>
+
+  <script type="module">
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/supabase-config.js';
+    (async () => {
+      const wkid = new URLSearchParams(location.search).get('wkid') || (location.pathname.match(/\/verify\/(\w+)/) || [])[1];
+      if (!wkid) return;
+      document.getElementById('v-wkid').textContent = wkid;
+      document.getElementById('v-wkid2').textContent = wkid;
+      try {
+        const r = await fetch(
+          `${SUPABASE_URL}/rest/v1/profiles?wanderkind_id=eq.${encodeURIComponent(wkid)}&select=trail_name,given_name,surname,nationality,issued_at,expires_at`,
+          { headers: { apikey: SUPABASE_ANON_KEY } }
+        );
+        if (!r.ok) return;
+        const rows = await r.json();
+        const p = rows && rows[0];
+        if (!p) {
+          document.getElementById('v-valid').textContent = '— NOT FOUND —';
+          document.getElementById('v-valid').style.color = 'var(--wk-error)';
+          return;
+        }
+        document.getElementById('v-surname').textContent = (p.surname || p.trail_name || '—').toUpperCase();
+        document.getElementById('v-given').textContent = (p.given_name || '—').toUpperCase();
+        document.getElementById('v-nat').textContent = (p.nationality || '—').toUpperCase();
+        const issued = p.issued_at ? new Date(p.issued_at) : null;
+        document.getElementById('v-issued').textContent = issued ? `${issued.getDate()}·${['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][issued.getMonth()]}·${issued.getFullYear() % 100}` : '—';
+      } catch {}
+    })();
+  </script>
+</body>
+</html>
