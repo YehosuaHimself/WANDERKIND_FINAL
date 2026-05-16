@@ -80,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // @ts-nocheck
-import { POIS, POI_META } from './map-pois.js';
 /**
  * /js/map-boot.js — the Wanderkind Map (v2).
  *
@@ -155,6 +154,9 @@ const PIN_THEME = {
   'wifi':           { glyph: 'wifi',           color: '#8A7250',              ring: '#5A4632' },
   'water-fountain': { glyph: 'water-fountain', color: '#4CA8C9',              ring: '#2E7997' },
   'bakery':         { glyph: 'bakery',         color: '#B5651D',              ring: '#7C420E' },
+  'fountain':       { glyph: 'fountain',       color: '#4CA8C9',              ring: '#2A5F73' },
+  'info':           { glyph: 'info',           color: '#4A5A6B',              ring: '#2D3645' },
+  'parish':         { glyph: 'parish',         color: '#7A5A30',              ring: '#4D3A1F' },
 };
 
 function makeIcon(kind, opts = {}) {
@@ -472,6 +474,18 @@ function renderPOIs() {
   state.poiLayer.addTo(state.map);
 }
 
+
+/* ─── legend toggle · wired here (CSP forbids inline <script>) ───────── */
+function wireLegendToggle() {
+  const t = document.getElementById('map-legend-toggle');
+  const w = document.getElementById('map-legend');
+  if (!t || !w) return;
+  t.addEventListener('click', () => {
+    const open = w.classList.toggle('open');
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
+
 async function bootMap() {
   const host = document.getElementById('map');
   if (!host) return;
@@ -522,13 +536,14 @@ async function bootMap() {
     };
     window.dispatchEvent(new CustomEvent('wk-map-moved'));
   };
-  _publishBounds();
-  state.map.on('moveend', _publishBounds);
+  try { _publishBounds(); } catch (e) { console.warn('[map] initial bounds publish failed', e); }
+  state.map.on('moveend', () => { try { _publishBounds(); } catch (_) {} });
   window.__wkMapFlyTo = (lat, lng) => {
     if (state.map) state.map.flyTo([lat, lng], Math.max(state.map.getZoom(), 12), { duration: 0.8 });
   };
 
   wireFilterChips();
+  wireLegendToggle();
 
   setStatus('Loading doors…');
   const ac = new AbortController();
