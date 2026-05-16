@@ -77,7 +77,7 @@ function toggle() {
 async function open() {
   state.open = true;
   $('wanderwall').classList.add('open');
-  $('wanderwall').setAttribute('aria-hidden', 'false');
+  $('wanderwall').removeAttribute('inert');
   $('wanderwall-handle').setAttribute('aria-expanded', 'true');
   await fetchRows(false);
   render();
@@ -89,7 +89,7 @@ async function open() {
 function close() {
   state.open = false;
   $('wanderwall').classList.remove('open');
-  $('wanderwall').setAttribute('aria-hidden', 'true');
+  $('wanderwall').setAttribute('inert', '');
   $('wanderwall-handle').setAttribute('aria-expanded', 'false');
   $('wanderwall-handle').focus();
 }
