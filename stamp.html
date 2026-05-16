@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>Wanderkind — Stamp</title>
+  <meta name="description" content="The story behind a single stamp." />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#FAFAF5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/seal.svg" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    font-src 'self';
+    connect-src 'self' https://gjzhwpzgvdpkflgjesmb.supabase.co;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/typography.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    html, body { background: var(--wk-bg); color: var(--wk-ink); height: 100svh; height: 100dvh; overflow-x: hidden; overflow-y: auto; }
+    body { overscroll-behavior-y: contain; padding: 0; }
+    .browser-mode-hint { max-width: 480px; margin: 12px auto 0; background: rgba(200,118,42,0.08); border: 1px solid var(--wk-amber-line); border-radius: var(--wk-r-md); padding: 12px var(--wk-space-md); }
+    .bmh-eyebrow { display: block; font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono-wide); text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 4px; }
+    .bmh-body { font-size: var(--wk-fs-small); line-height: var(--wk-lh-body); color: var(--wk-ink-soft); margin: 0; }
+    [data-pwa="true"] [data-only="browser"] { display: none; }
+    main#stamp-root {
+      max-width: 480px; margin: 0 auto;
+      padding: max(var(--wk-space-md), env(safe-area-inset-top))
+              var(--wk-page-x)
+              calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 30px);
+      display: flex; flex-direction: column; gap: var(--wk-space-md);
+    }
+    .stamp-back {
+      display: inline-flex; align-items: center;
+      font-family: var(--wk-font-mono);
+      font-size: 11px; letter-spacing: 0.22em;
+      text-transform: uppercase; font-weight: 700;
+      color: var(--wk-amber-text);
+      text-decoration: none;
+      padding: 8px 0;
+    }
+    .stamp-back::before { content: "← "; }
+    .stamp-hero { position: relative; padding: 14px 0 12px; border-bottom: 1px solid var(--wk-line); }
+    .stamp-hero-ghost {
+      position: absolute; top: -4px; right: 0;
+      font-family: var(--wk-font-display);
+      font-weight: 900; font-size: 80px;
+      letter-spacing: -0.04em;
+      color: var(--wk-amber);
+      opacity: 0.08;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .stamp-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .stamp-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .stamp-title-main {
+      font-family: var(--wk-font-display);
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .stamp-title-main em { color: var(--wk-amber-text); font-style: italic; }
+    .stamp-coords {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-muted);
+      margin-top: 6px;
+    }
+    .sect-head {
+      display: flex; align-items: baseline;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--wk-amber-line);
+    }
+    .sect-head-l {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+    }
+    .sect-head-l::before { content: "— "; color: var(--wk-amber); }
+    .sect-head-r {
+      margin-left: auto;
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-nano);
+      letter-spacing: 0.22em;
+      color: var(--wk-ink-muted);
+      text-transform: uppercase;
+    }
+    .gallery {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .g-photo {
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--wk-paper-3, #E8D6A4), var(--wk-paper-4, #D8C28A));
+      border-radius: var(--wk-r-sm);
+      overflow: hidden;
+      position: relative;
+    }
+    .g-photo.add {
+      display: grid; place-items: center;
+      background: var(--wk-bg-2);
+      border: 1px dashed var(--wk-amber);
+      color: var(--wk-amber-text);
+      font-family: var(--wk-font-display);
+      font-weight: 900; font-size: 22px;
+      cursor: pointer;
+    }
+    .note-block {
+      background: var(--wk-bg-2);
+      border-left: 3px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0;
+      padding: 12px 16px;
+      font-family: var(--wk-font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--wk-ink);
+      letter-spacing: 0.02em;
+      white-space: pre-wrap;
+    }
+    .note-empty {
+      font-style: italic;
+      color: var(--wk-ink-muted);
+    }
+    .vouch-block { background: var(--wk-bg-elevated); border: 1px solid var(--wk-line); border-radius: var(--wk-r-md); padding: 14px 16px; }
+    .vouch-text { font-family: var(--wk-font-display); font-style: italic; font-size: 14.5px; line-height: 1.6; color: var(--wk-ink); margin: 0 0 8px; }
+    .vouch-reply { margin: 6px 0 0; padding: 8px 12px; background: var(--wk-bg-2); border-left: 2px solid var(--wk-amber); border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0; font-family: var(--wk-font-display); font-size: 13.5px; line-height: 1.55; color: var(--wk-ink-soft); }
+    .vouch-reply-lbl { display: block; font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: 0.22em; color: var(--wk-amber-text); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+  <a href="#stamp-root" class="skip-to-content">Skip to stamp</a>
+  <aside class="browser-mode-hint" data-only="browser" role="status">
+    <span class="bmh-eyebrow">— Browser mode</span>
+    <p class="bmh-body">You're in Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
+  </aside>
+  <main id="stamp-root">
+    <a href="/stamps.html" class="stamp-back">Back to Wanderbuch</a>
+    <header class="stamp-hero">
+      <div class="stamp-hero-ghost" id="stamp-num">·</div>
+      <span class="stamp-eyebrow">— Stamp</span>
+      <h1 class="stamp-title-main" id="stamp-title-main">Loading…</h1>
+      <p class="stamp-coords" id="stamp-coords">—</p>
+    </header>
+
+    <section>
+      <header class="sect-head">
+        <span class="sect-head-l">Gallery</span>
+        <span class="sect-head-r" id="stamp-photo-count">0 photos</span>
+      </header>
+      <div class="gallery" id="stamp-gallery"></div>
+    </section>
+
+    <section>
+      <header class="sect-head">
+        <span class="sect-head-l">Private note</span>
+      </header>
+      <div class="note-block" id="stamp-note">
+        <span class="note-empty">No note yet · tap to write one.</span>
+      </div>
+    </section>
+
+    <section>
+      <header class="sect-head">
+        <span class="sect-head-l">The vouching</span>
+      </header>
+      <article class="vouch-block" id="stamp-vouch-block" hidden>
+        <p class="vouch-text" id="stamp-vouch-text">—</p>
+        <div class="vouch-reply" id="stamp-vouch-reply" hidden>
+          <span class="vouch-reply-lbl" id="stamp-vouch-reply-lbl">— Host replied</span>
+          <span id="stamp-vouch-reply-text">—</span>
+        </div>
+      </article>
+      <div id="stamp-vouch-empty" style="font-family: var(--wk-font-display); font-style: italic; color: var(--wk-ink-muted); font-size: 13.5px; line-height: 1.55;">No vouch on this stamp.</div>
+    </section>
+  </main>
+  <wk-tabbar></wk-tabbar>
+  <script type="module" src="/js/pwa-mode.js"></script>
+  <script type="module" src="/js/sw-register.js"></script>
+  <script type="module" src="/js/simple-mode.js"></script>
+  <script type="module" src="/js/wk-tabbar.js"></script>
+  <script type="module" src="/js/stamp.js"></script>
+</body>
+</html>
