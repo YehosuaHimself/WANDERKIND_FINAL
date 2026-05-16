@@ -18,10 +18,10 @@
     body { overscroll-behavior-y: contain; padding: 0; }
     [data-pwa="true"] [data-only="browser"] { display: none; }
     .browser-mode-hint { max-width: 480px; margin: 12px auto 0; background: rgba(200,118,42,0.08); border: 1px solid var(--wk-amber-line); border-radius: var(--wk-r-md); padding: 12px var(--wk-space-md); }
-    .bmh-eyebrow { display: block; font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono-wide); text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 4px; }
+    .bmh-eyebrow { display: block; font-family: var(--wk-font-display); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono-wide); text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 4px; }
     .bmh-body { font-size: var(--wk-fs-small); line-height: var(--wk-lh-body); color: var(--wk-ink-soft); margin: 0; }
     main#walks-root { max-width: 480px; margin: 0 auto; padding: max(var(--wk-space-md), env(safe-area-inset-top)) var(--wk-page-x) calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom) + 30px); display: flex; flex-direction: column; gap: var(--wk-space-md); }
-    .w-eyebrow { font-family: var(--wk-font-mono); font-size: var(--wk-fs-mono); letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid var(--wk-line); }
+    .w-eyebrow { font-family: var(--wk-font-display); font-size: var(--wk-fs-mono); letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid var(--wk-line); }
     .w-eyebrow::before { content: "— "; color: var(--wk-amber); }
     .w-title { font-family: var(--wk-font-display); font-weight: 900; font-size: 28px; letter-spacing: -0.02em; line-height: 0.95; margin: 0; color: var(--wk-ink); text-transform: uppercase; }
     .w-title em { color: var(--wk-amber-text); font-style: italic; }
@@ -30,14 +30,14 @@
     .gw-card.active { border-color: var(--wk-amber); border-left: 3px solid var(--wk-amber); }
     .gw-head { display: flex; align-items: baseline; gap: 12px; }
     .gw-name { font-family: var(--wk-font-display); font-weight: 800; font-size: 15px; color: var(--wk-ink); flex: 1; }
-    .gw-badge { font-family: var(--wk-font-mono); font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--wk-amber-soft); color: var(--wk-amber-text); }
-    .gw-meta { font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--wk-ink-muted); margin-top: 6px; line-height: 1.6; }
+    .gw-badge { font-family: var(--wk-font-display); font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--wk-amber-soft); color: var(--wk-amber-text); }
+    .gw-meta { font-family: var(--wk-font-display); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--wk-ink-muted); margin-top: 6px; line-height: 1.6; }
     .gw-dots { display: flex; gap: 5px; margin-top: 10px; }
     .gw-dot { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--wk-amber-hi), var(--wk-amber) 60%, var(--wk-amber-press)); color: var(--wk-bg); display: grid; place-items: center; font-family: var(--wk-font-display); font-weight: 800; font-size: 10px; }
     .gw-dot.ghost { background: transparent; color: var(--wk-amber-text); border: 1px dashed var(--wk-amber); }
     .w-start { padding: 14px 18px; background: var(--wk-bg-2); border: 1px dashed var(--wk-amber); border-radius: var(--wk-r-md); text-align: center; }
     .w-start-h { font-family: var(--wk-font-display); font-weight: 900; font-size: 14px; color: var(--wk-ink); margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.10em; }
-    .w-start-b { font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.18em; color: var(--wk-ink-muted); text-transform: uppercase; }
+    .w-start-b { font-family: var(--wk-font-display); font-size: 10px; letter-spacing: 0.18em; color: var(--wk-ink-muted); text-transform: uppercase; }
     .w-empty { padding: 32px 22px; text-align: center; background: var(--wk-bg-2); border: 1px solid var(--wk-line); border-radius: var(--wk-r-md); }
     .w-empty-h { font-family: var(--wk-font-display); font-weight: 700; font-size: 15px; color: var(--wk-ink); margin: 0 0 6px; }
     .w-empty-b { font-family: var(--wk-font-display); font-size: 13px; color: var(--wk-ink-soft); line-height: 1.5; margin: 0; }
