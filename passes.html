@@ -552,6 +552,162 @@
     .bmh-body strong { color: var(--wk-ink); font-weight: var(--wk-fw-bold); }
 
 
+  
+    /* ─── Master pass · Phase 2 · Passes aurora upgrade ─── */
+    .pd-aurora {
+      position: absolute; top: 0; left: 0; right: 0; height: 240px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%,
+        rgba(200,118,42,0.30) 0%,
+        rgba(200,118,42,0.10) 35%,
+        transparent 70%);
+      animation: aurora 18s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+      mix-blend-mode: multiply;
+    }
+    @keyframes aurora {
+      0%, 100% { transform: translateX(-6%); opacity: 0.85; }
+      50%      { transform: translateX(6%);  opacity: 1; }
+    }
+    .pd-scanline {
+      position: absolute; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--wk-amber), transparent);
+      box-shadow: 0 0 8px var(--wk-amber);
+      opacity: 0.6;
+      animation: scanline 8s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes scanline {
+      0%   { top: 6%; }
+      100% { top: 92%; }
+    }
+    .pd-particles {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 0;
+    }
+    .pd-particles span {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+      box-shadow: 0 0 6px var(--wk-amber);
+      opacity: 0.45;
+      animation: particle-rise 8s ease-in-out infinite;
+    }
+    @keyframes particle-rise {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50%      { transform: translateY(-20px); opacity: 0.7; }
+    }
+    .pd-compass {
+      position: absolute;
+      top: 16%; left: 50%;
+      width: 220px; height: 220px;
+      transform: translateX(-50%);
+      animation: compass-spin 60s linear infinite;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes compass-spin {
+      from { transform: translateX(-50%) rotate(0deg); }
+      to   { transform: translateX(-50%) rotate(360deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pd-aurora, .pd-scanline, .pd-particles span, .pd-compass { animation: none !important; }
+    }
+
+    /* Days counter */
+    .pd-days-counter {
+      text-align: center;
+      padding: 18px 0 14px;
+    }
+    .pd-days-num {
+      font-family: var(--wk-font-display);
+      font-weight: var(--wk-fw-black);
+      font-size: 64px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--wk-amber-text);
+      text-shadow: 0 0 24px rgba(200, 118, 42, 0.30);
+      display: inline-block;
+    }
+    .pd-days-label {
+      display: block;
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-top: 4px;
+    }
+
+    /* Letter to the house */
+    .pd-letter {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: var(--wk-r-md);
+      padding: 16px 18px;
+    }
+    .pd-letter-h {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+      margin: 0 0 10px;
+    }
+    .pd-letter-h::before { content: "— "; color: var(--wk-amber); }
+    .pd-letter p {
+      font-family: var(--wk-font-display);
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--wk-ink);
+      margin: 0 0 10px;
+    }
+    .pd-letter p:last-child { margin-bottom: 0; }
+    .pd-letter .accent { color: var(--wk-amber-text); font-weight: var(--wk-fw-bold); }
+
+    .pd-disclaimer {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--wk-bg-2);
+      border-left: 2px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0;
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--wk-ink-soft);
+    }
+    .pd-disclaimer em { color: var(--wk-amber-text); font-style: italic; font-weight: var(--wk-fw-bold); }
+
+    .pd-auth {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: var(--wk-fw-bold);
+    }
+    .pd-auth-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+      box-shadow: 0 0 8px var(--wk-amber);
+      animation: live-pulse 2s ease-in-out infinite;
+    }
+    @keyframes live-pulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.4; }
+    }
+
   </style>
 </head>
 <body>
@@ -682,8 +838,18 @@
   </main>
 
   <!-- ═══════════ Unfolded detail · Food ═══════════ -->
-  <aside class="pass-detail" id="pd-food" aria-hidden="true" role="dialog" aria-labelledby="pd-food-title">
-    <div class="pd-inner">
+  <aside class="pass-detail pass-detail--food" id="pd-food" aria-hidden="true" role="dialog" aria-labelledby="pd-food-title" style="position: relative; overflow: hidden;">
+    <div class="pd-inner"><div class="pd-particles" aria-hidden="true">
+        <span style="left:8%; top:30%; animation-delay:0s; animation-duration:6s"></span>
+        <span style="left:24%; top:60%; animation-delay:1.2s; animation-duration:8s"></span>
+        <span style="left:48%; top:18%; animation-delay:2.4s; animation-duration:7s"></span>
+        <span style="left:68%; top:55%; animation-delay:0.6s; animation-duration:5.5s"></span>
+        <span style="left:88%; top:35%; animation-delay:3s; animation-duration:9s"></span>
+        <span style="left:14%; top:80%; animation-delay:1.8s; animation-duration:7.5s"></span>
+        <span style="left:42%; top:42%; animation-delay:4s; animation-duration:8.5s"></span>
+      </div>
+      <div class="pd-aurora" aria-hidden="true"></div>
+      <div class="pd-scanline" aria-hidden="true"></div>
       <div class="pd-head">
         <button class="pd-close" type="button" data-close>Back</button>
         <span class="pd-title-mini">Pass II · Food</span>
@@ -715,6 +881,22 @@
           </div>
         </article>
       </div>
+      <div class="pd-days-counter">
+        <span class="pd-days-num" id="pd-days-food">—</span>
+        <span class="pd-days-label">Days on foot · no paid shelter · no motor</span>
+      </div>
+
+      <section class="pd-letter">
+        <h3 class="pd-letter-h">— To the house</h3>
+        <p>The person standing before you is a <span class="accent">Wanderkind</span> — a walker carrying the Food Pass under the seal of Wanderkind Inc. and the Wanderkind Covenant.</p>
+        <p>If you are able, this walker humbly asks for a meal — be it bread, a plate from the kitchen, a seat at the buffet. For free, or for whatever feels right.</p>
+        <p class="accent">Every meal given on the road is remembered.</p>
+      </section>
+
+      <p class="pd-disclaimer">Wanderkind does not form agreements with establishments. This pass is <em>an invitation to generosity, not an entitlement</em>. If food is offered, receive it with gratitude. If not, walk on with grace.</p>
+
+      <span class="pd-auth"><span class="pd-auth-dot" aria-hidden="true"></span>Live · Authenticated · Offline ready</span>
+
 
       <div>
         <h1 class="pd-title" id="pd-food-title">Bread <em>·</em> Salt <em>·</em> Welcome</h1>
@@ -764,8 +946,18 @@
   </aside>
 
   <!-- ═══════════ Unfolded detail · Water ═══════════ -->
-  <aside class="pass-detail" id="pd-water" aria-hidden="true" role="dialog" aria-labelledby="pd-water-title">
-    <div class="pd-inner">
+  <aside class="pass-detail pass-detail--water" id="pd-water" aria-hidden="true" role="dialog" aria-labelledby="pd-water-title" style="position: relative; overflow: hidden;">
+    <div class="pd-inner"><div class="pd-particles" aria-hidden="true">
+        <span style="left:8%; top:30%; animation-delay:0s; animation-duration:6s"></span>
+        <span style="left:24%; top:60%; animation-delay:1.2s; animation-duration:8s"></span>
+        <span style="left:48%; top:18%; animation-delay:2.4s; animation-duration:7s"></span>
+        <span style="left:68%; top:55%; animation-delay:0.6s; animation-duration:5.5s"></span>
+        <span style="left:88%; top:35%; animation-delay:3s; animation-duration:9s"></span>
+        <span style="left:14%; top:80%; animation-delay:1.8s; animation-duration:7.5s"></span>
+        <span style="left:42%; top:42%; animation-delay:4s; animation-duration:8.5s"></span>
+      </div>
+      <div class="pd-aurora" aria-hidden="true"></div>
+      <div class="pd-scanline" aria-hidden="true"></div>
       <div class="pd-head">
         <button class="pd-close" type="button" data-close>Back</button>
         <span class="pd-title-mini">Pass III · Water</span>
@@ -797,6 +989,22 @@
           </div>
         </article>
       </div>
+      <div class="pd-days-counter">
+        <span class="pd-days-num" id="pd-days-water">—</span>
+        <span class="pd-days-label">Days on foot · no paid shelter · no motor</span>
+      </div>
+
+      <section class="pd-letter">
+        <h3 class="pd-letter-h">— To the house</h3>
+        <p>The person standing before you is a <span class="accent">Wanderkind</span> — a walker carrying the Water Pass under the seal of Wanderkind Inc. and the Wanderkind Covenant.</p>
+        <p>If you are able, this walker humbly asks for a drink — be it bread, a refilled bottle, a tap, five minutes in the shade. For free, or for whatever feels right.</p>
+        <p class="accent">Every drink given on the road is remembered.</p>
+      </section>
+
+      <p class="pd-disclaimer">Wanderkind does not form agreements with establishments. This pass is <em>an invitation to generosity, not an entitlement</em>. If water is offered, receive it with gratitude. If not, walk on with grace.</p>
+
+      <span class="pd-auth"><span class="pd-auth-dot" aria-hidden="true"></span>Live · Authenticated · Offline ready</span>
+
 
       <div>
         <h1 class="pd-title" id="pd-water-title">Water <em>·</em> Shower <em>·</em> Rest</h1>
@@ -967,5 +1175,31 @@
       requestAnimationFrame(() => open(initial));
     }
   </script>
+
+  <script type="module">
+    /* Days counter · derives from profile.created_at */
+    import { getSession } from '/js/session.js';
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/supabase-config.js';
+    (async () => {
+      const session = getSession();
+      if (!session) return;
+      try {
+        const r = await fetch(
+          `${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=created_at`,
+          { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + session.accessToken } }
+        );
+        if (!r.ok) return;
+        const rows = await r.json();
+        const created = rows && rows[0] && rows[0].created_at;
+        if (!created) return;
+        const days = Math.max(0, Math.floor((Date.now() - new Date(created)) / 86400000));
+        for (const id of ['pd-days-food', 'pd-days-water']) {
+          const el = document.getElementById(id);
+          if (el) el.textContent = String(days);
+        }
+      } catch (err) { console.warn('[passes] days counter', err); }
+    })();
+  </script>
+
 </body>
 </html>
