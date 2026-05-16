@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.47-epics-all';
+const VERSION = '0.1.48-host-perfect';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -35,6 +35,7 @@ const PRECACHE = [
   '/id.html',
   '/messages.html',
   '/hosts.html',
+  '/js/host-setup.js',
   '/js/pass.js',
   '/js/messages.js',
   '/js/hosts.js',      // placeholder (Coming soon)
