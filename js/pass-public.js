@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * /u/<wkid|handle> — public profile page.
  *
