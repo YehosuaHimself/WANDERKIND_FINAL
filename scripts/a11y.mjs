@@ -27,6 +27,7 @@ const PAGES = [
   'http://localhost:8080/way.html',
   'http://localhost:8080/pass.html',
   'http://localhost:8080/vouches.html',
+  'http://localhost:8080/verify-me.html',
 ];
 
 (async () => {
