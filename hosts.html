@@ -391,6 +391,274 @@
     }
     .knock-decline:hover:not([disabled]) { border-color: var(--wk-amber); color: var(--wk-amber-text); }
 
+  
+    /* §A · Door status row · seal name + open/paused toggle + quiet hours */
+    .door-status {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 14px 18px;
+      margin-bottom: var(--wk-space-md);
+    }
+    .door-status-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 0;
+    }
+    .door-status-row + .door-status-row { border-top: 1px solid var(--wk-line); padding-top: 12px; margin-top: 6px; }
+    .door-name {
+      flex: 1;
+      font-family: var(--wk-font-display);
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--wk-ink-deep, var(--wk-ink));
+    }
+    .door-state-label {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+    }
+    .door-offers { display: flex; gap: 4px; }
+    .offer-pill {
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .door-status-toggle {
+      width: 44px; height: 24px;
+      position: relative; display: inline-block; cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .door-status-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .door-status-toggle .slider {
+      position: absolute; inset: 0;
+      background: var(--wk-line);
+      border-radius: 999px;
+      transition: background 0.18s ease;
+    }
+    .door-status-toggle .slider::before {
+      content: "";
+      position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      background: var(--wk-bg);
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(11,7,5,0.18);
+      transition: transform 0.18s ease;
+    }
+    .door-status-toggle input:checked + .slider { background: var(--wk-amber); }
+    .door-status-toggle input:checked + .slider::before { transform: translateX(20px); }
+    .door-row-label { flex: 1; font-family: var(--wk-font-display); font-size: 14px; color: var(--wk-ink); }
+    .door-row-meta {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* §C · Active stay panel · approaching / arrived / checkout */
+    .active-stay-wrap { margin-bottom: var(--wk-space-md); }
+    .active-stay-card {
+      background: var(--wk-bg-elevated);
+      border: 1px solid var(--wk-line);
+      border-left: 4px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+      padding: 14px 18px;
+    }
+    .stay-phase {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .stay-phase--approaching {
+      background: rgba(200,118,42,0.12);
+      color: var(--wk-amber-text);
+    }
+    .stay-phase--approaching .stay-phase-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+      animation: phase-pulse 2s ease-in-out infinite;
+    }
+    .stay-phase--arrived {
+      background: rgba(91, 115, 64, 0.14);
+      color: #5B7340;
+    }
+    .stay-phase--arrived .stay-phase-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #5B7340;
+    }
+    .stay-phase--checkout {
+      background: rgba(200,118,42,0.20);
+      color: var(--wk-amber-press);
+    }
+    .stay-phase--checkout .stay-phase-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+    }
+    @keyframes phase-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.85); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .stay-phase-dot { animation: none !important; }
+    }
+    .stay-name {
+      font-family: var(--wk-font-display);
+      font-size: 15px;
+      color: var(--wk-ink);
+      line-height: 1.4;
+    }
+    .stay-name strong { font-weight: 800; }
+    .stay-when {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-top: 2px;
+    }
+    .stay-vouch-cta {
+      display: inline-block;
+      margin-top: 12px;
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-bg);
+      background: var(--wk-amber);
+      padding: 9px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+
+    /* §D · Pair-a-Lock inline form */
+    .pair-lock-form {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-md);
+      padding: 14px 16px;
+      margin-top: var(--wk-space-sm);
+      display: flex; flex-direction: column;
+      gap: 10px;
+    }
+    .pair-lock-form input {
+      width: 100%;
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      background: var(--wk-bg);
+      color: var(--wk-ink);
+      box-sizing: border-box;
+    }
+    .pair-lock-form input:focus {
+      outline: 2px solid var(--wk-amber);
+      outline-offset: -1px;
+    }
+    .pair-lock-submit {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 11px;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* §E · Gästebuch · last 3 vouches received */
+    .gastebuch-wrap {
+      margin-top: var(--wk-space-md);
+      padding-top: var(--wk-space-md);
+      border-top: 1px solid var(--wk-line);
+    }
+    .gastebuch-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: var(--wk-fs-mono);
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+    .gastebuch-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .gast-entry {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-left: 3px solid var(--wk-amber);
+      border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+    .gast-head { display: flex; align-items: center; gap: 10px; }
+    .gast-av {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--wk-amber-hi), var(--wk-amber) 60%, var(--wk-amber-press));
+      color: var(--wk-bg);
+      display: grid; place-items: center;
+      font-family: var(--wk-font-display);
+      font-weight: 900; font-size: 12px;
+    }
+    .gast-meta { flex: 1; }
+    .gast-name {
+      font-family: var(--wk-font-display);
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--wk-ink);
+    }
+    .gast-date {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--wk-amber-text);
+      text-transform: uppercase;
+    }
+    .gast-text {
+      margin: 8px 0 0;
+      font-family: var(--wk-font-display);
+      font-style: italic;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--wk-ink-soft);
+    }
+    .gastebuch-all-link {
+      display: inline-block;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      padding: 8px 0;
+      text-decoration: none;
+    }
+    .gastebuch-all-link:hover { color: var(--wk-amber); }
+
   </style>
 </head>
 <body>
@@ -419,6 +687,23 @@
       <span class="h-eyebrow">— Hosting</span>
       <span class="h-kicker">Magic Open</span>
     </header>
+    <section class="door-status" aria-label="Your door's status">
+      <div class="door-status-row">
+        <div class="door-name" id="door-name">Your door</div>
+        <div class="door-offers" id="door-offers"></div>
+        <a href="/host.html" style="font-family:var(--wk-font-mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--wk-amber-text); text-decoration:none; font-weight:700; padding:6px 0;">Edit →</a>
+      </div>
+      <div class="door-status-row">
+        <span class="door-row-label">Open<span class="door-row-meta" id="door-state-label">Open</span></span>
+        <label class="door-status-toggle">
+          <input type="checkbox" id="toggle-paused" />
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+      </div>
+      <div class="door-status-row">
+        <span class="door-row-label">Quiet hours<span class="door-row-meta" id="quiet-hours-label">22:00 → 07:00</span></span>
+      </div>
+    </section>
     <section class="knocks-wrap" id="knocks-wrap" hidden aria-labelledby="knocks-eyebrow">
       <h2 class="knocks-eyebrow" id="knocks-eyebrow">Incoming knocks</h2>
       <div id="knocks-list" role="list"></div>
