@@ -401,9 +401,14 @@
           <h2 class="h-question">What can you <em>give</em>?</h2>
           <p class="h-sub">Pick everything that applies. You can change this any day.</p>
           <div class="h-offers" id="f-offers" role="group">
-            <button class="h-offer" type="button" data-offer="bed">Bed</button>
-            <button class="h-offer" type="button" data-offer="food">Food</button>
-            <button class="h-offer" type="button" data-offer="water">Water</button>
+            <button class="h-offer" type="button" data-offer="garden">⛺ Garden / Tent</button>
+            <button class="h-offer" type="button" data-offer="simple-roof">△ Simple Roof</button>
+            <button class="h-offer" type="button" data-offer="couch">◇ Couch</button>
+            <button class="h-offer" type="button" data-offer="room-no-bed">▢ Room · no bed</button>
+            <button class="h-offer" type="button" data-offer="room-bed">▣ Room · with bed</button>
+            <span style="width:100%; padding:8px 0 4px; font-family: var(--wk-font-mono); font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700;">— Food &amp; water</span>
+            <button class="h-offer" type="button" data-offer="food">⌇ Food</button>
+            <button class="h-offer" type="button" data-offer="water">◦ Water</button>
           </div>
         </section>
 
@@ -430,6 +435,17 @@
             <button class="h-offer" type="button" id="f-rule-add" style="flex: 0 0 auto;">+</button>
           </div>
           <div class="h-rules" id="f-rules"></div>
+          <div style="display:flex; align-items:center; gap: 12px; padding: 10px 0;">
+            <div style="flex:1;">
+              <div style="font-family: var(--wk-font-display); font-weight: 700; font-size: 14px;">Donation-based</div>
+              <div style="font-family: var(--wk-font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--wk-ink-muted); margin-top: 2px;">A gift is welcome, not required</div>
+            </div>
+            <label style="width: 44px; height: 24px; position: relative; display: inline-block; cursor: pointer; flex: 0 0 auto;">
+              <input type="checkbox" id="f-donation" style="position: absolute; opacity: 0;" />
+              <span style="position: absolute; inset: 0; background: var(--wk-line); border-radius: 999px; transition: background 0.18s ease;"></span>
+            </label>
+          </div>
+
         </section>
 
         <!-- Step 6 · Languages + Specialty -->
