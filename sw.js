@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.55-epic11-r2';
+const VERSION = '0.1.56-more-grid';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -27,6 +27,7 @@ const PRECACHE = [
   '/me.html',        // signed-in profile
   '/verify-me.html', // EPIC 11 · mandatory FaceScan onboarding step
   '/more.html',      // central hub
+  '/about.html',     // 'Every Wanderkind is a Host' philosophy page
   '/me-edit.html',   // profile editor
   '/settings.html',  // placeholder (Coming soon)
   '/host.html',      // placeholder (Coming soon)
@@ -68,12 +69,10 @@ const PRECACHE = [
   '/js/wk-tabbar.js',
   '/js/scanner-mode.js',
   '/js/stamp.js',
-  '/js/propose.js',
   '/js/walks.js',
   '/js/feed.js',
   '/verify/index.html',
   '/stamp.html',
-  '/propose.html',
   '/walks.html',
   '/feed.html',
   '/js/stamps.js',
