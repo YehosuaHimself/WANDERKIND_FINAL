@@ -372,6 +372,152 @@
       box-shadow: 0 8px 24px -12px rgba(11,7,5,0.25) !important;
     }
     .leaflet-popup-tip { background: var(--wk-bg-elevated) !important; }
+  
+    /* Master pass P4 · drawer + visibility */
+    .map-region-card {
+      position: absolute;
+      top: calc(env(safe-area-inset-top) + 8px);
+      left: 50%; transform: translateX(-50%);
+      max-width: 360px;
+      width: calc(100% - 32px);
+      padding: 10px 14px;
+      background: rgba(246, 237, 216, 0.95);
+      border: 1px solid var(--wk-amber);
+      border-radius: 999px;
+      box-shadow: 0 4px 12px -6px rgba(11, 7, 5, 0.20);
+      z-index: 410;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .map-region-l {
+      flex: 1;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-ink);
+      font-weight: 700;
+    }
+    .map-region-l .sub {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-muted);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+    .map-visible-pill {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      border: 0;
+      cursor: pointer;
+    }
+    .map-visible-pill[aria-pressed="false"] {
+      background: var(--wk-bg);
+      color: var(--wk-ink);
+      border: 1px solid var(--wk-line);
+    }
+    .map-visible-pill::before { content: "👁"; }
+    .map-visible-pill[aria-pressed="false"]::before { content: "⊘"; }
+
+    /* Bottom drawer · slides up when a pin is tapped */
+    .map-drawer {
+      position: absolute;
+      bottom: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom));
+      left: 0; right: 0;
+      background: var(--wk-bg-elevated);
+      border-top: 1px solid var(--wk-amber);
+      border-radius: 18px 18px 0 0;
+      padding: 14px 18px 18px;
+      box-shadow: 0 -12px 28px -16px rgba(11, 7, 5, 0.18);
+      z-index: 415;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .map-drawer.open { transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .map-drawer { transition: none; }
+    }
+    .map-drawer-handle {
+      width: 36px; height: 4px;
+      background: var(--wk-line);
+      border-radius: 2px;
+      margin: 0 auto 10px;
+    }
+    .map-drawer-top {
+      display: flex; justify-content: space-between;
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .map-drawer-top .l::before { content: "— "; color: var(--wk-amber); }
+    .map-drawer-name {
+      font-family: var(--wk-font-display);
+      font-weight: 800;
+      font-size: 17px;
+      color: var(--wk-ink);
+      margin: 0;
+    }
+    .map-drawer-name em { color: var(--wk-amber-text); font-style: italic; }
+    .map-drawer-meta {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin-top: 2px;
+    }
+    .map-drawer-offers {
+      display: flex; gap: 4px; flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .map-drawer-offer {
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 3px 8px;
+      background: var(--wk-amber-soft);
+      color: var(--wk-amber-text);
+      border: 1px solid var(--wk-amber-line);
+      border-radius: 3px;
+    }
+    .map-drawer-row {
+      display: flex; gap: 8px;
+      margin-top: 12px;
+    }
+    .map-drawer-btn {
+      flex: 1;
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 11px 0;
+      border-radius: 999px;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      border: 0;
+    }
+    .map-drawer-btn.primary { background: var(--wk-amber); color: var(--wk-bg); }
+    .map-drawer-btn.ghost { background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); }
+
   </style>
 </head>
 <body>
