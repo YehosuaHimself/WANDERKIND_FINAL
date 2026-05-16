@@ -204,6 +204,15 @@ function applyProfile(p) {
     el.textContent = fmtShortDate(p.expires_at) || fmtShortDate(addYears(p.issued_at || p.created_at, 5)) || '—';
   });
 
+  
+  /* Master pass · Phase 2 · Back page (Page 3) hydration */
+  const qrUrl = document.getElementById('id-qr-url');
+  if (qrUrl) qrUrl.innerHTML = 'verify.wanderkind.love<br>/' + wkid;
+  const bornAs = document.getElementById('id-born-as');
+  if (bornAs && p.born_as) bornAs.textContent = String(p.born_as).toUpperCase();
+  const bornPlace = document.getElementById('id-born-place');
+  if (bornPlace && p.last_location_label) bornPlace.textContent = String(p.last_location_label).toUpperCase();
+
   hydrateMatrix(p, wkid);
   /* EPIC 06 · youth path · render a 'minor · accompanied by' stripe when applicable */
   try {
