@@ -1,3 +1,82 @@
+
+function openDrawer(host) {
+  const d = document.getElementById('map-drawer');
+  if (!d) return;
+  const name = (host.trail_name || 'Wanderkind').replace(/[<>"']/g, '');
+  document.getElementById('drawer-eyebrow').textContent = '— Wanderkind';
+  document.getElementById('drawer-name').textContent = name;
+  document.getElementById('drawer-meta').textContent = (host.wanderkind_id || '') + ' · ' + (host.last_location_label || '').replace(/[<>"']/g, '');
+  const offers = document.getElementById('drawer-offers');
+  offers.innerHTML = '';
+  const arr = Array.isArray(host.host_offers) ? host.host_offers : [];
+  for (const o of arr) {
+    const span = document.createElement('span');
+    span.className = 'map-drawer-offer';
+    span.textContent = o;
+    offers.appendChild(span);
+  }
+  const knock = document.getElementById('drawer-knock');
+  if (knock && host.wanderkind_id) knock.href = '/u/?wkid=' + host.wanderkind_id + '#knock';
+  const pass = document.getElementById('drawer-pass');
+  if (pass && host.wanderkind_id) pass.href = '/u/?wkid=' + host.wanderkind_id;
+  d.classList.add('open');
+  d.setAttribute('aria-hidden', 'false');
+}
+
+function closeDrawer() {
+  const d = document.getElementById('map-drawer');
+  if (!d) return;
+  d.classList.remove('open');
+  d.setAttribute('aria-hidden', 'true');
+}
+
+/* Map clicks outside the drawer close it */
+document.addEventListener('click', (e) => {
+  const d = document.getElementById('map-drawer');
+  if (!d) return;
+  if (e.target.closest('.map-drawer')) return;
+  if (e.target.closest('.wk-pin')) return;
+  if (e.target.closest('.wk-walker')) return;
+  if (d.classList.contains('open')) closeDrawer();
+});
+
+/* Wire the visibility toggle */
+document.addEventListener('DOMContentLoaded', () => {
+  const pill = document.getElementById('map-visible-pill');
+  if (!pill) return;
+  /* Read profile.show_on_map once */
+  try {
+    const session = JSON.parse(localStorage.getItem('wk-session-v1') || 'null');
+    if (!session) return;
+    fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=show_on_map`, {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + session.accessToken }
+    }).then(r => r.json()).then(rows => {
+      const visible = rows && rows[0] && rows[0].show_on_map;
+      pill.setAttribute('aria-pressed', visible ? 'true' : 'false');
+      pill.textContent = visible ? 'Visible' : 'Invisible';
+    });
+    pill.addEventListener('click', async () => {
+      const wasOn = pill.getAttribute('aria-pressed') === 'true';
+      const next = !wasOn;
+      pill.setAttribute('aria-pressed', next ? 'true' : 'false');
+      pill.textContent = next ? 'Visible' : 'Invisible';
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}`, {
+          method: 'PATCH',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: 'Bearer ' + session.accessToken,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({ show_on_map: next }),
+        });
+      } catch {}
+    });
+  } catch {}
+});
+
+
 // @ts-nocheck
 /**
  * /js/map-boot.js — the Wanderkind Map (v2).
@@ -286,6 +365,7 @@ function renderWalkers(rows) {
         keyboard: false,
       });
       const name = (w.trail_name || 'Wanderkind').replace(/[<>"']/g, '');
+      marker.on('click', () => openDrawer(p));
       marker.bindPopup(popupHTML(name + (isSelf ? ' · you' : ''), w.wanderkind_id, isSelf ? 'On the road' : 'Walking now'));
       marker.addTo(state.walkerLayer);
       state.walkerMarkers.set(w.id, marker);
