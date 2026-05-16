@@ -10,7 +10,6 @@
  *      doesn't loop back into the editor
  */
 
-// @ts-check
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 import { refreshIfNeeded, signOut } from './session.js';
