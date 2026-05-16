@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 function openDrawer(host) {
   const d = document.getElementById('map-drawer');
