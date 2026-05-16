@@ -41,11 +41,7 @@ class WkTabbar extends HTMLElement {
 
       <a href="/more.html" class="wk-tab wk-tab-hub"${moreActive ? ' aria-current="page"' : ''}>
         <span class="wk-tab-hub-square" aria-hidden="true">
-          <svg viewBox="0 0 60 60" aria-hidden="true">
-            <path d="M 12 18 L 20 46 L 26 28 L 30 42 L 34 28 L 40 46 L 48 18"
-                  fill="none" stroke="currentColor" stroke-width="4"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <span class="wk-tab-hub-W">W</span>
         </span>
         <span class="sr-only">More</span>
       </a>
