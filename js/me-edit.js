@@ -120,6 +120,8 @@ async function boot() {
         }
         currentShowOnMap = Boolean(rows[0].show_on_map);
         if (rows[0].home_country && countryInput) countryInput.value = String(rows[0].home_country);
+        // Hydrate interests + photos UI from the loaded profile
+        if (window.__wkProfileExtrasHydrate) window.__wkProfileExtrasHydrate(rows[0]);
         renderLocation();
       }
     }
