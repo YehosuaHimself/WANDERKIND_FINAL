@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const fromUrl = parseInt(url.get('step'), 10);
   if (fromUrl && fromUrl >= 1 && fromUrl <= TOTAL_STEPS) state.step = fromUrl;
 
-  // Auto-advance: if already signed in and on step 2/3, jump to 4
-  const sess = getSession();
-  if (sess && state.step < 4) state.step = 4;
+  // Note: we used to auto-advance signed-in users past steps 2/3, but that
+  // bug also skipped step 3 (trail name) for anyone who refreshed after signup.
+  // URL ?step= + localStorage already handle resume correctly without it.
 
   wireNavigation();
   wireStep2_signup();
