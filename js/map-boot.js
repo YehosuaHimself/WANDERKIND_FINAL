@@ -315,7 +315,7 @@ function renderHostsAndPoi(rows) {
     const icon = makeIcon(kind, { size: 28, large: true });
     if (!icon) continue;
     const name = (p.trail_name || 'Wanderkind').replace(/[<>"']/g, '');
-    const m = L.marker([p.lat, p.lng], { icon, zIndexOffset: 500 });
+    const m = L.marker([p.lat, p.lng], { icon, alt: `${name} · ${kindLabel(kind)}`, zIndexOffset: 500 });
     m.bindPopup(popupHTML(name, p.wanderkind_id, kindLabel(kind)));
     m.addTo(state.hostLayer);
   }
@@ -460,7 +460,7 @@ function renderPOIs() {
       large: tier === 'primary',
     });
     if (!icon) continue;
-    const m = L.marker([p.lat, p.lng], { icon, zIndexOffset: tier === 'primary' ? 200 : 50 });
+    const m = L.marker([p.lat, p.lng], { icon, alt: `${safe(p.name)} · ${kindLabel(p.kind)}`, zIndexOffset: tier === 'primary' ? 200 : 50 });
     const safe = (s) => String(s || '').replace(/[<>"']/g, '');
     m.bindPopup(`
       <div style="font-family:'Helvetica Neue',sans-serif;font-size:13px;color:#1A120A;min-width:140px;">
