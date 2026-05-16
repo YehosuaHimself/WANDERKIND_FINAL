@@ -337,7 +337,22 @@
     .auth-back:hover, .auth-back:focus-visible {
       color: var(--wk-embassy-amber);
     }
-  </style>
+  
+.wk-img-logo {
+  display: inline-grid; place-items: center;
+  width: 96px; height: 96px;
+  background: var(--wk-cream, #FAEFCF);
+  border: 1.5px solid var(--wk-amber-text, #9C5917);
+  border-radius: 12px;
+  color: var(--wk-amber-text, #9C5917);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+</style>
 </head>
 <body>
   <a href="#auth-main" class="skip-to-content">Skip to sign-in</a>
@@ -345,7 +360,7 @@
   <main class="auth" id="auth-main">
 
     <div class="auth-seal-wrap" aria-hidden="true">
-      <img src="/assets/icons/seal-parchment.svg" alt="" width="96" height="96" />
+      <span class="wk-img-logo" aria-label="Wanderkind">W</span>
     </div>
 
     <!-- ── State A · email entry ──────────────────────────────────── -->
