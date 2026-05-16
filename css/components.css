@@ -239,6 +239,16 @@ wk-tabbar .wk-tab-hub-square {
   box-shadow: 0 -4px 14px -8px rgba(11, 7, 5, 0.20);
   transition: background 0.15s ease, color 0.15s ease;
 }
+wk-tabbar .wk-tab-hub-W {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--wk-amber-text);
+  user-select: none;
+}
+
 wk-tabbar .wk-tab-hub-square > svg {
   width: 30px;
   height: 30px;
