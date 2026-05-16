@@ -152,11 +152,11 @@ wk-tabbar {
   z-index: 50;
 
   display: grid;
-  /* Middle column locked at 60px so the FAB hub never affects side-tab geometry */
-  grid-template-columns: 1fr 60px 1fr;
-  height: var(--wk-tabbar-h);
-  /* flush to bottom of viewport per design lock */
-  padding-bottom: 0;
+  /* Middle column locked at 64px so the truly-square FAB hub never affects side-tab geometry */
+  grid-template-columns: 1fr 64px 1fr;
+  height: calc(var(--wk-tabbar-h) + env(safe-area-inset-bottom, 0px));
+  /* Safe-area padding so icons sit above the home indicator instead of behind it */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 
   background: var(--wk-bg);
   border-top: 1px solid var(--wk-line);
@@ -203,15 +203,15 @@ wk-tabbar .wk-tab-hub {
   overflow: visible;
 }
 wk-tabbar .wk-tab-hub-square {
-  /* Square FAB · a little taller than the bar · rises above the top edge */
-  width: 60px;
-  height: calc(var(--wk-tabbar-h) + 14px);
+  /* True square · 64×64 · equal sides */
+  width: 64px;
+  height: 64px;
   border-radius: var(--wk-r-sm);
   border: 1.5px solid var(--wk-amber-text);
   background: var(--wk-bg);
 
   position: absolute;
-  bottom: 0;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
 
