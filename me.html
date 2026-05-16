@@ -488,6 +488,97 @@
     <span class="bmh-eyebrow">— Browser mode</span>
     <p class="bmh-body">You're signed in via Safari. <strong>Open Wanderkind from your home screen</strong> for the full app experience.</p>
   </aside>
+  <!-- Walker-side active-stay banner · only shown when the bearer is mid-stay -->
+  <aside id="walker-stay" hidden style="
+    max-width: 480px;
+    margin: 10px auto 0;
+    background: var(--wk-bg-elevated);
+    border: 1px solid var(--wk-amber);
+    border-left: 3px solid var(--wk-amber);
+    border-radius: 0 var(--wk-r-md) var(--wk-r-md) 0;
+    padding: 12px 16px;
+  ">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span id="walker-stay-phase" style="
+        display:inline-flex; align-items:center; gap:6px;
+        font-family: var(--wk-font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(200,118,42,0.12);
+        color: var(--wk-amber-text);
+      ">— Approaching</span>
+      <a id="walker-stay-cta" href="#" hidden style="
+        margin-left: auto;
+        font-family: var(--wk-font-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--wk-bg);
+        background: var(--wk-amber);
+        padding: 7px 14px;
+        border-radius: 999px;
+        text-decoration: none;
+      ">Vouch →</a>
+    </div>
+    <div style="margin-top:8px; font-family: var(--wk-font-display); font-size: 14px; color: var(--wk-ink);">
+      <strong id="walker-stay-host">—</strong>
+      <span id="walker-stay-sub" style="color: var(--wk-ink-muted);"></span>
+    </div>
+  </aside>
+
+  <script type="module">
+    /* Walker active-stay banner · self-contained */
+    import { getSession } from '/js/session.js';
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from '/js/supabase-config.js';
+    (async function loadWalkerStay() {
+      const session = getSession();
+      if (!session) return;
+      try {
+        const r = await fetch(
+          `${SUPABASE_URL}/rest/v1/stays?guest_id=eq.${session.user.id}&status=in.(active,pending)&order=arrives_at.asc&limit=1&select=*,host:profiles!host_id(trail_name,wanderkind_id,last_location_label)`,
+          { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + session.accessToken } }
+        );
+        if (!r.ok) return;
+        const rows = await r.json();
+        const stay = rows && rows[0];
+        if (!stay) return;
+        const banner = document.getElementById('walker-stay');
+        if (!banner) return;
+        banner.hidden = false;
+        const host = stay.host || {};
+        const hostName = (host.trail_name || 'host').replace(/[<>"']/g, '');
+        document.getElementById('walker-stay-host').textContent = hostName;
+        const now = new Date();
+        const arr = new Date(stay.arrives_at);
+        const diffMin = Math.round((arr - now) / 60000);
+        const sinceArr = -diffMin;
+        const phaseEl = document.getElementById('walker-stay-phase');
+        const subEl   = document.getElementById('walker-stay-sub');
+        const cta     = document.getElementById('walker-stay-cta');
+        if (stay.status === 'pending' && diffMin > 0) {
+          phaseEl.textContent = '— Approaching';
+          subEl.textContent = ' · arriving in ' + (diffMin > 60 ? Math.round(diffMin/60) + 'h' : diffMin + 'm');
+        } else if (stay.status === 'active' && sinceArr < 14 * 60) {
+          phaseEl.textContent = '— Under their roof';
+          phaseEl.style.background = 'rgba(91, 115, 64, 0.14)';
+          phaseEl.style.color = '#5B7340';
+          subEl.textContent = ' · ' + (host.last_location_label || '');
+        } else if (stay.status === 'active') {
+          phaseEl.textContent = '— Checkout';
+          subEl.textContent = ' · time to write your vouch';
+          cta.hidden = false;
+          cta.href = '/vouch.html?stay=' + stay.id;
+        }
+      } catch (err) { console.warn('[me/walker-stay]', err); }
+    })();
+  </script>
+
+
 
   <main id="me-root" aria-live="polite">
     <!-- JS replaces this skeleton with the populated profile -->
