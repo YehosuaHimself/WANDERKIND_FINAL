@@ -1,26 +1,23 @@
 // @ts-nocheck
 /**
- * /js/verify-me.js · mandatory FaceScan onboarding step.
+ * /js/verify-me.js · mandatory FaceScan onboarding step. (v2 · hardened)
  *
  * Flow (one page, three slides via translateX track):
- *   1. Compose — explainer, "Start scan" button, "Not now" exits to /me.html
- *      (existing users can defer; new users get gated by auth.js redirect).
- *   2. Scanning — getUserMedia 640×480 front camera. Three prompts over ~6s:
- *        - "Look at the camera"   (capture frame at t=1500ms)
- *        - "Blink slowly"          (capture frame at t=3500ms)
- *        - "Turn slightly"         (capture frame at t=5500ms)
- *      Each frame is hashed (SHA-256) before pixels are discarded.
- *      Liveness score derived from three signals:
- *        - hash distance (frames must differ)
- *        - average brightness delta between frames
- *        - frame timing tolerance
- *   3. Confirmed — server returns ok=true, journey_tier = verified-walker.
+ *   1. Compose — explainer, Start scan / Maybe later (latter hidden in
+ *      mandatory-onboarding mode when ?next= is present).
+ *   2. Scanning — getUserMedia front camera. Three prompts over ~6s:
+ *        - "Look at the camera"   (capture at t=1500ms + 600ms reaction)
+ *        - "Blink slowly"          (capture at t=3500ms + 600ms reaction)
+ *        - "Turn slightly"         (capture at t=5500ms + 600ms reaction)
+ *      Frame pixels are hashed (SHA-256) locally then discarded.
+ *      Liveness score combines three signals:
+ *        - distinct hashes      (replay prevention)
+ *        - brightness deltas    (motion proxy)
+ *        - timing tolerance     (rejects automated replay)
+ *   3. Confirmed — server returns ok=true, profile.face_verified_at = now().
  *
- * The raw pixels never leave the device. We send only 3 hashes + liveness.
- * The RPC enforces the passing rule server-side (liveness >= 0.62, distinct hashes).
- *
- * Phase-2 hook: provider param. When wired to Stripe Identity / Onfido,
- * we'll change the provider string and POST a session token instead.
+ * Server enforces the passing rule (liveness >= 0.62, distinct hashes).
+ * Phase-2 hook: pass p_provider="stripe-identity-v1" once wired.
  */
 
 import { getSession } from './session.js';
@@ -31,7 +28,9 @@ const state = {
   session: null,
   stream: null,
   next: '/map.html',
+  mandatory: false,
   busy: false,
+  cancelled: false,
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -42,11 +41,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const params = new URLSearchParams(location.search);
-  if (params.get('next')) state.next = params.get('next');
+  // mandatory mode = the auth gate routed us here; in this mode we hide "Maybe later"
+  if (params.get('next')) {
+    state.next = params.get('next');
+    state.mandatory = true;
+  }
+
+  // ── Guard: MediaDevices API present + secure context? ────────────────
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.isSecureContext) {
+    showError('v-err-compose', 'This browser cannot access the camera. Open Wanderkind on a phone with HTTPS.');
+    $('v-start').disabled = true;
+  }
+
+  // ── Mandatory mode: hide the "Not now" exit ──────────────────────────
+  if (state.mandatory) {
+    $('v-cancel').hidden = true;
+  } else {
+    $('v-cancel').textContent = 'Maybe later';
+  }
 
   $('v-start').addEventListener('click', startScan);
   $('v-cancel').addEventListener('click', () => location.replace('/me.html'));
   $('v-continue').addEventListener('click', () => location.replace(state.next));
+
+  const cancelBtn = $('v-cancel-scan');
+  if (cancelBtn) cancelBtn.addEventListener('click', cancelScan);
 });
 
 function goSlide(idx) {
@@ -56,44 +75,78 @@ function goSlide(idx) {
 
 function showError(slot, msg) {
   const el = $(slot);
+  if (!el) return;
   el.textContent = msg;
   el.classList.add('on');
+}
+
+function clearError(slot) {
+  const el = $(slot);
+  if (el) el.classList.remove('on');
+}
+
+function cancelScan() {
+  state.cancelled = true;
+  if (state.stream) state.stream.getTracks().forEach((t) => t.stop());
+  state.stream = null;
+  state.busy = false;
+  goSlide(0);
 }
 
 async function startScan() {
   if (state.busy) return;
   state.busy = true;
-  $('v-err-compose').classList.remove('on');
+  state.cancelled = false;
+  clearError('v-err-compose');
+  clearError('v-err-scan');
 
-  // Request camera
+  // Request camera with a fresh user gesture
   let stream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: 640, height: 480 },
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
       audio: false,
     });
   } catch (err) {
     state.busy = false;
-    showError('v-err-compose', 'Camera access is required for verification. Enable it and try again.');
+    const denied = err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError');
+    showError(
+      'v-err-compose',
+      denied
+        ? 'Camera permission is required. Enable it in your browser settings and tap Start scan again.'
+        : 'Could not start the camera. Make sure no other app is using it, then try again.'
+    );
     return;
   }
   state.stream = stream;
   const video = $('v-video');
   video.srcObject = stream;
-  await new Promise((res) => video.addEventListener('loadedmetadata', res, { once: true }));
+  try {
+    await new Promise((res, rej) => {
+      const t = setTimeout(() => rej(new Error('Camera timeout')), 4000);
+      video.addEventListener('loadedmetadata', () => { clearTimeout(t); res(undefined); }, { once: true });
+    });
+    await video.play().catch(() => {});
+  } catch (err) {
+    cancelScan();
+    showError('v-err-compose', 'Camera did not start in time. Try again.');
+    return;
+  }
 
   goSlide(1);
 
   try {
     const result = await runLivenessSequence(video);
+    if (state.cancelled) return;
     await submitVerification(result);
   } catch (err) {
     console.warn('[verify-me] sequence failed', err);
-    showError('v-err-scan', err.message || 'Scan failed. Please try again.');
+    showError('v-err-scan', (err && err.message) || 'Scan failed. Please try again.');
     state.busy = false;
     return;
   } finally {
-    stream.getTracks().forEach((t) => t.stop());
+    if (state.stream) state.stream.getTracks().forEach((t) => t.stop());
+    state.stream = null;
   }
 }
 
@@ -112,22 +165,24 @@ async function runLivenessSequence(video) {
   const frames = [];
   const start = performance.now();
 
-  const captureAt = (idx) => new Promise((res) => {
+  const captureAt = (idx) => new Promise((res, rej) => {
     const step = steps[idx];
     setTimeout(() => {
+      if (state.cancelled) return rej(new Error('Cancelled'));
       prompt.textContent = step.prompt;
-      // Capture 200ms later, after user has time to react
       setTimeout(() => {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        frames.push({
-          data: imageData.data,
-          brightness: averageBrightness(imageData.data),
-          ts: performance.now() - start,
-        });
-        const pct = ((idx + 1) / 3) * 100;
-        progress.style.width = pct + '%';
-        res();
+        if (state.cancelled) return rej(new Error('Cancelled'));
+        try {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          frames.push({
+            data: imageData.data,
+            brightness: averageBrightness(imageData.data),
+            ts: performance.now() - start,
+          });
+          progress.style.width = (((idx + 1) / 3) * 100) + '%';
+          res(undefined);
+        } catch (e) { rej(e); }
       }, 600);
     }, step.at);
   });
@@ -136,17 +191,15 @@ async function runLivenessSequence(video) {
 
   prompt.textContent = 'Verifying…';
 
-  // Hash each frame
   const hashes = await Promise.all(frames.map((f) => sha256Pixels(f.data)));
 
-  // Compute liveness score
   // Signal 1: distinct hashes (replay prevention)
   const distinct = (hashes[0] !== hashes[1]) && (hashes[1] !== hashes[2]) && (hashes[0] !== hashes[2]);
-  // Signal 2: brightness varies between frames (face moved)
+  // Signal 2: brightness varies between frames (proxy for motion)
   const bDelta = Math.abs(frames[1].brightness - frames[0].brightness)
                + Math.abs(frames[2].brightness - frames[1].brightness);
-  const bScore = Math.min(1, bDelta / 12); // typical movement = 6-15
-  // Signal 3: timing is within a valid human window (rejects automated replay)
+  const bScore = Math.min(1, bDelta / 12);
+  // Signal 3: timing falls inside a valid human window (rejects automated replay)
   const tScore = (frames[2].ts > 5000 && frames[2].ts < 8000) ? 1 : 0.4;
 
   const liveness = distinct
@@ -158,7 +211,7 @@ async function runLivenessSequence(video) {
 
 function averageBrightness(pixels) {
   let sum = 0;
-  const step = 64; // sample every 16th pixel for speed
+  const step = 64;
   for (let i = 0; i < pixels.length; i += step) {
     sum += (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3;
   }
@@ -187,8 +240,13 @@ async function submitVerification(result) {
     },
     body: JSON.stringify(body),
   });
-  if (!r.ok) throw new Error('Server rejected verification (' + r.status + ').');
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error('Server rejected verification (' + r.status + '). ' + text.slice(0, 80));
+  }
   const json = await r.json();
-  if (!json.ok) throw new Error('Liveness check did not pass. Please try again in better light.');
+  if (!json.ok) {
+    throw new Error('Liveness check did not pass. Try again in better light, and follow the prompts carefully.');
+  }
   goSlide(2);
 }
