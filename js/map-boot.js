@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { POIS, POI_META } from './map-pois.js';
 
 function openDrawer(host) {
   const d = document.getElementById('map-drawer');
@@ -79,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // @ts-nocheck
+import { POIS, POI_META } from './map-pois.js';
 /**
  * /js/map-boot.js — the Wanderkind Map (v2).
  *
@@ -113,7 +115,7 @@ const state = {
   regionLayer: null,
   walkerMarkers: new Map(),
   walkerTrails: new Map(),
-  filters: new Set(['beds', 'food', 'water', 'churches', 'mountains', 'festivals', 'walkers']),
+  filters: new Set(['beds', 'food', 'water', 'walkers']),
 };
 
 function $(s) { return document.querySelector(s); }
@@ -134,6 +136,9 @@ const GLYPH = {
   'mountain': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 L9 8 L13 14 L16 10 L21 20 Z"/><path d="M8 12 L9.5 10 L11 11 Z" fill="currentColor"/></svg>`,
   'festival': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21 V4 L18 8 L6 12"/><circle cx="6" cy="3" r="0.8" fill="currentColor"/></svg>`,
   'wifi': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9 a16 16 0 0 1 20 0 M5 13 a11 11 0 0 1 14 0 M8 17 a6 6 0 0 1 8 0"/><circle cx="12" cy="20" r="0.8" fill="currentColor"/></svg>`,
+  'info': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="10" x2="12" y2="17"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>`,
+  'parish': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/><line x1="12" y1="7" x2="12" y2="11"/><line x1="10" y1="9" x2="14" y2="9"/></svg>`,
+  'fountain': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 v6 M9 6 h6"/><path d="M5 11 q7 4 14 0"/><path d="M5 11 v6 a3 3 0 0 0 14 0 v-6 z"/></svg>`,
   'water-fountain': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 v6 M8 7 c1 -2 3 -2 4 -2 s3 0 4 2 M6 13 h12 v8 H6 Z"/></svg>`,
   'bakery': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13 c0 -4 4 -7 8 -7 s8 3 8 7 v3 H4 Z M8 13 v3 M12 13 v3 M16 13 v3"/></svg>`,
 };
@@ -274,9 +279,10 @@ function isVisible(kind) {
   if (kind.startsWith('host-bed')) return state.filters.has('beds');
   if (kind === 'host-food') return state.filters.has('food');
   if (kind === 'host-water') return state.filters.has('water');
-  if (kind === 'church') return state.filters.has('churches');
-  if (kind === 'mountain') return state.filters.has('mountains');
-  if (kind === 'festival') return state.filters.has('festivals');
+  // primary landmarks · always visible (no filter)
+  if (kind === 'church' || kind === 'mountain' || kind === 'festival') return true;
+  // secondary services · always visible (zoom-gated in renderPOIs)
+  if (kind === 'wifi' || kind === 'fountain' || kind === 'info' || kind === 'parish') return true;
   return true;
 }
 
@@ -326,6 +332,9 @@ function kindLabel(kind) {
     'wifi':           'WiFi',
     'water-fountain': 'Water fountain',
     'bakery':         'Bakery',
+    'info':           'Tourist info',
+    'parish':         'Parish house',
+    'fountain':       'Drinking fountain',
   }[kind] || '';
 }
 
@@ -425,6 +434,44 @@ function wireFilterChips() {
   });
 }
 
+
+/* ─── render static POIs ─────────────────────────────────────────
+ * Primary tier (church · mountain · festival) → always visible, large.
+ * Secondary tier (wifi · fountain · info · parish) → smaller, visible
+ * only at zoom ≥ POI_META.minZoom[kind] to avoid clutter.
+ * Re-rendered on zoomend so secondary icons appear/disappear smoothly.
+ * ─────────────────────────────────────────────────────────────── */
+function renderPOIs() {
+  if (!state.map) return;
+  if (state.poiLayer) state.map.removeLayer(state.poiLayer);
+  state.poiLayer = L.layerGroup();
+  const z = state.map.getZoom();
+
+  for (const p of POIS) {
+    const tier = POI_META.tier[p.kind] || 'secondary';
+    if (tier === 'secondary') {
+      const min = POI_META.minZoom[p.kind] || 9;
+      if (z < min) continue;
+    }
+    const icon = makeIcon(p.kind, {
+      size: tier === 'primary' ? 24 : 16,
+      large: tier === 'primary',
+    });
+    if (!icon) continue;
+    const m = L.marker([p.lat, p.lng], { icon, zIndexOffset: tier === 'primary' ? 200 : 50 });
+    const safe = (s) => String(s || '').replace(/[<>"']/g, '');
+    m.bindPopup(`
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:13px;color:#1A120A;min-width:140px;">
+        <div style="font-weight:700;margin-bottom:4px;">${safe(p.name)}</div>
+        <div style="font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:0.22em;color:#9C5A1E;text-transform:uppercase;margin-bottom:6px;">— ${safe(kindLabel(p.kind))}</div>
+        ${p.note ? `<div style="color:#6B5A3E;">${safe(p.note)}</div>` : ''}
+      </div>
+    `);
+    m.addTo(state.poiLayer);
+  }
+  state.poiLayer.addTo(state.map);
+}
+
 async function bootMap() {
   const host = document.getElementById('map');
   if (!host) return;
@@ -459,6 +506,10 @@ async function bootMap() {
 
   // Region labels — always visible, no fetch needed
   state.regionLayer = placeRegionLabels(state.map).addTo(state.map);
+
+  // Static POIs — landmarks (primary) + services (secondary, zoom-gated)
+  renderPOIs();
+  state.map.on('zoomend', renderPOIs);
 
   wireFilterChips();
 
