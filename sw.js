@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.54-epic11-refined';
+const VERSION = '0.1.55-epic11-r2';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
