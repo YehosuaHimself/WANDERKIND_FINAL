@@ -80,7 +80,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 function render() {
   const list = document.getElementById('stamps-list');
   list.innerHTML = '';
+  /* Determine active chip · default 'all' */
+  const activeChip = document.querySelector('.stamps-chip[aria-pressed="true"]');
+  const cat = activeChip ? activeChip.dataset.cat : 'all';
+
   const filtered = state.stamps.filter((s) => {
+    /* Category filter */
+    if (cat !== 'all') {
+      const sCat = (s.category || 'other').toLowerCase();
+      if (sCat !== cat) return false;
+    }
+    /* Text filter */
     if (!state.filter) return true;
     const haystack = [
       s.host?.trail_name || '',
@@ -106,8 +116,13 @@ function render() {
     const initial = (name.match(/[A-Z]/) || ['W'])[0];
     const roman = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
     const date = `${dt.getDate()} ${roman[dt.getMonth()]} ${(year % 100).toString().padStart(2,'0')}`;
-    const card = document.createElement('article');
-    card.className = 'stamp';
+    /* Tier ring · default to tier 2 if not specified */
+    const tier = s.tier || 2;
+    const card = document.createElement('a');
+    card.className = 'stamp tier-ring tier-ring--' + tier;
+    card.href = '/stamp.html?id=' + s.id;
+    card.style.textDecoration = 'none';
+    card.style.color = 'inherit';
     card.innerHTML = `
       <div class="stamp-head">
         <div class="stamp-seal" aria-hidden="true">${initial}</div>
@@ -122,4 +137,18 @@ function render() {
     `;
     list.appendChild(card);
   }
+}
+
+/* Wire category chips */
+document.addEventListener('DOMContentLoaded', () => {
+  const chips = document.querySelectorAll('.stamps-chip');
+  chips.forEach((c) => {
+    c.addEventListener('click', () => {
+      chips.forEach(x => x.setAttribute('aria-pressed', 'false'));
+      c.setAttribute('aria-pressed', 'true');
+      if (typeof render === 'function') render();
+    });
+  });
+});
+
 }
