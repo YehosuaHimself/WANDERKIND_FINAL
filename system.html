@@ -103,7 +103,22 @@
     section.embassy table.tok th {
       border-bottom-color: var(--wk-embassy-line);
     }
-  </style>
+  
+.wk-img-logo {
+  display: inline-grid; place-items: center;
+  width: 96px; height: 96px;
+  background: var(--wk-cream, #FAEFCF);
+  border: 1.5px solid var(--wk-amber-text, #9C5917);
+  border-radius: 12px;
+  color: var(--wk-amber-text, #9C5917);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+</style>
 </head>
 <body>
 
@@ -393,7 +408,7 @@
 
     <h3 style="font-size:var(--wk-fs-h3); margin:var(--wk-space-lg) 0 var(--wk-space-sm); color: var(--wk-embassy-ink);">The seal · double ring</h3>
     <div style="display: flex; align-items: center; gap: var(--wk-space-lg); padding: var(--wk-space-md) 0;">
-      <img src="/assets/icons/seal-parchment.svg" alt="" width="96" height="96" />
+      <span class="wk-img-logo" aria-label="Wanderkind">W</span>
       <div>
         <p style="color: var(--wk-embassy-ink); margin-bottom: 4px;">The canonical W seal in its embassy form.</p>
         <p class="nano" style="color: var(--wk-embassy-ink-muted);">Inner ring · outer ring · dashed worn-paper detail · W glyph</p>
