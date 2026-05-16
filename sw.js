@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.64-marker-alt';
+const VERSION = '0.1.65-image-crop';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
