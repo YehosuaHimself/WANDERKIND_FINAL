@@ -672,18 +672,46 @@ function wirePhotoGrid() {
     const f = file.files && file.files[0];
     if (!f || targetSlot < 0) return;
     try {
-      const dataUrl = await new Promise((res, rej) => {
-        const fr = new FileReader();
-        fr.onload = () => res(fr.result);
-        fr.onerror = () => rej(new Error('read fail'));
-        fr.readAsDataURL(f);
-      });
+      // Downscale to max 800px on the longest side + re-encode JPEG q=0.8
+      // Keeps each photo around 80-150 KB so 9 photos fit comfortably in the jsonb column.
+      const dataUrl = await downscaleImage(f, 800, 0.8);
       __photos[targetSlot] = dataUrl;
       render();
-    } catch {}
+    } catch (err) {
+      console.warn('[profile] photo downscale failed', err);
+    }
     file.value = '';
     targetSlot = -1;
   });
+}
+
+/**
+ * Read a File, decode, downscale to maxDim on the longest side, re-encode as JPEG.
+ * @param {File} file
+ * @param {number} maxDim
+ * @param {number} q
+ * @returns {Promise<string>} data URL
+ */
+async function downscaleImage(file, maxDim, q) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => rej(new Error('image decode failed'));
+      i.src = url;
+    });
+    const ratio = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * ratio);
+    const h = Math.round(img.naturalHeight * ratio);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL('image/jpeg', q);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 
   window.__renderPhotos = render;
   render();
