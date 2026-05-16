@@ -75,7 +75,7 @@
     }
     .bmh-eyebrow {
       display: block;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono-wide);
       text-transform: uppercase;
@@ -100,7 +100,7 @@
       border-bottom: 1px solid var(--wk-line);
     }
     .me-eyebrow {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-micro);
       letter-spacing: var(--wk-ls-mono-wide);
       text-transform: uppercase;
@@ -217,7 +217,7 @@
     .me-set-trail {
       display: inline-block;
       margin-top: 6px;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono-wide);
       text-transform: uppercase;
@@ -241,14 +241,14 @@
       background: var(--tier);
     }
     .me-tier-label {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono);
       color: var(--tier);
       font-weight: var(--wk-fw-bold);
     }
     .me-pass-id {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-small);
       letter-spacing: 0.18em;
       color: var(--wk-ink-soft);
@@ -289,7 +289,7 @@
       font-variant-numeric: tabular-nums;
     }
     .me-stat-label {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: var(--wk-ls-mono);
       text-transform: uppercase;
@@ -336,7 +336,7 @@
       50%      { box-shadow: 0 0 0 7px color-mix(in srgb, var(--wk-amber-text) 8%, transparent); }
     }
     .me-status-label {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-micro);
       letter-spacing: var(--wk-ls-mono);
       text-transform: uppercase;
@@ -397,7 +397,7 @@
     /* ── Footer ───────────────────────────────────────────────── */
     .me-foot {
       text-align: center;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: 0.04em;
       color: var(--wk-ink-muted);
@@ -409,7 +409,7 @@
     .me-signout {
       background: transparent;
       border: none;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-micro);
       letter-spacing: var(--wk-ls-mono);
       text-transform: uppercase;
@@ -504,7 +504,7 @@
     <div style="display:flex; align-items:center; gap:10px;">
       <span id="walker-stay-phase" style="
         display:inline-flex; align-items:center; gap:6px;
-        font-family: var(--wk-font-mono);
+        font-family: var(--wk-font-display);
         font-size: 9.5px;
         letter-spacing: 0.28em;
         text-transform: uppercase;
@@ -516,7 +516,7 @@
       ">— Approaching</span>
       <a id="walker-stay-cta" href="#" hidden style="
         margin-left: auto;
-        font-family: var(--wk-font-mono);
+        font-family: var(--wk-font-display);
         font-size: 10px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
@@ -598,10 +598,10 @@
   <!-- Master pass P5 · 7-image trust grid + snooze + journey tier bar -->
   <section style="max-width: 480px; margin: 16px auto 0; padding: 0 var(--wk-page-x);">
     <div style="display:flex; align-items:baseline; gap:10px; margin-bottom: 8px;">
-      <span style="font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700;">— Photos · 0 / 7</span>
+      <span style="font-family: var(--wk-font-display); font-size: 10px; letter-spacing: 0.30em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700;">— Photos · 0 / 7</span>
     </div>
     <div id="me-photo-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;"></div>
-    <p style="font-family: var(--wk-font-mono); font-size: 9px; letter-spacing: 0.18em; color: var(--wk-ink-muted); text-transform: uppercase; margin: 6px 0 0; text-align: center;">7 photos build trust between host and guest.</p>
+    <p style="font-family: var(--wk-font-display); font-size: 9px; letter-spacing: 0.18em; color: var(--wk-ink-muted); text-transform: uppercase; margin: 6px 0 0; text-align: center;">7 photos build trust between host and guest.</p>
   </section>
 
   <section style="max-width: 480px; margin: 18px auto 0; padding: 0 var(--wk-page-x);">
@@ -609,7 +609,7 @@
       <div style="display:flex; align-items:center; gap: 12px;">
         <div style="flex:1;">
           <div style="font-family: var(--wk-font-display); font-weight: 800; font-size: 14.5px; color: var(--wk-ink);">Host mode</div>
-          <div id="me-host-status" style="font-family: var(--wk-font-mono); font-size: 9.5px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--wk-ink-muted); margin-top: 2px;">Loading…</div>
+          <div id="me-host-status" style="font-family: var(--wk-font-display); font-size: 9.5px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--wk-ink-muted); margin-top: 2px;">Loading…</div>
         </div>
         <label style="width: 44px; height: 24px; position: relative; display: inline-block; cursor: pointer; flex: 0 0 auto;">
           <input type="checkbox" id="me-host-toggle" style="position: absolute; opacity: 0; width: 0; height: 0;" />
@@ -617,9 +617,9 @@
         </label>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 10px;">
-        <button id="me-snooze" type="button" style="flex:1; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px; border-radius: 999px; background: rgba(200,118,42,0.12); color: var(--wk-amber-text); border: 1px solid var(--wk-amber-line); cursor: pointer;">Snooze 24h</button>
-        <a href="/me-edit.html" style="flex:1; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px 0; border-radius: 999px; background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); cursor: pointer; text-decoration: none; text-align: center;">Edit address</a>
-        <a href="/host.html" style="flex:1; font-family: var(--wk-font-mono); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px 0; border-radius: 999px; background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); cursor: pointer; text-decoration: none; text-align: center;">Preferences</a>
+        <button id="me-snooze" type="button" style="flex:1; font-family: var(--wk-font-display); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px; border-radius: 999px; background: rgba(200,118,42,0.12); color: var(--wk-amber-text); border: 1px solid var(--wk-amber-line); cursor: pointer;">Snooze 24h</button>
+        <a href="/me-edit.html" style="flex:1; font-family: var(--wk-font-display); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px 0; border-radius: 999px; background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); cursor: pointer; text-decoration: none; text-align: center;">Edit address</a>
+        <a href="/host.html" style="flex:1; font-family: var(--wk-font-display); font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; padding: 9px 0; border-radius: 999px; background: transparent; color: var(--wk-ink-soft); border: 1px solid var(--wk-line); cursor: pointer; text-decoration: none; text-align: center;">Preferences</a>
       </div>
     </div>
   </section>
@@ -629,18 +629,18 @@
   <section id="me-verify-pill" hidden style="max-width: 480px; margin: 18px auto 0; padding: 0 var(--wk-page-x);">
     <div style="display:inline-flex; gap:8px; align-items:center; padding:8px 14px; background: rgba(200,118,42,0.10); border: 1px solid var(--wk-amber); border-radius: 999px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--wk-amber);"><polyline points="20 6 9 17 4 12"/></svg>
-      <span style="font-family: var(--wk-font-mono); font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700;">Door key · issued</span>
+      <span style="font-family: var(--wk-font-display); font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700;">Door key · issued</span>
     </div>
   </section>
 
   <section id="me-verify-banner" hidden style="max-width: 480px; margin: 18px auto 0; padding: 0 var(--wk-page-x);">
     <a href="/verify-me.html?next=/me.html" style="display:flex; gap:12px; align-items:center; padding:14px 16px; background: var(--wk-amber); color: var(--wk-cream); border-radius: var(--wk-r-md); text-decoration:none;">
-      <span aria-hidden="true" style="font-family: var(--wk-font-mono); font-size: 18px;">◷</span>
+      <span aria-hidden="true" style="font-family: var(--wk-font-display); font-size: 18px;">◷</span>
       <span style="flex:1;">
         <span style="display:block; font-family: var(--wk-font-display); font-weight: 800; font-size: 13.5px; letter-spacing: 0.02em;">Get verified</span>
-        <span style="display:block; font-family: var(--wk-font-mono); font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85; margin-top: 2px;">— 6-second face scan · unlocks the door</span>
+        <span style="display:block; font-family: var(--wk-font-display); font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85; margin-top: 2px;">— 6-second face scan · unlocks the door</span>
       </span>
-      <span aria-hidden="true" style="font-family: var(--wk-font-mono); font-size: 14px;">→</span>
+      <span aria-hidden="true" style="font-family: var(--wk-font-display); font-size: 14px;">→</span>
     </a>
   </section>
 
@@ -662,7 +662,7 @@
       flex: 1;
       padding: 6px 4px;
       text-align: center;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: 8px;
       letter-spacing: 0.10em;
       text-transform: uppercase;
@@ -779,7 +779,7 @@
     ">
       <div style="display:flex; align-items:baseline; gap:10px;">
         <span style="
-          font-family: var(--wk-font-mono);
+          font-family: var(--wk-font-display);
           font-size: var(--wk-fs-nano);
           letter-spacing: 0.30em;
           text-transform: uppercase;
@@ -788,7 +788,7 @@
         ">— Vouches</span>
         <span id="me-vouches-count" style="
           margin-left: auto;
-          font-family: var(--wk-font-mono);
+          font-family: var(--wk-font-display);
           font-size: var(--wk-fs-nano);
           letter-spacing: 0.22em;
           text-transform: uppercase;
@@ -812,7 +812,7 @@
       <a href="/vouches.html" style="
         align-self: flex-start;
         margin-top: 4px;
-        font-family: var(--wk-font-mono);
+        font-family: var(--wk-font-display);
         font-size: 11px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
