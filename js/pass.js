@@ -143,8 +143,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0 && state.page === 0) goPage(1);
-      else if (dx > 0 && state.page === 1) goPage(0);
+      if (dx < 0 && state.page < 2) goPage(state.page + 1);
+      else if (dx > 0 && state.page > 0) goPage(state.page - 1);
     }
     swiping = false;
   }, { passive: true });
@@ -400,9 +400,9 @@ function lockId() {
 
 function goPage(p) {
   state.page = p;
-  refs.track.style.transform = `translateX(${p === 0 ? 0 : '-100%'})`;
+  refs.track.style.transform = `translateX(-${p * 100}%)`;
   if (refs.prev) refs.prev.disabled = p === 0;
-  if (refs.next) refs.next.disabled = p === 1;
+  if (refs.next) refs.next.disabled = p >= 2;
   document.querySelectorAll('.id-dot').forEach((d, i) => {
     d.classList.toggle('on', i === p);
     d.setAttribute('aria-selected', i === p ? 'true' : 'false');
