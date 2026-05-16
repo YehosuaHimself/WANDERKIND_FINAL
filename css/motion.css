@@ -1,0 +1,230 @@
+/* ════════════════════════════════════════════════════════════════════════
+ * motion.css · Wanderkind canonical motion + interaction system
+ *
+ * The difference between "web app" and "default iPhone app" lives here.
+ * Every interactive surface in Wanderkind should use these primitives.
+ *
+ * Principles:
+ *   • Motion is meaningful. Every animation tells the user where they are.
+ *   • Springs, not linear. iOS uses overshoot curves; we follow.
+ *   • Press is instant; release bounces. Tap-down has no delay; release
+ *     uses a small spring that overshoots before settling.
+ *   • Reduced-motion is honored without exception (canon).
+ *   • 60fps minimum, 120fps on ProMotion. Only GPU-accelerated transforms.
+ * ──────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Canonical easings · use one of these, never inline cubic-bezier ── */
+  --wk-ease-out:        cubic-bezier(0.16, 1, 0.3, 1);        /* iOS standard ease-out · decel */
+  --wk-ease-in-out:     cubic-bezier(0.4, 0, 0.2, 1);         /* material standard · for symmetric */
+  --wk-spring-soft:     cubic-bezier(0.34, 1.26, 0.64, 1);    /* gentle overshoot on release */
+  --wk-spring-firm:     cubic-bezier(0.34, 1.56, 0.64, 1);    /* prominent overshoot for emphasis */
+  --wk-press:           cubic-bezier(0.4, 0, 1, 1);           /* press-down — accelerates into */
+
+  /* ── Canonical durations ── */
+  --wk-dur-instant:     80ms;     /* tap-down · press-state · status changes */
+  --wk-dur-fast:        160ms;    /* release · hover · cursor changes */
+  --wk-dur-normal:      240ms;    /* drawer reveals · sheet slides · expand-collapse */
+  --wk-dur-slow:        360ms;    /* page transitions · hero animations */
+  --wk-dur-deliberate:  600ms;    /* celebration moments · success states */
+}
+
+/* ── Reduced motion: honor without exception ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * TAP SCALE · the single most important Apple-grade interaction
+ * Apply class .wk-press or attribute data-wk-press="true" to any
+ * interactive element (button, link, card). On press it scales to 0.97
+ * with no delay (press is instant). On release it bounces back through
+ * a spring with overshoot — that's the iOS feel.
+ * ──────────────────────────────────────────────────────────────────── */
+.wk-press,
+[data-wk-press="true"],
+button:not([disabled]):not(.no-press),
+a:not(.no-press):not([href^="#"]),
+[role="button"]:not([disabled]):not(.no-press) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform var(--wk-dur-instant) var(--wk-press),
+              opacity var(--wk-dur-fast) var(--wk-ease-out);
+  will-change: transform;
+}
+.wk-press:active,
+[data-wk-press="true"]:active,
+button:not([disabled]):not(.no-press):active,
+a:not(.no-press):not([href^="#"]):active,
+[role="button"]:not([disabled]):not(.no-press):active {
+  transform: scale(0.97);
+  transition: transform var(--wk-dur-instant) var(--wk-press);
+}
+
+/* Larger scale-down for cards (less aggressive than buttons) */
+.wk-press-card,
+[data-wk-press="card"] {
+  transition: transform var(--wk-dur-fast) var(--wk-spring-soft),
+              box-shadow var(--wk-dur-fast) var(--wk-ease-out);
+}
+.wk-press-card:active,
+[data-wk-press="card"]:active {
+  transform: scale(0.985);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * 44PT TAP TARGETS · Apple HIG · everything tappable is ≥ 44×44pt
+ * ──────────────────────────────────────────────────────────────────── */
+.wk-tap-44 {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * BOTTOM SHEET · the canonical modal pattern (used by WanderWall)
+ * Any new dialog should use these primitives.
+ * ──────────────────────────────────────────────────────────────────── */
+.wk-sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 420;
+  background: var(--wk-bg);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -12px 40px -16px rgba(11, 7, 5, 0.4);
+  transform: translateY(100%);
+  transition: transform var(--wk-dur-normal) var(--wk-spring-soft);
+  /* Sheets respect bottom safe-area */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.wk-sheet.open {
+  transform: translateY(0);
+}
+.wk-sheet-grip {
+  align-self: center;
+  width: 36px; height: 4px;
+  background: rgba(26, 18, 10, 0.18);
+  border-radius: 2px;
+  margin: 8px auto 4px;
+}
+.wk-sheet-scrim {
+  position: fixed; inset: 0;
+  z-index: 415;
+  background: rgba(11, 7, 5, 0.12);
+  opacity: 0;
+  transition: opacity var(--wk-dur-normal) var(--wk-ease-out);
+  pointer-events: none;
+}
+.wk-sheet-scrim.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * SKELETON LOADERS · never spinners.
+ * Use .wk-skeleton to mark a placeholder. Width/height set inline.
+ * ──────────────────────────────────────────────────────────────────── */
+.wk-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(26, 18, 10, 0.04) 0%,
+    rgba(26, 18, 10, 0.08) 50%,
+    rgba(26, 18, 10, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: wk-skeleton-shimmer 1600ms linear infinite;
+}
+@keyframes wk-skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * VIEW TRANSITIONS · smooth route changes
+ * Browsers that support the View Transitions API will use these names.
+ * Other browsers degrade gracefully (no animation).
+ * ──────────────────────────────────────────────────────────────────── */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--wk-dur-normal);
+    animation-timing-function: var(--wk-ease-out);
+  }
+  ::view-transition-old(root) {
+    animation-name: wk-fade-out-up;
+  }
+  ::view-transition-new(root) {
+    animation-name: wk-fade-in-up;
+  }
+}
+@keyframes wk-fade-out-up {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+@keyframes wk-fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * FOCUS RINGS · keyboard-visible, designed not browser-default
+ * ──────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--wk-amber);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline-offset: 3px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * KEYBOARD ACCESSORY · the visual-viewport gymnastics that make form
+ * fields feel like Apple's. The footer button slides above the keyboard.
+ * ──────────────────────────────────────────────────────────────────── */
+@supports (height: 100dvh) {
+  .wk-kbd-aware {
+    /* When the keyboard opens, dvh shrinks. This lets CTAs reposition. */
+    min-height: 100dvh;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * SCROLL · smooth + bouncy
+ * ──────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+.wk-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * RIPPLE · subtle inverse highlight on tap (Apple's "Press" state)
+ * Apply class .wk-ripple to a button to get an instant amber wash.
+ * ──────────────────────────────────────────────────────────────────── */
+.wk-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.wk-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--wk-amber);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--wk-dur-instant) var(--wk-press);
+}
+.wk-ripple:active::after {
+  opacity: 0.10;
+}
