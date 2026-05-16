@@ -203,6 +203,69 @@
       line-height: 1.5;
       margin: 0;
     }
+  
+    /* Year header */
+    .stamps-year {
+      font-family: var(--wk-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      margin: 14px 0 2px;
+    }
+    .stamps-year::before { content: "— "; color: var(--wk-amber); }
+    .stamps-year:first-child { margin-top: 0; }
+
+    /* Search input */
+    .stamps-search-wrap {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 0;
+    }
+    .stamps-search {
+      flex: 1;
+      font-family: var(--wk-font-display);
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--wk-line);
+      border-radius: var(--wk-r-sm);
+      background: var(--wk-bg-2);
+      color: var(--wk-ink);
+      box-sizing: border-box;
+    }
+    .stamps-search:focus { outline: 2px solid var(--wk-amber); outline-offset: -1px; }
+
+    /* Open-vouches banner */
+    .stamps-open-vouch {
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-amber);
+      border-radius: var(--wk-r-md);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .stamps-open-vouch-eyebrow {
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      font-weight: 700;
+      flex: 1;
+    }
+    .stamps-open-vouch-eyebrow::before { content: "— "; color: var(--wk-amber); }
+    .stamps-open-vouch a {
+      font-family: var(--wk-font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-bg);
+      background: var(--wk-amber);
+      padding: 8px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+
   </style>
 </head>
 <body>
@@ -225,7 +288,17 @@
       <p class="st-sub">One stamp for every door. Written the morning after, locked the moment your host writes theirs.</p>
     </div>
 
-    <section class="stamps-list" id="stamps-list" hidden></section>
+    
+    <section class="stamps-open-vouch" id="stamps-open-vouch" hidden>
+      <span class="stamps-open-vouch-eyebrow">A vouch is waiting</span>
+      <a href="#">Finish →</a>
+    </section>
+
+    <div class="stamps-search-wrap">
+      <input type="search" class="stamps-search" id="stamps-search" placeholder="Search by host, region, or line…" maxlength="60" />
+    </div>
+
+<section class="stamps-list" id="stamps-list" hidden></section>
 
     <section class="stamps-empty" id="stamps-empty" hidden>
       <h2 class="stamps-empty-h">Your first stamp lands here.</h2>
