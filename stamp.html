@@ -28,7 +28,7 @@
     html, body { background: var(--wk-bg); color: var(--wk-ink); height: 100svh; height: 100dvh; overflow-x: hidden; overflow-y: auto; }
     body { overscroll-behavior-y: contain; padding: 0; }
     .browser-mode-hint { max-width: 480px; margin: 12px auto 0; background: rgba(200,118,42,0.08); border: 1px solid var(--wk-amber-line); border-radius: var(--wk-r-md); padding: 12px var(--wk-space-md); }
-    .bmh-eyebrow { display: block; font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono-wide); text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 4px; }
+    .bmh-eyebrow { display: block; font-family: var(--wk-font-display); font-size: var(--wk-fs-nano); letter-spacing: var(--wk-ls-mono-wide); text-transform: uppercase; color: var(--wk-amber-text); font-weight: 700; margin-bottom: 4px; }
     .bmh-body { font-size: var(--wk-fs-small); line-height: var(--wk-lh-body); color: var(--wk-ink-soft); margin: 0; }
     [data-pwa="true"] [data-only="browser"] { display: none; }
     main#stamp-root {
@@ -40,7 +40,7 @@
     }
     .stamp-back {
       display: inline-flex; align-items: center;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: 11px; letter-spacing: 0.22em;
       text-transform: uppercase; font-weight: 700;
       color: var(--wk-amber-text);
@@ -60,7 +60,7 @@
       pointer-events: none;
     }
     .stamp-eyebrow {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: 0.30em;
       text-transform: uppercase;
@@ -80,7 +80,7 @@
     }
     .stamp-title-main em { color: var(--wk-amber-text); font-style: italic; }
     .stamp-coords {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: 10px;
       letter-spacing: 0.18em;
       color: var(--wk-ink-muted);
@@ -92,7 +92,7 @@
       border-bottom: 1px dashed var(--wk-amber-line);
     }
     .sect-head-l {
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: 10px;
       letter-spacing: 0.30em;
       text-transform: uppercase;
@@ -102,7 +102,7 @@
     .sect-head-l::before { content: "— "; color: var(--wk-amber); }
     .sect-head-r {
       margin-left: auto;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: var(--wk-fs-nano);
       letter-spacing: 0.22em;
       color: var(--wk-ink-muted);
@@ -133,7 +133,7 @@
       border-left: 3px solid var(--wk-amber);
       border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0;
       padding: 12px 16px;
-      font-family: var(--wk-font-mono);
+      font-family: var(--wk-font-display);
       font-size: 12px;
       line-height: 1.6;
       color: var(--wk-ink);
@@ -147,7 +147,7 @@
     .vouch-block { background: var(--wk-bg-elevated); border: 1px solid var(--wk-line); border-radius: var(--wk-r-md); padding: 14px 16px; }
     .vouch-text { font-family: var(--wk-font-display); font-style: italic; font-size: 14.5px; line-height: 1.6; color: var(--wk-ink); margin: 0 0 8px; }
     .vouch-reply { margin: 6px 0 0; padding: 8px 12px; background: var(--wk-bg-2); border-left: 2px solid var(--wk-amber); border-radius: 0 var(--wk-r-sm) var(--wk-r-sm) 0; font-family: var(--wk-font-display); font-size: 13.5px; line-height: 1.55; color: var(--wk-ink-soft); }
-    .vouch-reply-lbl { display: block; font-family: var(--wk-font-mono); font-size: var(--wk-fs-nano); letter-spacing: 0.22em; color: var(--wk-amber-text); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+    .vouch-reply-lbl { display: block; font-family: var(--wk-font-display); font-size: var(--wk-fs-nano); letter-spacing: 0.22em; color: var(--wk-amber-text); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
   </style>
 </head>
 <body>
