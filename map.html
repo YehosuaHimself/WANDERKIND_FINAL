@@ -314,37 +314,74 @@
     }
     .empty-pill[hidden] { display: none; }
 
-    /* ── Legend · desktop only ── */
+    /* ── Legend · foldable, lower-right ── */
     .map-legend {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      padding: 10px 12px;
-      background: rgba(246,237,216,0.92);
-      border: 1px solid var(--wk-line);
-      border-radius: var(--wk-r-sm);
-      box-shadow: 0 4px 10px -6px rgba(11,7,5,0.15);
+      bottom: calc(var(--wk-tabbar-h, 64px) + 78px);  /* clear of zoom controls */
+      right: 14px;
       z-index: 405;
       font-family: var(--wk-font-mono);
-      font-size: 9.5px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
+      font-size: 10px;
       color: var(--wk-ink);
     }
+    .map-legend-toggle {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px;
+      background: rgba(246,237,216,0.95);
+      border: 1px solid var(--wk-line);
+      border-radius: 999px;
+      box-shadow: 0 4px 10px -6px rgba(11,7,5,0.18);
+      cursor: pointer;
+      font-family: inherit; font-size: 10px;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--wk-ink);
+      transition: background 0.15s;
+    }
+    .map-legend-toggle:hover { background: rgba(246,237,216,1); }
+    .map-legend-toggle::before {
+      content: ""; width: 4px; height: 4px; border-radius: 50%;
+      background: var(--wk-amber); display: inline-block;
+    }
+    .map-legend-body {
+      display: none;
+      margin-top: 6px;
+      padding: 12px 14px;
+      background: rgba(246,237,216,0.96);
+      border: 1px solid var(--wk-line);
+      border-radius: 8px;
+      box-shadow: 0 6px 16px -8px rgba(11,7,5,0.22);
+      max-width: 220px;
+    }
+    .map-legend.open .map-legend-body { display: block; }
+    .map-legend.open .map-legend-toggle { border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+    .map-legend-section {
+      font-family: var(--wk-font-mono);
+      font-size: 9px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--wk-ink-muted);
+      margin: 4px 0 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--wk-line);
+    }
+    .map-legend-section:first-child { margin-top: 0; }
     .map-legend .legend-row {
       display: flex; align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
+      gap: 9px;
+      margin-bottom: 5px;
+      font-size: 10.5px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--wk-ink);
     }
     .map-legend .legend-row:last-child { margin-bottom: 0; }
     .legend-dot {
-      width: 8px; height: 8px;
+      width: 10px; height: 10px;
       border-radius: 50%;
       flex-shrink: 0;
+      box-shadow: 0 0 0 1.5px rgba(0,0,0,0.15);
     }
-    @media (max-width: 720px) {
-      .map-legend { display: none; }
-    }
+    .legend-dot--sm { width: 7px; height: 7px; }
 
     /* ── Leaflet controls — themed ── */
     .leaflet-control-zoom a {
@@ -582,14 +619,37 @@
   <main class="map-canvas" role="main" aria-label="Map of nearby wanderkinds">
     <div id="map"></div>
 
-    <aside class="map-legend" aria-label="Map legend">
-      <div class="legend-row"><span class="legend-dot" style="background:#C8762A"></span>Bed</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#A0522D"></span>Food</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#4CA8C9"></span>Water</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#5A4632"></span>Church</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#5C6B40"></span>Mountain</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#9C2E5C"></span>Festival</div>
-      <div class="legend-row"><span class="legend-dot" style="background:#C8762A;box-shadow:0 0 0 2px rgba(200,118,42,0.4)"></span>Walker</div>
+    <aside class="map-legend" id="map-legend" aria-label="Map legend">
+      <button type="button" class="map-legend-toggle" id="map-legend-toggle" aria-expanded="false" aria-controls="map-legend-body">Legend</button>
+      <div class="map-legend-body" id="map-legend-body" role="region" aria-label="Icon meanings">
+        <div class="map-legend-section">— Hosts</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#C8762A"></span>Bed</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#A0522D"></span>Food</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#4CA8C9"></span>Water</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#C8762A;box-shadow:0 0 0 2px rgba(200,118,42,0.45)"></span>Walker</div>
+
+        <div class="map-legend-section">— Landmarks</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#5A4632"></span>Church</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#5C6B40"></span>Mountain</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#9C2E5C"></span>Festival</div>
+
+        <div class="map-legend-section">— Services</div>
+        <div class="legend-row"><span class="legend-dot legend-dot--sm" style="background:#4CA8C9"></span>Drinking fountain</div>
+        <div class="legend-row"><span class="legend-dot legend-dot--sm" style="background:#4A5A6B"></span>Tourist info</div>
+        <div class="legend-row"><span class="legend-dot legend-dot--sm" style="background:#7A5A30"></span>Parish house</div>
+        <div class="legend-row"><span class="legend-dot legend-dot--sm" style="background:#A0522D"></span>Public WiFi</div>
+      </div>
+      <script>
+        (function(){
+          var t = document.getElementById('map-legend-toggle');
+          var w = document.getElementById('map-legend');
+          if (!t || !w) return;
+          t.addEventListener('click', function(){
+            var open = w.classList.toggle('open');
+            t.setAttribute('aria-expanded', open ? 'true' : 'false');
+          });
+        })();
+      </script>
     </aside>
 
     <section class="empty-pill" id="empty-pill" hidden>
