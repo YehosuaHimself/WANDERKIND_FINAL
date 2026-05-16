@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.52-master-pass';
+const VERSION = '0.1.53-epic11-facescan';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -22,8 +22,10 @@ const PRECACHE = [
   '/map.html',       // map register page
   '/u/index.html',   // public-pass page (404 routes /u/<X> to ?id=X)
   '/js/pass-public.js',
+  '/js/verify-me.js',
   '/auth.html',      // magic-link sign-in
   '/me.html',        // signed-in profile
+  '/verify-me.html', // EPIC 11 · mandatory FaceScan onboarding step
   '/more.html',      // central hub
   '/me-edit.html',   // profile editor
   '/settings.html',  // placeholder (Coming soon)
