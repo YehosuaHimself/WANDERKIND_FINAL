@@ -266,6 +266,101 @@
       text-decoration: none;
     }
 
+  
+    /* Master pass P3 · category chips + propose tile + tier rings */
+    .stamps-chips {
+      display: flex;
+      gap: 6px;
+      padding: 4px 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      white-space: nowrap;
+    }
+    .stamps-chips::-webkit-scrollbar { display: none; }
+    .stamps-chip {
+      flex: 0 0 auto;
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--wk-ink);
+      background: var(--wk-bg-2);
+      border: 1px solid var(--wk-line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+    .stamps-chip[aria-pressed="true"] {
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      border-color: var(--wk-amber);
+    }
+    /* Propose tile · cream with dashed amber border */
+    .stamps-propose {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 18px;
+      background: var(--wk-bg-2);
+      border: 1px dashed var(--wk-amber);
+      border-radius: var(--wk-r-md);
+      text-decoration: none;
+      color: var(--wk-ink);
+    }
+    .stamps-propose-plus {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+      color: var(--wk-bg);
+      display: grid; place-items: center;
+      font-family: var(--wk-font-display);
+      font-weight: 900; font-size: 22px;
+    }
+    .stamps-propose-text {
+      flex: 1;
+    }
+    .stamps-propose-name {
+      font-family: var(--wk-font-display);
+      font-weight: 800;
+      font-size: 14.5px;
+      color: var(--wk-ink);
+    }
+    .stamps-propose-hint {
+      font-family: var(--wk-font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--wk-ink-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    /* Tier ring badges */
+    .tier-ring { position: relative; flex-shrink: 0; }
+    .tier-ring--1 .stamp-seal { box-shadow: 0 0 0 2px var(--wk-amber); }
+    .tier-ring--2 .stamp-seal::after {
+      content: "";
+      position: absolute; top: -2px; right: -2px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--wk-amber);
+      box-shadow: 0 0 0 1.5px var(--wk-bg);
+    }
+    .tier-ring--3 .stamp-seal {
+      box-shadow: 0 0 0 1.5px var(--wk-amber);
+      border: 1.5px dashed var(--wk-amber);
+      background: var(--wk-bg-2) !important;
+      color: var(--wk-amber-text) !important;
+    }
+    .tier-legend-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: var(--wk-font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wk-amber-text);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
   </style>
 </head>
 <body>
