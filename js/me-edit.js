@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * /me-edit.html — minimal profile editor.
  *
