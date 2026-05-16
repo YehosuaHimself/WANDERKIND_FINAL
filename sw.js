@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.49-host-vouch';
+const VERSION = '0.1.50-host-complete';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
@@ -35,6 +35,8 @@ const PRECACHE = [
   '/id.html',
   '/messages.html',
   '/hosts.html',
+  '/js/gastebuch.js',
+  '/gastebuch.html',
   '/js/vouch.js',
   '/vouch.html',
   '/js/host-setup.js',
