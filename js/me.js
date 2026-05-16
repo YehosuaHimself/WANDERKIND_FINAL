@@ -199,9 +199,11 @@ function renderProfile(p, email) {
  */
 function toggleVerifyBanner(p) {
   const banner = document.getElementById('me-verify-banner');
-  if (!banner) return;
+  const pill   = document.getElementById('me-verify-pill');
   // @ts-ignore — face_verified_at added by EPIC 11 SQL
-  banner.hidden = !!p.face_verified_at;
+  const verified = !!p.face_verified_at;
+  if (banner) banner.hidden = verified;
+  if (pill)   pill.hidden   = !verified;
 }
 
 /**
