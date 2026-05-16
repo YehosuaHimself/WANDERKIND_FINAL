@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.50-host-complete';
+const VERSION = '0.1.51-loop-closed';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
