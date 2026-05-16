@@ -1,11 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 152 152" role="img" aria-label="Wanderkind W">
-  <!-- Cream background -->
   <rect width="152" height="152" fill="#FAEFCF"/>
-  <!-- A plain Helvetica Neue "W" in brown · per design canon -->
-  <text x="76" y="106" text-anchor="middle"
-        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
-        font-weight="800"
-        font-size="92"
-        letter-spacing="-0.02em"
-        fill="#9C5A1E">W</text>
+  <!-- Path-based W · renders crisp at every size -->
+  <path d="M 34 42 L 58 114 L 76 60 L 94 114 L 118 42"
+        fill="none" stroke="#9C5A1E" stroke-width="16"
+        stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
