@@ -36,7 +36,19 @@ const state = {
 document.addEventListener('DOMContentLoaded', () => {
   state.session = getSession();
   if (!state.session) {
-    location.replace('/auth.html?next=' + encodeURIComponent(location.pathname + location.search));
+    // Don't silently redirect — surface a clear message so the user knows
+    // they need to sign in. Camera flow requires a session for the RPC.
+    const err = document.getElementById('v-err-compose');
+    if (err) {
+      err.textContent = 'You need to be signed in to use the face check. Tap to sign in.';
+      err.classList.add('on');
+      err.style.cursor = 'pointer';
+      err.addEventListener('click', () => {
+        location.replace('/onboarding/?step=2');
+      });
+    }
+    const btn = document.getElementById('v-start');
+    if (btn) btn.disabled = true;
     return;
   }
 
