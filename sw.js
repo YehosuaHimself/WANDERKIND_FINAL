@@ -12,7 +12,7 @@
  * bundle without manual refresh.
  */
 
-const VERSION = '0.1.67-haptics-everywhere';
+const VERSION = '0.1.68-lh100-fix';
 const CACHE_NAME = `wk-${VERSION}`;
 const PRECACHE = [
   '/',
