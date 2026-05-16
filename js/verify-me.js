@@ -66,6 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const cancelBtn = $('v-cancel-scan');
   if (cancelBtn) cancelBtn.addEventListener('click', cancelScan);
+  const retryBtn = $('v-retry');
+  if (retryBtn) retryBtn.addEventListener('click', () => {
+    retryBtn.hidden = true;
+    clearError('v-err-scan');
+    goSlide(0);
+    setTimeout(startScan, 80);
+  });
 });
 
 function goSlide(idx) {
@@ -90,13 +97,24 @@ function cancelScan() {
   if (state.stream) state.stream.getTracks().forEach((t) => t.stop());
   state.stream = null;
   state.busy = false;
+  resetProgress();
   goSlide(0);
+}
+
+function resetProgress() {
+  const p = $('v-progress');
+  if (p) p.style.width = '0%';
+  const prompt = $('v-prompt');
+  if (prompt) prompt.textContent = 'Look at the camera';
+  const retry = $('v-retry');
+  if (retry) retry.hidden = true;
 }
 
 async function startScan() {
   if (state.busy) return;
   state.busy = true;
   state.cancelled = false;
+  resetProgress();
   clearError('v-err-compose');
   clearError('v-err-scan');
 
@@ -142,6 +160,8 @@ async function startScan() {
   } catch (err) {
     console.warn('[verify-me] sequence failed', err);
     showError('v-err-scan', (err && err.message) || 'Scan failed. Please try again.');
+    const retry = $('v-retry');
+    if (retry) retry.hidden = false;
     state.busy = false;
     return;
   } finally {
