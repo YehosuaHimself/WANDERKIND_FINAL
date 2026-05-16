@@ -64,3 +64,25 @@ class WkTabbar extends HTMLElement {
 }
 
 customElements.define('wk-tabbar', WkTabbar);
+
+
+/* ─── BULLETPROOF LOCK · re-pin on every viewport change ──────────────── */
+function lockTabbar() {
+  const bars = document.querySelectorAll('wk-tabbar');
+  bars.forEach((tb) => {
+    tb.style.setProperty('position', 'fixed', 'important');
+    tb.style.setProperty('bottom', '0', 'important');
+    tb.style.setProperty('left', '0', 'important');
+    tb.style.setProperty('right', '0', 'important');
+    tb.style.setProperty('width', '100%', 'important');
+    tb.style.setProperty('z-index', '999', 'important');
+    tb.style.setProperty('transform', 'none', 'important');
+  });
+}
+addEventListener('load', lockTabbar);
+addEventListener('resize', lockTabbar);
+addEventListener('orientationchange', lockTabbar);
+addEventListener('pageshow', lockTabbar);
+/* Initial run after DOM ready */
+if (document.readyState !== 'loading') lockTabbar();
+else document.addEventListener('DOMContentLoaded', lockTabbar);
